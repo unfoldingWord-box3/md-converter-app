@@ -30,8 +30,6 @@ LoadingIndicator.defaultProps = {
 };
 
 LoadingIndicator.propTypes = {
-  size: PropsTypes.number.isRequired,
-  files: PropsTypes.array.isRequired,
-  message: PropsTypes.string.isRequired,
-  onItemClick: PropsTypes.func.isRequired,
+  size: PropsTypes.number,
+  message: PropsTypes.string,
 };

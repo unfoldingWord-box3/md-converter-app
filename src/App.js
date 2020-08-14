@@ -8,7 +8,6 @@ import {
 } from "gitea-react-toolkit";
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import theme from './theme';
-import './App.css'
 import {
   tokenid,
   base_url,
