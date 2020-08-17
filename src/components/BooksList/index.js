@@ -6,6 +6,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import FolderIcon from '@material-ui/icons/FolderOpenOutlined';
+import { BIBLES_ABBRV_INDEX } from '../../common/BooksOfTheBible';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,16 +21,20 @@ export default function BooksList({
 }) {
   const classes = useStyles();
 
+  const books = files.filter(({ path: bookId }) => Object.keys(BIBLES_ABBRV_INDEX).includes(bookId))
+
+  console.log('books', books)
+
   return (
     <div className={classes.root}>
       <List component="nav" aria-label="main mailbox folders">
       {
-        files.map(({ path: book, url, sha: key }) => (
-          <ListItem key={key} button onClick={() => onItemClick(book, url)}>
+        books.map(({ path: bookId, url, sha: key }) => (
+          <ListItem key={key} button onClick={() => onItemClick(bookId, url)}>
             <ListItemIcon>
               <FolderIcon />
             </ListItemIcon>
-            <ListItemText primary={book} />
+            <ListItemText primary={bookId} />
           </ListItem>
         ))
       }
