@@ -20,10 +20,7 @@ export default function BooksList({
   onItemClick,
 }) {
   const classes = useStyles();
-
   const books = files.filter(({ path: bookId }) => Object.keys(BIBLES_ABBRV_INDEX).includes(bookId))
-
-  console.log('books', books)
 
   return (
     <div className={classes.root}>
