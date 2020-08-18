@@ -1,6 +1,6 @@
 # tn-converter-app
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Translation notes markdown converter. Converts md tn files to tsv files.
 
 ## Available Scripts
 
