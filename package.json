@@ -14,11 +14,13 @@
     "gitea-react-toolkit": "^1.1.0",
     "localforage": "^1.9.0",
     "markdown-translatable": "^1.0.2-rc.2",
+    "marked": "^1.1.1",
     "md-2-json": "^1.0.6",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.3"
+    "react-scripts": "3.4.3",
+    "traverse": "^0.6.6"
   },
   "scripts": {
     "start": "react-scripts start",

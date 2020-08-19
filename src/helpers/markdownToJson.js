@@ -1,16 +1,8 @@
 import axios from 'axios';
-import mdToJson from 'md-2-json';
-
-function base64DecodeUnicode(str) {
-  // Convert Base64 encoded bytes to percent-encoding, and then get the original string.
-  const percentEncodedStr = atob(str).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join('');
-
-  return decodeURIComponent(percentEncodedStr);
-}
+import mdToJson from './md2json';
 
 export default async function markdownToJson(bookUrl) {
+  console.log('markdownToJson()');
   console.time('markdownToJson')
   const { data: bookData } = await axios(bookUrl);
   const chapters = bookData.tree;
@@ -18,39 +10,39 @@ export default async function markdownToJson(bookUrl) {
 
   for (let index = 0; index < chapters.length; index++) {
     const chapter = chapters[index];
-    const { path: chapterNumber, url: chapterUrl } = chapter;
+    let { path: chapterNumber, url: chapterUrl } = chapter;
+    chapterNumber = parseNumber(chapterNumber);
     const { data: chapterData } = await axios(chapterUrl);
     const verses = chapterData.tree;
 
     for (let index = 0; index < verses.length; index++) {
       const verse = verses[index];
-// console.log('====================================');
-// console.log('verse', verse);
-// console.log('====================================');
-      const { path: verseNumber, url: verseUrl } = verse;
+      let { path: verseNumber, url: verseUrl } = verse;
+      verseNumber = parseNumber(verseNumber);
       const { data: verseData } = await axios(verseUrl);
-// console.log('====================================');
-console.log('chapterNumber', chapterNumber);
-console.log('verseNumber', verseNumber);
-console.log('verseUrl', verseUrl);
-// console.log('verseData', verseData);
-// console.log('====================================');
       const { content } = verseData;
       const markdown = base64DecodeUnicode(content);
-      console.log("parsed markdown", markdown);
-      let json = ''
+      const tnObject = {};
+      let json = {};
 
       try {
-        // TODO: Parsing should keep the order of the headings somehow.
-        json = mdToJson.parse(markdown)
+        json = mdToJson.parse(markdown);
       } catch (error) {
         json = { '': { raw: markdown } }
         console.error(error);
       }
-      console.log("json", json);
+
+      Object.keys(json).forEach((heading) => {
+        const { occurrence, raw } = json[heading];
+        tnObject[occurrence || 1] = {
+          heading,
+          raw
+        }
+      })
+
       result[chapterNumber] = {
         ...result[chapterNumber],
-        [verseNumber]: json
+        [verseNumber]: tnObject
       }
     }
   }
@@ -59,4 +51,22 @@ console.log('verseUrl', verseUrl);
   console.log('====================================');
   console.log('result', result);
   console.log('====================================');
+
+  return result;
+}
+
+function parseNumber(number) {
+  if (number.includes('.')) number = number.split('.').slice(0, -1).join('.')
+  const result = typeof number === 'number' || !isNaN(parseInt(number)) ?
+    parseInt(number) : number;
+  return result;
+}
+
+function base64DecodeUnicode(str) {
+  // Convert Base64 encoded bytes to percent-encoding, and then get the original string.
+  const percentEncodedStr = atob(str).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join('');
+
+  return decodeURIComponent(percentEncodedStr);
 }
