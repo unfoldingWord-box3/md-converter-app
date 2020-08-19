@@ -2,6 +2,7 @@ import {
   useState,
   useEffect,
 } from "react";
+import path from 'path';
 import axios from 'axios';
 import { base_url } from '../common/constants';
 
@@ -9,7 +10,7 @@ const useFetch = (tree_url) => {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const url = tree_url;
+  const url = tree_url ? path.join(base_url, tree_url) : null;
 
   useEffect(() => {
     async function fetchData() {
@@ -18,11 +19,7 @@ const useFetch = (tree_url) => {
         setIsLoading(true);
 
         try {
-          const result = await axios({
-            url,
-            base_url,
-            method: 'get',
-          })
+          const result = await axios.get(url);
           setData(result.data);
         } catch (error) {
           console.error(error);
