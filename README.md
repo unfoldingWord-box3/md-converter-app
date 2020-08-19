@@ -1,6 +1,6 @@
 # tn-converter-app
 
-Translation notes markdown converter. Converts md tn files to tsv files.
+Translation notes markdown converter. Conversion of MD tN to TSV files.
 
 ## Available Scripts
 
