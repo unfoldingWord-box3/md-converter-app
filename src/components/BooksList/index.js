@@ -10,7 +10,8 @@ import { BIBLES_ABBRV_INDEX } from '../../common/BooksOfTheBible';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%',
+    width: '1000px',
+    margin: 'auto',
     backgroundColor: theme.palette.background.paper,
   },
 }));
