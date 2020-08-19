@@ -1,6 +1,7 @@
 {
   "name": "tn-converter-app",
   "version": "0.1.0",
+  "description": "Translation notes markdown conversion to TSV files.",
   "private": true,
   "dependencies": {
     "@dimerapp/markdown": "^3.2.2",
