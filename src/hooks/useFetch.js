@@ -19,7 +19,7 @@ const useFetch = (tree_url) => {
         setIsLoading(true);
 
         try {
-          const result = await axios(url);
+          const result = await axios.get(url);
 
           setData(result.data);
         } catch (error) {

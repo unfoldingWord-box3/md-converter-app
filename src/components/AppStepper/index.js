@@ -55,7 +55,7 @@ function StepContent({
     case 2:
       return (
         <BooksList
-          files={data.tree}
+          files={data?.tree}
           onItemClick={(book, url) => {
             // TODO: Move up the component tree
             console.log(book, url)
