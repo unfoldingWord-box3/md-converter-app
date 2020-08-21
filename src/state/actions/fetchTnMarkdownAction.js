@@ -1,10 +1,10 @@
-import axios from 'axios';
-import mdToJson from './md2json';
+import mdToJson from '../../helpers/md2json';
 
-export default async function markdownToJson(bookUrl) {
-  console.log('markdownToJson()');
+export default async function fetchTnMarkdownAction(dispatch, bookUrl, bookId) {
+  console.log('fetchTnMarkdown()');
   console.time('markdownToJson')
-  const { data: bookData } = await axios(bookUrl);
+  const data = await fetch(bookUrl);
+  const bookData = await data.json();
   const chapters = bookData.tree;
   const result = {};
 
@@ -12,47 +12,38 @@ export default async function markdownToJson(bookUrl) {
     const chapter = chapters[index];
     let { path: chapterNumber, url: chapterUrl } = chapter;
     chapterNumber = parseNumber(chapterNumber);
-    const { data: chapterData } = await axios(chapterUrl);
+    const data = await fetch(chapterUrl);
+    const chapterData = await data.json();
     const verses = chapterData.tree;
 
     for (let index = 0; index < verses.length; index++) {
       const verse = verses[index];
       let { path: verseNumber, url: verseUrl } = verse;
       verseNumber = parseNumber(verseNumber);
-      const { data: verseData } = await axios(verseUrl);
+      const data = await fetch(verseUrl);
+      const verseData = await data.json();
       const { content } = verseData;
       const markdown = base64DecodeUnicode(content);
-      const tnObject = {};
-      let json = {};
-
-      try {
-        json = mdToJson.parse(markdown);
-      } catch (error) {
-        json = { '': { raw: markdown } }
-        console.error(error);
-      }
-
-      Object.keys(json).forEach((heading) => {
-        const { occurrence, raw } = json[heading];
-        tnObject[occurrence || 1] = {
-          heading,
-          raw
-        }
-      })
+      const tnJson = convertMarkdownToJson(markdown)
 
       result[chapterNumber] = {
         ...result[chapterNumber],
-        [verseNumber]: tnObject
+        [verseNumber]: tnJson
       }
     }
   }
   console.timeEnd('markdownToJson')
 
   console.log('====================================');
+  console.log('bookId', bookId);
   console.log('result', result);
   console.log('====================================');
 
-  return result;
+  dispatch({
+    type: "FETCH_TN_DATA",
+    bookId,
+    payload: result,
+  })
 }
 
 function parseNumber(number) {
@@ -69,4 +60,26 @@ function base64DecodeUnicode(str) {
   }).join('');
 
   return decodeURIComponent(percentEncodedStr);
+}
+
+function convertMarkdownToJson(markdown) {
+  const tnJson = {};
+  let json = {};
+
+  try {
+    json = mdToJson.parse(markdown);
+  } catch (error) {
+    json = { '': { raw: markdown } }
+    console.error(error);
+  }
+
+  Object.keys(json).forEach((heading) => {
+    const { occurrence, raw } = json[heading];
+    tnJson[occurrence || 1] = {
+      heading,
+      raw
+    }
+  })
+
+  return tnJson;
 }

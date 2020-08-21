@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import localforage from 'localforage';
+import { makeStyles } from '@material-ui/core/styles';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import {
   RepositoryContextProvider,
@@ -12,14 +13,32 @@ import {
 } from './common/constants';
 import AppBar from './components/AppBar';
 import AppStepper from './components/AppStepper';
+import { TnDataContext } from './state/contexts/TnDataContextProvider'
+import { ProjectContext } from './state/contexts/ProjectContextProvider'
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    height: '100%',
+  },
+  body: { margin: `${theme.spacing(2)}px` },
+}));
 
 export default function App() {
+  const classes = useStyles();
   const [authentication, setAuthentication] = useState();
   const [repository, setRepository] = useState();
+  const { state: tnData } = React.useContext(TnDataContext);
+  const { state: { bookId } } = React.useContext(ProjectContext);
+
   const myAuthStore = localforage.createInstance({
     driver: [localforage.INDEXEDDB],
     name: 'my-auth-store',
   });
+
+  console.log('====================================');
+  console.log('tnData', tnData);
+  console.log('bookId', bookId);
+  console.log('====================================');
 
   const getAuth = async () => {
     const auth = await myAuthStore.getItem('authentication');
@@ -42,7 +61,7 @@ export default function App() {
   };
 
   return (
-    <div className="App">
+    <div className={classes.root}>
       <MuiThemeProvider theme={theme}>
         <AuthenticationContextProvider
           config={{
@@ -62,8 +81,8 @@ export default function App() {
             // branch='master'
           >
             <AppBar/>
-            <div style={{ display: "flex", justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-              <AppStepper authentication={authentication} repository={repository}/>
+            <div className={classes.body}>
+              <AppStepper />
             </div>
           </RepositoryContextProvider>
         </AuthenticationContextProvider>

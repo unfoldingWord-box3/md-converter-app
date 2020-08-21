@@ -3,10 +3,16 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import TnDataContextProvider from './state/contexts/TnDataContextProvider';
+import ProjectContextProvider from './state/contexts/ProjectContextProvider';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <TnDataContextProvider>
+      <ProjectContextProvider>
+        <App />
+      </ProjectContextProvider>
+    </TnDataContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

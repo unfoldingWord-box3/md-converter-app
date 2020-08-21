@@ -7,10 +7,13 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import FolderIcon from '@material-ui/icons/FolderOpenOutlined';
 import { BIBLES_ABBRV_INDEX } from '../../common/BooksOfTheBible';
+import fetchTnMarkdownAction from "../../state/actions/fetchTnMarkdownAction";
+import { TnDataContext } from '../../state/contexts/TnDataContextProvider'
+import { ProjectContext } from '../../state/contexts/ProjectContextProvider'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '1000px',
+    width: '100%',
     margin: 'auto',
     backgroundColor: theme.palette.background.paper,
   },
@@ -18,17 +21,23 @@ const useStyles = makeStyles((theme) => ({
 
 export default function BooksList({
   files,
-  onItemClick,
 }) {
+  const { dispatch } = React.useContext(TnDataContext);
+  const { setBookId } = React.useContext(ProjectContext);
   const classes = useStyles();
   const books = files.filter(({ path: bookId }) => Object.keys(BIBLES_ABBRV_INDEX).includes(bookId))
+
+  const onItemClick = async (url, bookId) => {
+    await fetchTnMarkdownAction(dispatch, url, bookId)
+    setBookId(bookId);
+  }
 
   return (
     <div className={classes.root}>
       <List component="nav" aria-label="main mailbox folders">
       {
         books.map(({ path: bookId, url, sha: key }) => (
-          <ListItem key={key} button onClick={() => onItemClick(bookId, url)}>
+          <ListItem key={key} button onClick={() => onItemClick(url, bookId)}>
             <ListItemIcon>
               <FolderIcon />
             </ListItemIcon>
@@ -41,7 +50,10 @@ export default function BooksList({
   );
 }
 
+BooksList.defaultProps = {
+  files: []
+}
+
 BooksList.propTypes = {
   files: PropsTypes.array.isRequired,
-  onItemClick: PropsTypes.func.isRequired,
 };
