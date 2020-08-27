@@ -1,49 +1,68 @@
+import { customAlphabet } from 'nanoid/non-secure'
+import * as cacheLibrary from 'money-clip';
 import mdToJson from '../../helpers/md2json';
 
-export default async function fetchTnMarkdownAction(dispatch, bookUrl, bookId) {
-  console.log('fetchTnMarkdown()');
-  console.time('markdownToJson')
-  const data = await fetch(bookUrl);
-  const bookData = await data.json();
-  const chapters = bookData.tree;
-  const result = {};
+export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName) {
+  console.info('fetchTnMarkdownAction()');
+  const tsvItems = [];
 
-  for (let index = 0; index < chapters.length; index++) {
-    const chapter = chapters[index];
-    let { path: chapterNumber, url: chapterUrl } = chapter;
-    chapterNumber = parseNumber(chapterNumber);
-    const data = await fetch(chapterUrl);
-    const chapterData = await data.json();
-    const verses = chapterData.tree;
+  try {
+    if (navigator.onLine) {
+      const data = await fetch(bookUrl);
+      const bookData = await data.json();
+      const nanoid = customAlphabet('1234567890abcdef', 4)
 
-    for (let index = 0; index < verses.length; index++) {
-      const verse = verses[index];
-      let { path: verseNumber, url: verseUrl } = verse;
-      verseNumber = parseNumber(verseNumber);
-      const data = await fetch(verseUrl);
-      const verseData = await data.json();
-      const { content } = verseData;
-      const markdown = base64DecodeUnicode(content);
-      const tnJson = convertMarkdownToJson(markdown)
+      const chapters = bookData.tree
+        // Move 'front' to the front of array
+        .sort(({ path: path1 }, { path: path2 }) => { return path1 === 'front' ? -1 : path2 === 'front' ? 1 : 0; });
 
-      result[chapterNumber] = {
-        ...result[chapterNumber],
-        [verseNumber]: tnJson
+      for (let i = 0; i < chapters.length; i++) {
+        const chapter = chapters[i];
+        let { path: chapterNumber, url: chapterUrl } = chapter;
+        chapterNumber = parseNumber(chapterNumber);
+        const data = await fetch(chapterUrl);
+        const chapterData = await data.json();
+        const verses = chapterData.tree
+          // Move 'intro.md' to the front of array
+          .sort(({ path: path1 }, { path: path2 }) => { return path1 === 'intro.md' ? -1 : path2 === 'intro.md' ? 1 : 0; });
+
+        for (let j = 0; j < verses.length; j++) {
+          const verse = verses[j];
+          let { path: verseNumber, url: verseUrl } = verse;
+          verseNumber = parseNumber(verseNumber);
+          const data = await fetch(verseUrl);
+          const verseData = await data.json();
+          const { content } = verseData;
+          const markdown = base64DecodeUnicode(content);
+          const tnJson = convertMarkdownToJson(markdown)
+          const tnItemKeys = Object.keys(tnJson);
+
+          for (let k = 0; k < tnItemKeys.length; k++) {
+            const key = tnItemKeys[k];
+            const { heading, raw } = tnJson[key];
+            tsvItems.push({
+              Book: bookId,
+              Chapter: chapterNumber,
+              Verse: verseNumber,
+              id: nanoid(),
+              GLQuote: heading,
+              OccurrenceNote: raw,
+            })
+          }
+        }
       }
+    } else {
+      cacheLibrary.getAll().then(
+        cacheData => {
+          return cacheData[reducerName]?.glTsvs?.en || {}
+        }
+      );
     }
+  } catch (error) {
+    console.error(error);
   }
-  console.timeEnd('markdownToJson')
 
-  console.log('====================================');
-  console.log('bookId', bookId);
-  console.log('result', result);
-  console.log('====================================');
-
-  dispatch({
-    type: "FETCH_TN_DATA",
-    bookId,
-    payload: result,
-  })
+  return tsvItems;
 }
 
 function parseNumber(number) {

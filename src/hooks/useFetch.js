@@ -1,12 +1,13 @@
 import {
   useState,
   useEffect,
-} from "react";
+} from 'react';
 import path from 'path';
-import axios from 'axios';
+import ric from 'ric-shim';
+import * as cacheLibrary from 'money-clip';
 import { base_url } from '../common/constants';
 
-const useFetch = (tree_url) => {
+const useFetch = (tree_url, id) => {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -19,8 +20,15 @@ const useFetch = (tree_url) => {
         setIsLoading(true);
 
         try {
-          const result = await axios.get(url);
-          setData(result.data);
+          if (navigator.onLine) {
+            const result = await fetch(url).then(data => data.json())
+            ric(() => cacheLibrary.set(id, result));
+            setData(result);
+          } else {
+            cacheLibrary.getAll().then(cacheData => {
+              setData(cacheData[id] || null);
+            });
+          }
         } catch (error) {
           console.error(error);
           setIsError(true);
@@ -31,7 +39,7 @@ const useFetch = (tree_url) => {
     };
 
     fetchData();
-  }, [url, tree_url]);
+  }, [url, tree_url, id]);
 
   return { data, isLoading, isError };
 }

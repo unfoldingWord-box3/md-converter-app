@@ -1,7 +1,7 @@
 const marked = require('marked');
 const traverse = require('traverse');
 
-var parse = function(mdContent) {
+const parse = function(mdContent) {
     var aligned = getAlignedContent(mdContent);
     var json = marked.lexer(aligned);
     var currentHeading,

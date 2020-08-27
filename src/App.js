@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import localforage from 'localforage';
 import { makeStyles } from '@material-ui/core/styles';
 import { MuiThemeProvider } from '@material-ui/core/styles';
@@ -13,7 +13,7 @@ import {
 } from './common/constants';
 import AppBar from './components/AppBar';
 import AppStepper from './components/AppStepper';
-import { TnDataContext } from './state/contexts/TnDataContextProvider'
+import { TsvDataContext } from './state/contexts/TsvDataContextProvider'
 import { ProjectContext } from './state/contexts/ProjectContextProvider'
 
 const useStyles = makeStyles(theme => ({
@@ -27,18 +27,30 @@ export default function App() {
   const classes = useStyles();
   const [authentication, setAuthentication] = useState();
   const [repository, setRepository] = useState();
-  const { state: tnData } = React.useContext(TnDataContext);
+  // TODO:
+  const { state: { tsvObjects, glTsvs }, fetchEnglishTsvs } = React.useContext(TsvDataContext);
   const { state: { bookId } } = React.useContext(ProjectContext);
+
+  console.log('====================================');
+  console.log('glTsvs', glTsvs);
+  console.log('tsvObjects', tsvObjects);
+  console.log('bookId', bookId);
+  console.log('====================================');
+  // TODO:
+
+  useEffect(() => {
+    async function fetchData() {
+      return fetchEnglishTsvs()
+    }
+
+    fetchData();
+    // eslint-disable-next-line
+  }, []);
 
   const myAuthStore = localforage.createInstance({
     driver: [localforage.INDEXEDDB],
     name: 'my-auth-store',
   });
-
-  console.log('====================================');
-  console.log('tnData', tnData);
-  console.log('bookId', bookId);
-  console.log('====================================');
 
   const getAuth = async () => {
     const auth = await myAuthStore.getItem('authentication');

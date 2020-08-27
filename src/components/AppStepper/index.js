@@ -28,7 +28,7 @@ function AppStepper() {
     1: !!sourceRepository,
   });
   const { tree_url } = sourceRepository || {};
-  const { data, isLoading, isError } = useFetch(tree_url);
+  const { data, isLoading, isError } = useFetch(tree_url, 'repo-data');
 
   useEffect(() => {
     setCompleted({
@@ -55,7 +55,7 @@ function AppStepper() {
     },
     {
       label: 'Book',
-      instructions: 'Select a Book',
+      instructions: 'Select a Book to Start a Project',
       component: () => (
         <BooksList files={data?.tree} />
       ),

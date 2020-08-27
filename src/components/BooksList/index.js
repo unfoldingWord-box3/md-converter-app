@@ -7,8 +7,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import FolderIcon from '@material-ui/icons/FolderOpenOutlined';
 import { BIBLES_ABBRV_INDEX } from '../../common/BooksOfTheBible';
-import fetchTnMarkdownAction from "../../state/actions/fetchTnMarkdownAction";
-import { TnDataContext } from '../../state/contexts/TnDataContextProvider'
+import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider'
 import { ProjectContext } from '../../state/contexts/ProjectContextProvider'
 
 const useStyles = makeStyles((theme) => ({
@@ -22,13 +21,13 @@ const useStyles = makeStyles((theme) => ({
 export default function BooksList({
   files,
 }) {
-  const { dispatch } = React.useContext(TnDataContext);
+  const { fetchTnMarkdown } = React.useContext(TsvDataContext);
   const { setBookId } = React.useContext(ProjectContext);
   const classes = useStyles();
   const books = files.filter(({ path: bookId }) => Object.keys(BIBLES_ABBRV_INDEX).includes(bookId))
 
   const onItemClick = async (url, bookId) => {
-    await fetchTnMarkdownAction(dispatch, url, bookId)
+    await fetchTnMarkdown(url, bookId);
     setBookId(bookId);
   }
 
