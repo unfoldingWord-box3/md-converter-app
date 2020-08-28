@@ -12,9 +12,8 @@ import {
   base_url,
 } from './common/constants';
 import AppBar from './components/AppBar';
-import AppStepper from './components/AppStepper';
+import WorkingArea from './components/WorkingArea';
 import { TsvDataContext } from './state/contexts/TsvDataContextProvider'
-import { ProjectContext } from './state/contexts/ProjectContextProvider'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,16 +26,7 @@ export default function App() {
   const classes = useStyles();
   const [authentication, setAuthentication] = useState();
   const [repository, setRepository] = useState();
-  // TODO:
-  const { state: { tsvObjects, glTsvs }, fetchEnglishTsvs } = React.useContext(TsvDataContext);
-  const { state: { bookId } } = React.useContext(ProjectContext);
-
-  console.log('====================================');
-  console.log('glTsvs', glTsvs);
-  console.log('tsvObjects', tsvObjects);
-  console.log('bookId', bookId);
-  console.log('====================================');
-  // TODO:
+  const { fetchEnglishTsvs } = React.useContext(TsvDataContext);
 
   useEffect(() => {
     async function fetchData() {
@@ -94,7 +84,7 @@ export default function App() {
           >
             <AppBar/>
             <div className={classes.body}>
-              <AppStepper />
+              <WorkingArea />
             </div>
           </RepositoryContextProvider>
         </AuthenticationContextProvider>
