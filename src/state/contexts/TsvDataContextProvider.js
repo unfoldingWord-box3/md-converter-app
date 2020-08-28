@@ -46,7 +46,7 @@ export default function TsvDataContextProvider(props) {
 
   const fetchEnglishTsvs = async () => {
     const enTsvs = await fetchEnglishTsvsAction(reducerName);
-    // TODO: get tsv for current source tsv and store in state
+
     dispatch({
       type: 'STORE_EN_TSVS',
       payload: enTsvs
@@ -55,6 +55,7 @@ export default function TsvDataContextProvider(props) {
 
   const fetchTnMarkdown = async (bookUrl, bookId) => {
     const tsvItems = await fetchTnMarkdownAction(bookUrl, bookId, reducerName);
+    // TODO: Get tsv for current source tsv and store in state: Source notes
 
     dispatch({
       type: 'STORE_TSV_OBJECTS_FOR_BOOK',

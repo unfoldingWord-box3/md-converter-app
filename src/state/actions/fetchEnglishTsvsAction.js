@@ -11,7 +11,16 @@ export default async function fetchEnglishTsvsAction(reducerName) {
 
   try {
     if (navigator.onLine) {
-      return fetchTsvs('https://git.door43.org/api/v1/repos/unfoldingWord/en_tn/git/trees/master');
+      const result = {};
+      const tsvs = await fetchTsvs('https://git.door43.org/api/v1/repos/unfoldingWord/en_tn/git/trees/master');
+
+      tsvs.forEach(({ path, url }) => {
+        const bookId = path.split('-')[1].replace('.tsv', '').toLowerCase();
+
+        result[bookId] = url;
+      });
+
+      return result;
     } else {
       cacheLibrary.getAll().then(
         cacheData => {
