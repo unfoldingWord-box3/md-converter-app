@@ -66,13 +66,13 @@ const DraggableTable = ({ columns, data }) => {
     setRecords(newRecords);
   };
 
-  const addRowAbove = (rowIndex) => {
-    const currentRecord = records[rowIndex];
-    const newRecords = [...records];
-    newRecords.splice(rowIndex, 0, newRecord(currentRecord));
+  // const addRowAbove = (rowIndex) => {
+  //   const currentRecord = records[rowIndex];
+  //   const newRecords = [...records];
+  //   newRecords.splice(rowIndex, 0, newRecord(currentRecord));
 
-    setRecords(newRecords);
-  };
+  //   setRecords(newRecords);
+  // };
 
   return (
     <DndProvider backend={HTML5Backend}>

@@ -11007,6 +11007,11 @@ tsutils@^3.17.1:
   dependencies:
     tslib "^1.8.1"
 
+tsvtojson@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/tsvtojson/-/tsvtojson-1.0.1.tgz#b2cc04812e2b8f5e6ad4d537b99d8c24b0109bd3"
+  integrity sha1-sswEgS4rj15q1NU3uZ2MJLAQm9M=
+
 tty-browserify@0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/tty-browserify/-/tty-browserify-0.0.0.tgz#a157ba402da24e9bf957f9aa69d524eed42901a6"

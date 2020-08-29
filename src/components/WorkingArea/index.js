@@ -26,12 +26,12 @@ const Styles = styled.div`
 `;
 
 export default function WorkingArea() {
-  const { state: { tsvObjects, glTsvs } } = React.useContext(TsvDataContext);
+  const { state: { targetNotes, sourceNotes, glTsvs } } = React.useContext(TsvDataContext);
   const { state: { bookId } } = React.useContext(ProjectContext);
 
   console.log('====================================');
   console.log('glTsvs', glTsvs);
-  console.log('tsvObjects', tsvObjects);
+  console.log('targetNotes', targetNotes);
   console.log('bookId', bookId);
   console.log('====================================');
 
@@ -96,11 +96,11 @@ export default function WorkingArea() {
   );
 
 
-  if (tsvObjects[bookId]) {
+  if (targetNotes[bookId]) {
     return (
       <Styles>
-        <Table columns={enColumns} data={tsvObjects[bookId]} />
-        <DraggableTable columns={glColumns} data={tsvObjects[bookId]} />
+        <Table columns={enColumns} data={sourceNotes[bookId]} />
+        <DraggableTable columns={glColumns} data={targetNotes[bookId]} />
       </Styles>
     );
   } else {

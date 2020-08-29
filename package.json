@@ -27,7 +27,8 @@
     "react-table": "^7.5.0",
     "ric-shim": "^1.0.0",
     "styled-components": "^5.1.1",
-    "traverse": "^0.6.6"
+    "traverse": "^0.6.6",
+    "tsvtojson": "^1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

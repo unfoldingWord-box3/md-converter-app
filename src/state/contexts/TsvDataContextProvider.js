@@ -3,12 +3,14 @@ import ric from 'ric-shim'
 import * as cacheLibrary from 'money-clip';
 import fetchEnglishTsvsAction from '../actions/fetchEnglishTsvsAction';
 import fetchTnMarkdownAction from '../actions/fetchTnMarkdownAction';
+import getGlTsvContent from '../../helpers/getGlTsvContent';
 
 export const TsvDataContext = React.createContext({});
 
 const reducerName = 'tsvDataReducer';
 const initialState = {
-  tsvObjects: {},
+  targetNotes: {},
+  sourceNotes: {},
   glTsvs: {},
 };
 
@@ -16,11 +18,19 @@ function tsvDataReducer(state, action) {
   switch (action.type) {
     case 'SET_TSV_DATA':
       return action.payload;
-    case 'STORE_TSV_OBJECTS_FOR_BOOK':
+    case 'STORE_TARGET_NOTES':
       return {
         ...state,
-        tsvObjects: {
-          ...state.tsvObjects,
+        targetNotes: {
+          ...state.targetNotes,
+          [action.bookId]: action.payload,
+        }
+      };
+    case 'STORE_SOURCE_NOTES':
+      return {
+        ...state,
+        sourceNotes: {
+          ...state.sourceNotes,
           [action.bookId]: action.payload,
         }
       };
@@ -54,12 +64,18 @@ export default function TsvDataContextProvider(props) {
   }
 
   const fetchTnMarkdown = async (bookUrl, bookId) => {
-    const tsvItems = await fetchTnMarkdownAction(bookUrl, bookId, reducerName);
-    // TODO: Get tsv for current source tsv and store in state: Source notes
+    const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName);
+    const enTsvUrl = state.glTsvs.en[bookId];
+    const sourceNotes = await getGlTsvContent(enTsvUrl);
 
     dispatch({
-      type: 'STORE_TSV_OBJECTS_FOR_BOOK',
-      payload: tsvItems,
+      type: 'STORE_TARGET_NOTES',
+      payload: targetNotes,
+      bookId,
+    })
+    dispatch({
+      type: 'STORE_SOURCE_NOTES',
+      payload: sourceNotes,
       bookId,
     })
   }
