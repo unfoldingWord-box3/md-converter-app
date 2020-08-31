@@ -12,6 +12,11 @@ const useFetch = (tree_url, id) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const url = tree_url ? path.join(base_url, tree_url) : null;
+  console.log('====================================');
+  console.log('url', url);
+  console.log('base_url', base_url);
+  console.log('tree_url', tree_url);
+  console.log('====================================');
 
   useEffect(() => {
     async function fetchData() {
@@ -21,7 +26,13 @@ const useFetch = (tree_url, id) => {
 
         try {
           if (navigator.onLine) {
-            const result = await fetch(url).then(data => data.json())
+            const result = await fetch(url, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                // 'API-Key': 'secret'
+              }
+            }).then(data => data.json())
             ric(() => cacheLibrary.set(id, result));
             setData(result);
           } else {
