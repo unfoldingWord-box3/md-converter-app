@@ -20,13 +20,7 @@ const useFetch = (tree_url, id) => {
 
         try {
           if (navigator.onLine) {
-            const result = await fetch(url, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                // 'API-Key': 'secret'
-              }
-            }).then(data => data.json())
+            const result = await fetch(url).then(data => data.json())
             ric(() => cacheLibrary.set(id, result));
             setData(result);
           } else {
