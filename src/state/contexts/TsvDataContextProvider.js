@@ -52,18 +52,18 @@ function tsvDataReducer(state, action) {
 export default function TsvDataContextProvider(props) {
   const [state, dispatch] = React.useReducer(tsvDataReducer, initialState );
 
-  useEffect(() => {
-    cacheLibrary.getAll().then(cacheData => {
-      const payload = cacheData[reducerName];
+  // useEffect(() => {
+  //   cacheLibrary.getAll().then(cacheData => {
+  //     const payload = cacheData[reducerName];
 
-      if (cacheData[reducerName]) {
-        dispatch({
-          type: 'SET_CACHED_REDUCER',
-          payload,
-        })
-      }
-    });
-  }, []);
+  //     if (cacheData[reducerName]) {
+  //       dispatch({
+  //         type: 'SET_CACHED_REDUCER',
+  //         payload,
+  //       })
+  //     }
+  //   });
+  // }, []);
 
   useEffect(() => {
     ric(() => cacheLibrary.set(reducerName, state))
@@ -79,20 +79,21 @@ export default function TsvDataContextProvider(props) {
   }
 
   const fetchTnMarkdown = async (bookUrl, bookId) => {
-    const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName);
     const enTsvUrl = state.glTsvs.en[bookId];
     const sourceNotes = await getGlTsvContent(enTsvUrl);
+    const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes);
 
-    dispatch({
-      type: 'STORE_TARGET_NOTES',
-      payload: targetNotes,
-      bookId,
-    })
     dispatch({
       type: 'STORE_SOURCE_NOTES',
       payload: sourceNotes,
       bookId,
     })
+    dispatch({
+      type: 'STORE_TARGET_NOTES',
+      payload: targetNotes,
+      bookId,
+    })
+
   }
 
   const value = {

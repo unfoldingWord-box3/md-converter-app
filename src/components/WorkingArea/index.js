@@ -15,9 +15,13 @@ const Styles = styled.div`
       font-weight: bold;
     }
 
+    tr {
+      height: 53px;
+    }
+
     th,
     td {
-      max-width: 250px;
+      max-width: 130px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -79,14 +83,14 @@ export default function WorkingArea() {
 
   const targetColumns = React.useMemo(
     () => [
-      {
-        Header: "Chapter",
-        accessor: "Chapter"
-      },
-      {
-        Header: "Verse",
-        accessor: "Verse"
-      },
+      // {
+      //   Header: "Chapter",
+      //   accessor: "Chapter"
+      // },
+      // {
+      //   Header: "Verse",
+      //   accessor: "Verse"
+      // },
       {
         Header: "GLQuote",
         accessor: "GLQuote"
