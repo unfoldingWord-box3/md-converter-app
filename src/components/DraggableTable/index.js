@@ -76,33 +76,36 @@ const DraggableTable = ({ columns, data }) => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <MaUTable {...getTableProps()}>
-        <TableHead>
-          {headerGroups.map((headerGroup) => (
-            <TableRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <TableCell {...column.getHeaderProps()}>
-                  {column.render('Header')}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody {...getTableBodyProps()}>
-          {rows.map(
-            (row, index) =>
-              prepareRow(row) || (
-                <Row
-                  index={index}
-                  row={row}
-                  moveRow={moveRow}
-                  addRowBelow={addRowBelow}
-                  {...row.getRowProps()}
-                />
-              )
-          )}
-        </TableBody>
-      </MaUTable>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: '19px' }}/>
+        <MaUTable {...getTableProps()}>
+          <TableHead>
+            {headerGroups.map((headerGroup) => (
+              <TableRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <TableCell {...column.getHeaderProps()}>
+                    {column.render('Header')}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
+          <TableBody {...getTableBodyProps()}>
+            {rows.map(
+              (row, index) =>
+                prepareRow(row) || (
+                  <Row
+                    index={index}
+                    row={row}
+                    moveRow={moveRow}
+                    addRowBelow={addRowBelow}
+                    {...row.getRowProps()}
+                  />
+                )
+            )}
+          </TableBody>
+        </MaUTable>
+      </div>
     </DndProvider>
   );
 };

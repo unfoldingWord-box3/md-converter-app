@@ -30,13 +30,37 @@ export default function WorkingArea() {
   const { state: { bookId } } = React.useContext(ProjectContext);
 
   console.log('====================================');
+  console.log('bookId', bookId);
   console.log('glTsvs', glTsvs);
   console.log('targetNotes', targetNotes);
-  console.log('bookId', bookId);
   console.log('====================================');
 
-  const enColumns = React.useMemo(
+  const sourceColumns = React.useMemo(
     () => [
+      {
+        Header: "Book",
+        accessor: "Book"
+      },
+      {
+        Header: "Chapter",
+        accessor: "Chapter"
+      },
+      {
+        Header: "Verse",
+        accessor: "Verse"
+      },
+      {
+        Header: "ID",
+        accessor: "ID"
+      },
+      {
+        Header: "SupportReference",
+        accessor: "SupportReference"
+      },
+      {
+        Header: "OrigQuote",
+        accessor: "OrigQuote"
+      },
       {
         Header: "Occurrence",
         accessor: "Occurrence"
@@ -53,36 +77,16 @@ export default function WorkingArea() {
     []
   );
 
-  const glColumns = React.useMemo(
+  const targetColumns = React.useMemo(
     () => [
-      // {
-      //   Header: "Book",
-      //   accessor: "Book"
-      // },
-      // {
-      //   Header: "Chapter",
-      //   accessor: "Chapter"
-      // },
-      // {
-      //   Header: "Verse",
-      //   accessor: "Verse"
-      // },
-      // {
-      //   Header: "ID",
-      //   accessor: "id"
-      // },
-      // {
-      //   Header: "SupportReference",
-      //   accessor: "SupportReference"
-      // },
-      // {
-      //   Header: "OrigQuote",
-      //   accessor: "OrigQuote"
-      // },
-      // {
-      //   Header: "Occurrence",
-      //   accessor: "Occurrence"
-      // },
+      {
+        Header: "Chapter",
+        accessor: "Chapter"
+      },
+      {
+        Header: "Verse",
+        accessor: "Verse"
+      },
       {
         Header: "GLQuote",
         accessor: "GLQuote"
@@ -99,8 +103,8 @@ export default function WorkingArea() {
   if (targetNotes[bookId]) {
     return (
       <Styles>
-        <Table columns={enColumns} data={sourceNotes[bookId]} />
-        <DraggableTable columns={glColumns} data={targetNotes[bookId]} />
+        <Table columns={sourceColumns} data={sourceNotes[bookId]} />
+        <DraggableTable columns={targetColumns} data={targetNotes[bookId]} />
       </Styles>
     );
   } else {
