@@ -5,11 +5,11 @@ import {
 import ric from 'ric-shim';
 import * as cacheLibrary from 'money-clip';
 import { base_url } from '../common/constants';
+import useLoading from './useLoading';
 
 const useFetch = (tree_url, id) => {
   const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const { isLoading, isError, setIsLoading, setIsError } = useLoading();
   const url = tree_url ? `${base_url}/${tree_url}` : null;
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const useFetch = (tree_url, id) => {
     };
 
     fetchData();
-  }, [url, tree_url, id]);
+  }, [url, tree_url, id, setIsError, setIsLoading]);
 
   return { data, isLoading, isError };
 }
