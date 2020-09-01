@@ -18,15 +18,16 @@ const useFetch = (tree_url, id) => {
         setIsError(false);
         setIsLoading(true);
 
+        const cachedResult = await cacheLibrary.getAll().then(cacheData => cacheData[id]);
         try {
-          if (navigator.onLine) {
+          if (cachedResult) {
+            setData(cachedResult);
+          } else if (navigator.onLine) {
             const result = await fetch(url).then(data => data.json())
             ric(() => cacheLibrary.set(id, result));
             setData(result);
           } else {
-            cacheLibrary.getAll().then(cacheData => {
-              setData(cacheData[id] || null);
-            });
+            setData(null);
           }
         } catch (error) {
           console.error(error);

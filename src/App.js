@@ -53,11 +53,11 @@ export default function App() {
     } else {
       await myAuthStore.setItem('authentication', authentication)
       .then(function (authentication) {
-        console.log("saveAuth() success. authentication is:", authentication);
+        console.info("saveAuth() success. authentication is:", authentication);
       }).catch(function(err) {
           // This code runs if there were any errors
-          console.log("saveAuth() failed. err:", err);
-          console.log("saveAuth() failed. authentication:", authentication);
+          console.info("saveAuth() failed. err:", err);
+          console.info("saveAuth() failed. authentication:", authentication);
       });
     }
   };

@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import ric from 'ric-shim'
+import * as cacheLibrary from 'money-clip';
 
 export const ProjectContext = React.createContext({});
 
+const reducerName = 'projectReducer';
 const initialState = {
   bookId: null,
 };
@@ -13,6 +16,8 @@ function projectReducer(state, action) {
         ...state,
         bookId: action.bookId,
       };
+    case 'SET_CACHED_REDUCER':
+      return action.payload;
     default:
       return state;
   }
@@ -20,6 +25,23 @@ function projectReducer(state, action) {
 
 export default function ProjectContextProvider(props) {
   const [state, dispatch] = React.useReducer(projectReducer, initialState);
+
+  useEffect(() => {
+    cacheLibrary.getAll().then(cacheData => {
+      const payload = cacheData[reducerName];
+
+      if (cacheData[reducerName]) {
+        dispatch({
+          type: 'SET_CACHED_REDUCER',
+          payload,
+        })
+      }
+    });
+  }, [])
+
+  useEffect(() => {
+    ric(() => cacheLibrary.set(reducerName, state))
+  }, [state])
 
   const setBookId = (bookId) => dispatch({ type: 'SET_BOOK_ID', bookId })
 

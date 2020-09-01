@@ -26,12 +26,12 @@ const Styles = styled.div`
 `;
 
 export default function WorkingArea() {
-  const { state: { targetNotes, sourceNotes, glTsvs } } = React.useContext(TsvDataContext);
+  const { state: { targetNotes, sourceNotes } } = React.useContext(TsvDataContext);
   const { state: { bookId } } = React.useContext(ProjectContext);
 
   console.log('====================================');
   console.log('bookId', bookId);
-  console.log('glTsvs', glTsvs);
+  console.log('sourceNotes', sourceNotes);
   console.log('targetNotes', targetNotes);
   console.log('====================================');
 
@@ -98,7 +98,6 @@ export default function WorkingArea() {
     ],
     []
   );
-
 
   if (targetNotes[bookId]) {
     return (

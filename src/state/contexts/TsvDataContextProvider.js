@@ -42,6 +42,8 @@ function tsvDataReducer(state, action) {
           en: action.payload || {},
         }
       };
+    case 'SET_CACHED_REDUCER':
+      return action.payload;
     default:
       return state;
   }
@@ -49,6 +51,19 @@ function tsvDataReducer(state, action) {
 
 export default function TsvDataContextProvider(props) {
   const [state, dispatch] = React.useReducer(tsvDataReducer, initialState );
+
+  useEffect(() => {
+    cacheLibrary.getAll().then(cacheData => {
+      const payload = cacheData[reducerName];
+
+      if (cacheData[reducerName]) {
+        dispatch({
+          type: 'SET_CACHED_REDUCER',
+          payload,
+        })
+      }
+    });
+  }, []);
 
   useEffect(() => {
     ric(() => cacheLibrary.set(reducerName, state))
