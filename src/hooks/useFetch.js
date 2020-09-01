@@ -2,7 +2,6 @@ import {
   useState,
   useEffect,
 } from 'react';
-// import path from 'path';
 import ric from 'ric-shim';
 import * as cacheLibrary from 'money-clip';
 import { base_url } from '../common/constants';
@@ -12,11 +11,6 @@ const useFetch = (tree_url, id) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const url = tree_url ? `${base_url}/${tree_url}` : null;
-  console.log('====================================');
-  console.log('url', url);
-  console.log('base_url', base_url);
-  console.log('tree_url', tree_url);
-  console.log('====================================');
 
   useEffect(() => {
     async function fetchData() {
