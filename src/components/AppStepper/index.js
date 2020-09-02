@@ -50,7 +50,7 @@ function AppStepper() {
     },
     {
       label: 'Repository',
-      instructions: 'Select a Repository to Convert to TSV',
+      instructions: 'Select a translationNotes Repository to Convert to TSV',
       component: () => (repositoryComponent),
     },
     {
