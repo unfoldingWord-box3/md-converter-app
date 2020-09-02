@@ -13,6 +13,7 @@ import {
 } from './common/constants';
 import AppBar from './components/AppBar';
 import WorkingArea from './components/WorkingArea';
+import NetlifyBadge from './components/NetlifyBadge';
 import { TsvDataContext } from './state/contexts/TsvDataContextProvider'
 
 const useStyles = makeStyles(theme => ({
@@ -20,11 +21,6 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
   },
   body: { margin: `${theme.spacing(1)}px` },
-  netlifyBadge: {
-    width: '100%',
-    textAlign: 'center',
-    marginTop: theme.spacing(2),
-  },
 }));
 
 export default function App() {
@@ -67,17 +63,6 @@ export default function App() {
     }
   };
 
-  const netlifyBadge = (
-    <div className={classes.netlifyBadge}>
-      <a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer">
-        <img
-          src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg"
-          alt="Deploys by Netlify"
-        />
-      </a>
-    </div>
-  );
-
   return (
     <div className={classes.root}>
       <MuiThemeProvider theme={theme}>
@@ -102,7 +87,7 @@ export default function App() {
             <div className={classes.body}>
               <WorkingArea />
             </div>
-            {netlifyBadge}
+            <NetlifyBadge/>
           </RepositoryContextProvider>
         </AuthenticationContextProvider>
       </MuiThemeProvider>

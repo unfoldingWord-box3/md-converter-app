@@ -82,17 +82,6 @@ function AppStepper() {
   const handleBack = () => setActiveStep(activeStep - 1);
   const handleStep = step => () => setActiveStep(step);
 
-  // const netlifyBadge = (
-  //   <div className={classes.netlifyBadge}>
-  //     <a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer">
-  //       <img
-  //         src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg"
-  //         alt="Deploys by Netlify"
-  //       />
-  //     </a>
-  //   </div>
-  // );
-
   if (steps[activeStep]) {
     return (
       <>
@@ -138,7 +127,6 @@ function AppStepper() {
             </div>
           </div>
         </Paper>
-        {/* {netlifyBadge} */}
       </>
     );
   } else {
@@ -163,11 +151,6 @@ const useStyles = makeStyles(theme => ({
   instructions: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
-  },
-  netlifyBadge: {
-    width: '100%',
-    textAlign: 'center',
-    marginTop: theme.spacing(2),
   },
 }));
 
