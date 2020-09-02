@@ -57,23 +57,6 @@ const DraggableTable = ({ columns, data }) => {
     };
   };
 
-  const addRowBelow = (rowIndex) => {
-    const currentRecord = records[rowIndex];
-    const newRecords = [...records];
-    const i = rowIndex + 1;
-    newRecords.splice(i, 0, newRecord(currentRecord));
-
-    setRecords(newRecords);
-  };
-
-  // const addRowAbove = (rowIndex) => {
-  //   const currentRecord = records[rowIndex];
-  //   const newRecords = [...records];
-  //   newRecords.splice(rowIndex, 0, newRecord(currentRecord));
-
-  //   setRecords(newRecords);
-  // };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -98,7 +81,6 @@ const DraggableTable = ({ columns, data }) => {
                     index={index}
                     row={row}
                     moveRow={moveRow}
-                    addRowBelow={addRowBelow}
                     {...row.getRowProps()}
                   />
                 )
@@ -112,7 +94,7 @@ const DraggableTable = ({ columns, data }) => {
 
 const DND_ITEM_TYPE = 'row';
 
-const Row = ({ row, index, moveRow, addRowBelow }) => {
+const Row = ({ row, index, moveRow }) => {
   const dropRef = React.useRef(null);
   const dragRef = React.useRef(null);
 
@@ -166,6 +148,7 @@ const Row = ({ row, index, moveRow, addRowBelow }) => {
   });
 
   const opacity = isDragging ? 0 : 1;
+  const cursor = isDragging ? 'grabbing' : 'grab';
 
   preview(drop(dropRef));
   drag(dragRef);
@@ -173,12 +156,14 @@ const Row = ({ row, index, moveRow, addRowBelow }) => {
   return (
     <TableRow
       ref={dropRef}
-      style={{ opacity }}
-      onClick={() => addRowBelow(index)}
+      style={{ opacity, cursor }}
     >
       {row.cells.map((cell) => {
         return (
-          <TableCell ref={dragRef} {...cell.getCellProps()}>
+          <TableCell
+            ref={dragRef}
+            {...cell.getCellProps()}
+          >
             {cell.render('Cell')}
           </TableCell>
         );
