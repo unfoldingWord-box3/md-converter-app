@@ -15,9 +15,13 @@ const Styles = styled.div`
       font-weight: bold;
     }
 
+    tr {
+      height: 53px;
+    }
+
     th,
     td {
-      max-width: 250px;
+      max-width: 130px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -26,12 +30,12 @@ const Styles = styled.div`
 `;
 
 export default function WorkingArea() {
-  const { state: { targetNotes, sourceNotes, glTsvs } } = React.useContext(TsvDataContext);
+  const { state: { targetNotes, sourceNotes } } = React.useContext(TsvDataContext);
   const { state: { bookId } } = React.useContext(ProjectContext);
 
   console.log('====================================');
   console.log('bookId', bookId);
-  console.log('glTsvs', glTsvs);
+  console.log('sourceNotes', sourceNotes);
   console.log('targetNotes', targetNotes);
   console.log('====================================');
 
@@ -80,14 +84,6 @@ export default function WorkingArea() {
   const targetColumns = React.useMemo(
     () => [
       {
-        Header: "Chapter",
-        accessor: "Chapter"
-      },
-      {
-        Header: "Verse",
-        accessor: "Verse"
-      },
-      {
         Header: "GLQuote",
         accessor: "GLQuote"
       },
@@ -98,7 +94,6 @@ export default function WorkingArea() {
     ],
     []
   );
-
 
   if (targetNotes[bookId]) {
     return (

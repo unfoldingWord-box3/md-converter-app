@@ -2,16 +2,15 @@ import { customAlphabet } from 'nanoid/non-secure'
 import * as cacheLibrary from 'money-clip';
 import mdToJson from '../../helpers/md2json';
 
-export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName) {
+export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes) {
   console.info('fetchTnMarkdownAction()');
-  const tsvItems = [];
+  let tsvItems = [];
+  const nanoid = customAlphabet('1234567890abcdef', 4)
 
   try {
     if (navigator.onLine) {
       const data = await fetch(bookUrl);
       const bookData = await data.json();
-      const nanoid = customAlphabet('1234567890abcdef', 4)
-
       const chapters = bookData.tree
         // Move 'front' to the front of array
         .sort(({ path: path1 }, { path: path2 }) => { return path1 === 'front' ? -1 : path2 === 'front' ? 1 : 0; });
@@ -58,6 +57,33 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
         }
       );
     }
+    const unusedTargetItems = [];
+
+    tsvItems = sourceNotes.map((sourceItem, index) => {
+      const targetItem = tsvItems[index]
+      const targetChapter = targetItem?.Chapter.toString();
+      const targetVerse = targetItem?.Verse.toString();
+      const sourceChapter = sourceItem.Chapter.toString();
+      const sourceVerse = sourceItem.Verse.toString();
+
+      if (targetChapter === sourceChapter && targetVerse === sourceVerse) {
+        return targetItem;
+      } else if (unusedTargetItems[0] && unusedTargetItems[0].Chapter.toString() === sourceChapter && unusedTargetItems[0].Verse.toString() === sourceVerse) {
+        const result = unusedTargetItems[0];
+        unusedTargetItems.shift();
+        return result;
+      } else {
+        unusedTargetItems.push(targetItem);
+        return {
+          Book: '',
+          Chapter: sourceChapter,
+          Verse: sourceVerse,
+          id: nanoid(),
+          GLQuote: '',
+          OccurrenceNote: '',
+        }
+      }
+    })
   } catch (error) {
     console.error(error);
   }

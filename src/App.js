@@ -13,13 +13,14 @@ import {
 } from './common/constants';
 import AppBar from './components/AppBar';
 import WorkingArea from './components/WorkingArea';
+import NetlifyBadge from './components/NetlifyBadge';
 import { TsvDataContext } from './state/contexts/TsvDataContextProvider'
 
 const useStyles = makeStyles(theme => ({
   root: {
     height: '100%',
   },
-  body: { margin: `${theme.spacing(2)}px` },
+  body: { margin: `${theme.spacing(1)}px` },
 }));
 
 export default function App() {
@@ -53,11 +54,11 @@ export default function App() {
     } else {
       await myAuthStore.setItem('authentication', authentication)
       .then(function (authentication) {
-        console.log("saveAuth() success. authentication is:", authentication);
+        console.info("saveAuth() success. authentication is:", authentication);
       }).catch(function(err) {
           // This code runs if there were any errors
-          console.log("saveAuth() failed. err:", err);
-          console.log("saveAuth() failed. authentication:", authentication);
+          console.info("saveAuth() failed. err:", err);
+          console.info("saveAuth() failed. authentication:", authentication);
       });
     }
   };
@@ -86,6 +87,7 @@ export default function App() {
             <div className={classes.body}>
               <WorkingArea />
             </div>
+            <NetlifyBadge/>
           </RepositoryContextProvider>
         </AuthenticationContextProvider>
       </MuiThemeProvider>
