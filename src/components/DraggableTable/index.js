@@ -3,7 +3,6 @@ import { useTable } from 'react-table';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
-import { customAlphabet } from 'nanoid/non-secure';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -39,22 +38,6 @@ const DraggableTable = ({ columns, data }) => {
         ]
       })
     );
-  };
-
-  const newRecord = (currentRecord) => {
-    const nanoid = customAlphabet('1234567890abcdef', 4);
-
-    return {
-      Book: currentRecord.Book,
-      Chapter: '',
-      Verse: '',
-      id: nanoid(),
-      SupportReference: '',
-      OrigQuote: '',
-      Occurrence: '',
-      GLQuote: '',
-      OccurrenceNote: '',
-    };
   };
 
   return (
