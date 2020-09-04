@@ -5,7 +5,7 @@ const useStyles = makeStyles(theme => ({
   netlifyBadge: {
     width: '100%',
     textAlign: 'center',
-    marginTop: theme.spacing(2),
+    margin: '20px 0px 20px',
   },
 }));
 

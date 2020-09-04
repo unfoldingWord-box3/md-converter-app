@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTable } from 'react-table';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { makeStyles } from '@material-ui/core/styles';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import MaUTable from '@material-ui/core/Table';
@@ -8,9 +9,21 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Button from '@material-ui/core/Button';
 
-const DraggableTable = ({ columns, data }) => {
+const useStyles = makeStyles(() => ({
+  button: {
+    margin: '25px',
+  },
+}));
+
+const DraggableTable = ({
+  data,
+  columns,
+  saveRecords,
+}) => {
   const [records, setRecords] = React.useState(data);
+  const classes = useStyles();
 
   const getRowId = React.useCallback((row) => {
     return row.id;
@@ -70,6 +83,9 @@ const DraggableTable = ({ columns, data }) => {
             )}
           </TableBody>
         </MaUTable>
+        <Button className={classes.button} variant="contained" color="primary" onClick={() => saveRecords(records)}>
+          Save
+        </Button>
       </div>
     </DndProvider>
   );

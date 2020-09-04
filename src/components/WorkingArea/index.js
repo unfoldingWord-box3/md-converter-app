@@ -1,14 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
+import Paper from '@material-ui/core/Paper';
 import Table from '../Table';
 import DraggableTable from '../DraggableTable';
 import AppStepper from '../AppStepper';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider'
 import { ProjectContext } from '../../state/contexts/ProjectContextProvider'
+import exportNotes from '../../helpers/exportNotes';
 
 const Styles = styled.div`
   display: flex;
-  padding: 1rem;
+  padding: 1rem 1rem 0;
 
   table {
     th {
@@ -32,12 +34,6 @@ const Styles = styled.div`
 export default function WorkingArea() {
   const { state: { targetNotes, sourceNotes } } = React.useContext(TsvDataContext);
   const { state: { bookId } } = React.useContext(ProjectContext);
-
-  console.log('====================================');
-  console.log('bookId', bookId);
-  console.log('sourceNotes', sourceNotes);
-  console.log('targetNotes', targetNotes);
-  console.log('====================================');
 
   const sourceColumns = React.useMemo(
     () => [
@@ -95,12 +91,18 @@ export default function WorkingArea() {
     []
   );
 
+  const saveRecords = (targetRecords) => {
+    exportNotes(sourceNotes[bookId], targetRecords, bookId);
+  }
+
   if (targetNotes[bookId]) {
     return (
-      <Styles>
-        <Table columns={sourceColumns} data={sourceNotes[bookId]} />
-        <DraggableTable columns={targetColumns} data={targetNotes[bookId]} />
-      </Styles>
+      <Paper>
+        <Styles>
+          <Table columns={sourceColumns} data={sourceNotes[bookId]} />
+          <DraggableTable columns={targetColumns} data={targetNotes[bookId]} saveRecords={saveRecords} />
+        </Styles>
+      </Paper>
     );
   } else {
     return <AppStepper />

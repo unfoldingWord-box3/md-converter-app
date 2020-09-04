@@ -10,6 +10,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "deep-freeze": "0.0.1",
+    "file-saver": "^2.0.2",
     "gitea-react-toolkit": "^1.1.0",
     "immutability-helper": "^3.1.1",
     "localforage": "^1.9.0",
@@ -28,7 +29,7 @@
     "ric-shim": "^1.0.0",
     "styled-components": "^5.1.1",
     "traverse": "^0.6.6",
-    "tsvtojson": "^1.0.1"
+    "tsv": "^0.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
