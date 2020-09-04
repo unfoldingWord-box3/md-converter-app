@@ -4884,6 +4884,11 @@ file-loader@4.3.0:
     loader-utils "^1.2.3"
     schema-utils "^2.5.0"
 
+file-saver@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/file-saver/-/file-saver-2.0.2.tgz#06d6e728a9ea2df2cce2f8d9e84dfcdc338ec17a"
+  integrity sha512-Wz3c3XQ5xroCxd1G8b7yL0Ehkf0TC9oYC6buPFkNnU9EnaPlifeAFCyCh+iewXTyFRcg0a6j3J7FmJsIhlhBdw==
+
 file-uri-to-path@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz#553a7b8446ff6f684359c445f1e37a05dacc33dd"
@@ -11007,10 +11012,10 @@ tsutils@^3.17.1:
   dependencies:
     tslib "^1.8.1"
 
-tsvtojson@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/tsvtojson/-/tsvtojson-1.0.1.tgz#b2cc04812e2b8f5e6ad4d537b99d8c24b0109bd3"
-  integrity sha1-sswEgS4rj15q1NU3uZ2MJLAQm9M=
+tsv@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/tsv/-/tsv-0.2.0.tgz#92869a3cb5f50332f3dc90fca82be667db6f72d6"
+  integrity sha1-koaaPLX1AzLz3JD8qCvmZ9tvctY=
 
 tty-browserify@0.0.0:
   version "0.0.0"
