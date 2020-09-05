@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
   },
   checkbox: {
-    margin: '0px 5px',
+    margin: '0px 3px',
   }
 }));
 
@@ -84,7 +84,7 @@ function Table({ columns, data }) {
               <TableRow {...row.getRowProps()}>
                 {row.cells.map((cell) => {
                   return (
-                    <TableCell {...cell.getCellProps()}>
+                    <TableCell {...cell.getCellProps()} style={{ color: 'grey' }}>
                       {cell.render('Cell')}
                     </TableCell>
                   );

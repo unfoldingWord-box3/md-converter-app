@@ -23,6 +23,7 @@ const Styles = styled.div`
 
     th,
     td {
+      padding: 14px;
       max-width: 130px;
       white-space: nowrap;
       overflow: hidden;

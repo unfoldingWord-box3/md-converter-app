@@ -13,8 +13,15 @@ import Button from '@material-ui/core/Button';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 
 const useStyles = makeStyles(() => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  fill: {
+    height: '19px',
+  },
   button: {
-    margin: '25px',
+    margin: '20px',
   },
 }));
 
@@ -56,17 +63,21 @@ const DraggableTable = ({
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <div style={{ height: '19px' }}/>
+      <div className={classes.root}>
+        <div className={classes.fill}/>
         <MaUTable {...getTableProps()}>
           <TableHead>
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <TableCell {...column.getHeaderProps()}>
-                    {column.render('Header')}
-                  </TableCell>
-                ))}
+                {headerGroup.headers.map((column) => {
+                  const tCellStyle = {};
+                  if (column.Header === "GLQuote") tCellStyle.minWidth = '160px';
+                  return (
+                    <TableCell {...column.getHeaderProps()} style={tCellStyle}>
+                      {column.render('Header')}
+                    </TableCell>
+                  )
+                })}
               </TableRow>
             ))}
           </TableHead>
@@ -160,7 +171,7 @@ const Row = ({ row, index, moveRow }) => {
     >
       {row.cells.map((cell) => {
         return (
-          <TableCell {...cell.getCellProps()}>
+          <TableCell {...cell.getCellProps()} style={{ borderLeft: '1px solid rgba(224, 224, 224, 1)' }}>
             {cell.render('Cell')}
           </TableCell>
         );

@@ -149,6 +149,8 @@ const useStyles = makeStyles(theme => ({
   button: { marginRight: theme.spacing(1) },
   completed: { display: 'inline-block' },
   instructions: {
+    display: 'flex',
+    justifyContent: 'center',
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
