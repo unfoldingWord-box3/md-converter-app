@@ -10,6 +10,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Button from '@material-ui/core/Button';
+import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -155,18 +156,18 @@ const Row = ({ row, index, moveRow }) => {
   return (
     <TableRow
       ref={dropRef}
-      style={{ opacity, cursor }}
+      style={{ opacity }}
     >
       {row.cells.map((cell) => {
         return (
-          <TableCell
-            ref={dragRef}
-            {...cell.getCellProps()}
-          >
+          <TableCell {...cell.getCellProps()}>
             {cell.render('Cell')}
           </TableCell>
         );
       })}
+      <TableCell ref={dragRef} style={{ maxWidth: '50px', padding: '5px', cursor }}>
+        <DragIndicatorIcon />
+      </TableCell>
     </TableRow>
   );
 };
