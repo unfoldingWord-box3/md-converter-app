@@ -100,8 +100,15 @@ export default function WorkingArea() {
     return (
       <Paper>
         <Styles>
-          <Table columns={sourceColumns} data={sourceNotes[bookId]} />
-          <DraggableTable columns={targetColumns} data={targetNotes[bookId]} saveRecords={saveRecords} />
+          <Table
+            columns={sourceColumns}
+            data={sourceNotes[bookId]}
+          />
+          <DraggableTable
+            columns={targetColumns}
+            data={targetNotes[bookId]}
+            saveRecords={saveRecords}
+          />
         </Styles>
       </Paper>
     );

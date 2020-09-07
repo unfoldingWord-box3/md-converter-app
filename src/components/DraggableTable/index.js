@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTable } from 'react-table';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import MaUTable from '@material-ui/core/Table';
@@ -9,8 +9,10 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -24,6 +26,16 @@ const useStyles = makeStyles(() => ({
     margin: '20px',
   },
 }));
+
+const HtmlTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 200,
+    fontSize: theme.typography.pxToRem(12),
+    border: '1px solid #dadde9',
+  },
+}))(Tooltip);
 
 const DraggableTable = ({
   data,
@@ -72,6 +84,7 @@ const DraggableTable = ({
                 {headerGroup.headers.map((column) => {
                   const tCellStyle = {};
                   if (column.Header === "GLQuote") tCellStyle.minWidth = '160px';
+
                   return (
                     <TableCell {...column.getHeaderProps()} style={tCellStyle}>
                       {column.render('Header')}
@@ -169,18 +182,46 @@ const Row = ({ row, index, moveRow }) => {
       ref={dropRef}
       style={{ opacity }}
     >
-      {row.cells.map((cell) => {
-        return (
-          <TableCell {...cell.getCellProps()} style={{ borderLeft: '1px solid rgba(224, 224, 224, 1)' }}>
-            {cell.render('Cell')}
-          </TableCell>
-        );
-      })}
+      {row.cells.map((cell, key) => <Record key={key} cell={cell} />)}
       <TableCell ref={dragRef} style={{ maxWidth: '50px', padding: '5px', cursor }}>
         <DragIndicatorIcon />
       </TableCell>
     </TableRow>
   );
 };
+
+const Record = ({
+  cell,
+}) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
+
+  return (
+    <ClickAwayListener onClickAway={handleTooltipClose}>
+      <HtmlTooltip
+        arrow
+        open={open}
+        disableHoverListener
+        title={cell.value}
+        onClose={handleTooltipClose}
+      >
+        <TableCell
+          {...cell.getCellProps()}
+          onClick={handleTooltipOpen}
+          style={{ borderLeft: '1px solid rgba(224, 224, 224, 1)' }}
+        >
+          {cell.render('Cell')}
+        </TableCell>
+      </HtmlTooltip>
+    </ClickAwayListener>
+  );
+}
 
 export default DraggableTable;
