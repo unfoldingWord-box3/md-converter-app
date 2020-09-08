@@ -86,7 +86,7 @@ const ScrollingWrapper = (props) => {
       )} */}
       {hasScrolled && (
         <ScrollToTopIconContainer onClick={scrollToTop}>
-          <Fab color="primary" size="small" aria-label="scroll back to top">
+          <Fab color="primary" size="small" aria-label="scroll back to top" title="Scroll back to top">
             <KeyboardArrowUpIcon />
           </Fab>
         </ScrollToTopIconContainer>
