@@ -15,6 +15,7 @@ import AppBar from './components/AppBar';
 import WorkingArea from './components/WorkingArea';
 import NetlifyBadge from './components/NetlifyBadge';
 import { TsvDataContext } from './state/contexts/TsvDataContextProvider'
+import ScrollingWrapper from './components/ScrollingWrapper'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -83,11 +84,15 @@ export default function App() {
             defaultQuery=""
             // branch='master'
           >
-            <AppBar/>
-            <div className={classes.body}>
-              <WorkingArea />
+            <div>
+              <AppBar/>
+              <div className={classes.body}>
+                <ScrollingWrapper>
+                  <WorkingArea />
+                </ScrollingWrapper>
+              </div>
+              <NetlifyBadge/>
             </div>
-            <NetlifyBadge/>
           </RepositoryContextProvider>
         </AuthenticationContextProvider>
       </MuiThemeProvider>
