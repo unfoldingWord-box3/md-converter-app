@@ -12,6 +12,9 @@ const useStyles = makeStyles((theme) => ({
     margin: '20px',
     padding: '20px',
   },
+  message: {
+    color: theme.palette.primary.main,
+  }
 }));
 
 export default function LoadingIndicator({
@@ -23,7 +26,7 @@ export default function LoadingIndicator({
   return (
     <div className={classes.root}>
       <CircularProgress size={size} />
-      <h1>{message}</h1>
+      <h1 className={classes.message}>{message}</h1>
     </div>
   );
 }
