@@ -9,8 +9,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: '20px',
-    padding: '20px',
+    margin: '30px',
+    padding: '30px',
   },
   message: {
     color: theme.palette.primary.main,

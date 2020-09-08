@@ -53,7 +53,7 @@ function Table({ columns, data }) {
     <div className={classes.root}>
       <div className={classes.checkboxes}>
         <div className={classes.checkbox}>
-          <IndeterminateCheckbox {...getToggleHideAllColumnsProps()} /> Toggle
+          <IndeterminateCheckbox {...getToggleHideAllColumnsProps()} />
           All
         </div>
         {allColumns.map(column => (

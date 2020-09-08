@@ -50,7 +50,7 @@ function AppStepper() {
     },
     {
       label: 'Repository',
-      instructions: 'Select a translationNotes Repository to Convert to TSV',
+      instructions: 'Select a Markdown translationNotes Repository to Convert to TSV',
       component: () => (repositoryComponent),
     },
     {
@@ -137,7 +137,7 @@ function AppStepper() {
 const useStyles = makeStyles(theme => ({
   root: { padding: `${theme.spacing(2)}px` },
   step: {
-    maxWidth: '600px',
+    maxWidth: '790px',
     margin: 'auto',
     padding: `0 ${theme.spacing(2)}px`,
   },

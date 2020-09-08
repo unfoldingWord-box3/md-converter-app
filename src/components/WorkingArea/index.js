@@ -23,8 +23,8 @@ const Styles = styled.div`
 
     th,
     td {
-      padding: 14px;
-      max-width: 130px;
+      padding: 12px;
+      max-width: 140px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
