@@ -12,6 +12,7 @@ const initialState = {
   targetNotes: {},
   sourceNotes: {},
   glTsvs: {},
+  bookId: null,
 };
 
 function tsvDataReducer(state, action) {
@@ -41,6 +42,11 @@ function tsvDataReducer(state, action) {
           ...state.glTsvs,
           en: action.payload || {},
         }
+      };
+    case 'SET_BOOK_ID':
+      return {
+        ...state,
+        bookId: action.bookId,
       };
     case 'SET_CACHED_REDUCER':
       return action.payload;
@@ -93,12 +99,14 @@ export default function TsvDataContextProvider(props) {
       payload: targetNotes,
       bookId,
     })
-
   }
+
+  const setBookId = (bookId) => dispatch({ type: 'SET_BOOK_ID', bookId })
 
   const value = {
     state,
     dispatch,
+    setBookId,
     fetchEnglishTsvs,
     fetchTnMarkdown,
    }

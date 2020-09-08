@@ -16,6 +16,7 @@ import WorkingArea from './components/WorkingArea';
 import NetlifyBadge from './components/NetlifyBadge';
 import { TsvDataContext } from './state/contexts/TsvDataContextProvider'
 import ScrollingWrapper from './components/ScrollingWrapper'
+import MyProjects from './components/MyProjects'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -88,6 +89,7 @@ export default function App() {
               <AppBar/>
               <div className={classes.body}>
                 <ScrollingWrapper>
+                  <MyProjects />
                   <WorkingArea />
                 </ScrollingWrapper>
               </div>

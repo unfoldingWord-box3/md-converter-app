@@ -5,7 +5,6 @@ import Table from '../Table';
 import DraggableTable from '../DraggableTable';
 import AppStepper from '../AppStepper';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider'
-import { ProjectContext } from '../../state/contexts/ProjectContextProvider'
 import exportNotes from '../../helpers/exportNotes';
 
 const Styles = styled.div`
@@ -33,8 +32,7 @@ const Styles = styled.div`
 `;
 
 export default function WorkingArea() {
-  const { state: { targetNotes, sourceNotes } } = React.useContext(TsvDataContext);
-  const { state: { bookId } } = React.useContext(ProjectContext);
+  const { state: { targetNotes, sourceNotes, bookId } } = React.useContext(TsvDataContext);
 
   const sourceColumns = React.useMemo(
     () => [

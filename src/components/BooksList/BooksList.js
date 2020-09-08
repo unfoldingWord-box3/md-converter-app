@@ -8,7 +8,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import FolderIcon from '@material-ui/icons/FolderOpenOutlined';
 import { BIBLES_ABBRV_INDEX } from '../../common/BooksOfTheBible';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider'
-import { ProjectContext } from '../../state/contexts/ProjectContextProvider'
 import LoadingIndicator from '../LoadingIndicator/LoadingIndicator';
 import useLoading from '../../hooks/useLoading';
 
@@ -24,8 +23,7 @@ export default function BooksList({
   files,
 }) {
   const classes = useStyles();
-  const { fetchTnMarkdown } = React.useContext(TsvDataContext);
-  const { setBookId } = React.useContext(ProjectContext);
+  const { fetchTnMarkdown, setBookId } = React.useContext(TsvDataContext);
   const { isLoading, setIsLoading, setIsError } = useLoading();
   const books = files.filter(({ path: bookId }) => Object.keys(BIBLES_ABBRV_INDEX).includes(bookId))
 

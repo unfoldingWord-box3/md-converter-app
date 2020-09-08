@@ -183,7 +183,7 @@ const Row = ({ row, index, moveRow }) => {
       style={{ opacity }}
     >
       {row.cells.map((cell, key) => <Record key={key} cell={cell} />)}
-      <TableCell ref={dragRef} style={{ maxWidth: '50px', padding: '5px', cursor }}>
+      <TableCell ref={dragRef} style={{ maxWidth: '50px', padding: '5px', cursor }} title="Drag">
         <DragIndicatorIcon />
       </TableCell>
     </TableRow>

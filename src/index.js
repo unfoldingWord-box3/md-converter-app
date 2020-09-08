@@ -4,14 +4,11 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import TsvDataContextProvider from './state/contexts/TsvDataContextProvider';
-import ProjectContextProvider from './state/contexts/ProjectContextProvider';
 
 ReactDOM.render(
   <React.StrictMode>
     <TsvDataContextProvider>
-      <ProjectContextProvider>
-        <App />
-      </ProjectContextProvider>
+      <App />
     </TsvDataContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
