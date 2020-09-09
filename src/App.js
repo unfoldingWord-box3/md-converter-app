@@ -95,7 +95,7 @@ export default function App() {
                     currentProject ?
                       <WorkingArea project={currentProject} />
                     :
-                    projects.length ?
+                    projects && projects.length ?
                       <MyProjects projects={projects} onProjectSelection={(project) => setProject(project)} />
                     :
                       <AppStepper />
