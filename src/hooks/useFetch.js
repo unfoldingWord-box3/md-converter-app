@@ -18,7 +18,8 @@ const useFetch = (tree_url, id) => {
         setIsError(false);
         setIsLoading(true);
 
-        const cachedResult = await cacheLibrary.getAll().then(cacheData => cacheData[id]);
+        const cachedResult = await cacheLibrary.getAll().then(cacheData => cacheData ? cacheData[id] : null);
+
         try {
           if (cachedResult) {
             setData(cachedResult);

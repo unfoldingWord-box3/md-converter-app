@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import ric from 'ric-shim'
+import equal from 'deep-equal';
 import * as cacheLibrary from 'money-clip';
 import fetchEnglishTsvsAction from '../actions/fetchEnglishTsvsAction';
 import fetchTnMarkdownAction from '../actions/fetchTnMarkdownAction';
 import getGlTsvContent from '../../helpers/getGlTsvContent';
+import generateTimestamp from '../../helpers/generateTimestamp';
 
 export const TsvDataContext = React.createContext({});
 
@@ -13,6 +15,8 @@ const initialState = {
   sourceNotes: {},
   glTsvs: {},
   bookId: null,
+  projects: [],
+  currentProject: null,
 };
 
 function tsvDataReducer(state, action) {
@@ -48,6 +52,29 @@ function tsvDataReducer(state, action) {
         ...state,
         bookId: action.bookId,
       };
+    case 'SET_CURRENT_PROJECT':
+      const found = state.projects.find(project => project.name === action.project.name)
+      const projects = found ? state.projects : [...state.projects, action.project];
+      return {
+        ...state,
+        projects,
+        currentProject: action.project,
+      };
+    case 'UPDATE_CURRENT_PROJECT':
+      return {
+        ...state,
+        currentProject: action.project,
+      };
+    case 'REMOVE_CURRENT_PROJECT':
+      return {
+        ...state,
+        currentProject: null,
+      };
+    case 'SET_PROJECTS':
+      return {
+        ...state,
+        projects: action.projects,
+      };
     case 'SET_CACHED_REDUCER':
       return action.payload;
     default:
@@ -58,21 +85,23 @@ function tsvDataReducer(state, action) {
 export default function TsvDataContextProvider(props) {
   const [state, dispatch] = React.useReducer(tsvDataReducer, initialState );
 
-  // useEffect(() => {
-  //   cacheLibrary.getAll().then(cacheData => {
-  //     const payload = cacheData[reducerName];
+  useEffect(() => {
+    cacheLibrary.getAll().then(cacheData => {
+      const payload = cacheData[reducerName];
 
-  //     if (cacheData[reducerName]) {
-  //       dispatch({
-  //         type: 'SET_CACHED_REDUCER',
-  //         payload,
-  //       })
-  //     }
-  //   });
-  // }, []);
+      if (cacheData[reducerName]) {
+        dispatch({
+          type: 'SET_CACHED_REDUCER',
+          payload,
+        })
+      }
+    });
+  }, []);
 
   useEffect(() => {
-    ric(() => cacheLibrary.set(reducerName, state))
+    if (!equal(state, initialState)) {
+      ric(() => cacheLibrary.set(reducerName, state))
+    }
   }, [state])
 
   const fetchEnglishTsvs = async () => {
@@ -99,16 +128,48 @@ export default function TsvDataContextProvider(props) {
       payload: targetNotes,
       bookId,
     })
+
+    setProject({
+      name: `ru_${bookId}`,
+      languageId: 'ru',
+      sourceNotes,
+      targetNotes,
+      bookId,
+      timestamp: generateTimestamp(),
+    })
   }
 
   const setBookId = (bookId) => dispatch({ type: 'SET_BOOK_ID', bookId })
+
+  const setProject = (project) => dispatch({ type: 'SET_CURRENT_PROJECT', project })
+
+  const removeProject = () => dispatch({ type: 'REMOVE_CURRENT_PROJECT' })
+
+  const saveProjectChanges = (targetRecords) => {
+    const { currentProject, projects } = state;
+    const updatedProject = Object.assign({}, currentProject);
+    updatedProject.targetNotes = targetRecords;
+    const foundIndex = projects.findIndex(project => project.name === updatedProject.name)
+    const newProjects = projects.map((project, index) => {
+      if (foundIndex !== index) {
+        return project;
+      } else {
+        return updatedProject;
+      }
+    })
+    dispatch({ type: 'UPDATE_CURRENT_PROJECT', project: updatedProject })
+    dispatch({ type: 'SET_PROJECTS', projects: newProjects })
+  }
 
   const value = {
     state,
     dispatch,
     setBookId,
-    fetchEnglishTsvs,
+    setProject,
+    removeProject,
     fetchTnMarkdown,
+    fetchEnglishTsvs,
+    saveProjectChanges,
    }
 
   return <TsvDataContext.Provider value={value}>{props.children}</TsvDataContext.Provider>;

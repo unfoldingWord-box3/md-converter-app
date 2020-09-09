@@ -22,6 +22,9 @@ const useStyles = makeStyles(() => ({
   fill: {
     height: '19px',
   },
+  buttons: {
+    display: 'flex',
+  },
   button: {
     margin: '20px',
   },
@@ -40,7 +43,8 @@ const HtmlTooltip = withStyles((theme) => ({
 const DraggableTable = ({
   data,
   columns,
-  saveRecords,
+  saveChanges,
+  exportProject,
 }) => {
   const [records, setRecords] = React.useState(data);
   const classes = useStyles();
@@ -108,9 +112,14 @@ const DraggableTable = ({
             )}
           </TableBody>
         </MaUTable>
-        <Button className={classes.button} variant="contained" color="primary" onClick={() => saveRecords(records)}>
-          Save
-        </Button>
+        <div className={classes.buttons}>
+          <Button className={classes.button} variant="contained" color="primary" onClick={() => saveChanges(records)}>
+            Save Changes
+          </Button>
+          <Button className={classes.button} variant="contained" color="primary" onClick={() => exportProject(records)}>
+            Export to TSV
+          </Button>
+        </div>
       </div>
     </DndProvider>
   );

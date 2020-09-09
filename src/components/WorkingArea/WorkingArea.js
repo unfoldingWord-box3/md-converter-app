@@ -1,11 +1,11 @@
 import React from 'react';
+import PropsTypes from 'prop-types';
 import styled from 'styled-components';
 import Paper from '@material-ui/core/Paper';
 import Table from '../Table';
 import DraggableTable from '../DraggableTable';
-import AppStepper from '../AppStepper';
-import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider'
 import exportNotes from '../../helpers/exportNotes';
+import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
 
 const Styles = styled.div`
   display: flex;
@@ -31,8 +31,11 @@ const Styles = styled.div`
   }
 `;
 
-export default function WorkingArea() {
-  const { state: { targetNotes, sourceNotes, bookId } } = React.useContext(TsvDataContext);
+export default function WorkingArea({
+  project,
+}) {
+  const { saveProjectChanges } = React.useContext(TsvDataContext);
+  const { targetNotes, sourceNotes, bookId } = project;
 
   const sourceColumns = React.useMemo(
     () => [
@@ -90,27 +93,36 @@ export default function WorkingArea() {
     []
   );
 
-  const saveRecords = (targetRecords) => {
-    exportNotes(sourceNotes[bookId], targetRecords, bookId);
+  const exportProject = (targetRecords) => {
+    exportNotes(sourceNotes, targetRecords, bookId);
   }
 
-  if (targetNotes[bookId]) {
+  if (targetNotes) {
     return (
       <Paper>
         <Styles>
           <Table
             columns={sourceColumns}
-            data={sourceNotes[bookId]}
+            data={sourceNotes}
           />
           <DraggableTable
             columns={targetColumns}
-            data={targetNotes[bookId]}
-            saveRecords={saveRecords}
+            data={targetNotes}
+            exportProject={exportProject}
+            saveChanges={saveProjectChanges}
           />
         </Styles>
       </Paper>
     );
   } else {
-    return <AppStepper />
+    return (
+      <h1 style={{ display: 'flex', justifyContent: 'center' }}>
+        Something went wrong ...
+      </h1>
+    );
   }
 }
+
+WorkingArea.propTypes = {
+  project: PropsTypes.object.isRequired,
+};

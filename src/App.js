@@ -17,6 +17,7 @@ import NetlifyBadge from './components/NetlifyBadge';
 import { TsvDataContext } from './state/contexts/TsvDataContextProvider'
 import ScrollingWrapper from './components/ScrollingWrapper'
 import MyProjects from './components/MyProjects'
+import AppStepper from './components/AppStepper';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,8 +30,9 @@ export default function App() {
   const classes = useStyles();
   const [authentication, setAuthentication] = useState();
   const [repository, setRepository] = useState();
-  const { fetchEnglishTsvs } = React.useContext(TsvDataContext);
+  const { state: { currentProject, projects }, fetchEnglishTsvs, setProject } = React.useContext(TsvDataContext);
 
+  console.log('projects', projects)
   useEffect(() => {
     async function fetchData() {
       return fetchEnglishTsvs()
@@ -89,8 +91,15 @@ export default function App() {
               <AppBar/>
               <div className={classes.body}>
                 <ScrollingWrapper>
-                  <MyProjects />
-                  <WorkingArea />
+                  {
+                    currentProject ?
+                      <WorkingArea project={currentProject} />
+                    :
+                    projects.length ?
+                      <MyProjects projects={projects} onProjectSelection={(project) => setProject(project)} />
+                    :
+                      <AppStepper />
+                  }
                 </ScrollingWrapper>
               </div>
               <NetlifyBadge/>

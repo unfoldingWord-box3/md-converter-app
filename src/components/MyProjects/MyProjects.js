@@ -20,13 +20,14 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     padding: '10px',
     margin: 'auto',
-    width: '800px',
-    height: '500px'
+    width: '850px',
+    height: '650px'
   },
   title: {
     display: 'flex',
     marginTop: '8px',
     marginBottom: '8px',
+    marginLeft: '16px',
     fontWeight: '400',
     lineHeight: '1.334',
     fontFamily: "Roboto, Helvetica, Arial, sans-serif",
@@ -58,17 +59,19 @@ const MyProjects = ({
         <MaUTable>
           <TableHead>
             <TableRow>
-              {headerGroups.map((headerGroup) => (
-                <TableCell>
+              {headerGroups.map((headerGroup, i) => (
+                <TableCell key={i}>
                   <b>{headerGroup}</b>
                 </TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {projects.map(({ name, timestamp }, i) => {
+            {projects.map((project, i) => {
+              const { name, timestamp } = project;
+
               return (
-                <TableRow className={classes.tr} onClick={() => onProjectSelection()}>
+                <TableRow key={i} className={classes.tr} onClick={() => onProjectSelection(project)}>
                   <TableCell>
                     {name}
                   </TableCell>
@@ -86,32 +89,7 @@ const MyProjects = ({
 };
 
 MyProjects.defaultProps = {
-  projects: [
-    {
-      name: 'ru_tit_tsv',
-      bookId: 'tit',
-      languageId: 'ru',
-      timestamp: '2020-09-06T17:08:04.547Z',
-    },
-    {
-      name: 'ru_1co_tsv',
-      bookId: '1co',
-      languageId: 'ru',
-      timestamp: '2020-09-08T17:08:04.547Z',
-    },
-    {
-      name: 'ru_psa_tsv',
-      bookId: 'psa',
-      languageId: 'ru',
-      timestamp: '2020-09-08T10:01:00.000Z',
-    },
-    {
-      name: 'ru_isa_tsv',
-      bookId: 'isa',
-      languageId: 'ru',
-      timestamp: '2020-08-08T17:08:04.547Z',
-    },
-  ]
+  projects: []
 }
 
 MyProjects.propTypes = {
