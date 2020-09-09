@@ -16,12 +16,16 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
   },
   checkbox: {
-    margin: '0px 3px',
-  }
+    display: 'flex',
+    margin: '0px',
+  },
+  checkboxLabel: {
+    display: 'flex',
+  },
 }));
 
 const IndeterminateCheckbox = React.forwardRef(
-  ({ indeterminate, ...rest }, ref) => {
+  ({ indeterminate, classes, ...rest }, ref) => {
     const defaultRef = React.useRef()
     const resolvedRef = ref || defaultRef
 
@@ -35,6 +39,9 @@ const IndeterminateCheckbox = React.forwardRef(
 
 function Table({ columns, data }) {
   const classes = useStyles();
+  const initialState = {
+    hiddenColumns: ['ID', 'SupportReference', 'OrigQuote', 'Occurrence'],
+  }
   // Use the state and functions returned from useTable to build your UI
   const {
     rows,
@@ -44,8 +51,9 @@ function Table({ columns, data }) {
     getTableProps,
     getToggleHideAllColumnsProps,
   } = useTable({
-    columns,
     data,
+    columns,
+    initialState,
   });
 
   // Render the UI for your table
@@ -53,17 +61,18 @@ function Table({ columns, data }) {
     <div className={classes.root}>
       <div className={classes.checkboxes}>
         <div className={classes.checkbox}>
-          <IndeterminateCheckbox {...getToggleHideAllColumnsProps()} />
+          <IndeterminateCheckbox {...getToggleHideAllColumnsProps()} classes={classes} />
           All
         </div>
-        {allColumns.map(column => (
-          <div key={column.id} className={classes.checkbox}>
-            <label>
-              <input type="checkbox" {...column.getToggleHiddenProps()} />{' '}
-              {column.id}
-            </label>
-          </div>
-        ))}
+        {allColumns.map(column => {
+          return (
+            <div key={column.id} className={classes.checkbox}>
+              <label className={classes.checkboxLabel}>
+                <input type="checkbox" {...column.getToggleHiddenProps()} />{' '}
+                {column.id}
+              </label>
+            </div>
+        )})}
       </div>
       <MaUTable {...getTableProps()}>
         <TableHead>
