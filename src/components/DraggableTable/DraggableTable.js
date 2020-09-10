@@ -27,6 +27,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
   },
   button: {
+    width: '100%',
     margin: '20px',
   },
 }));
