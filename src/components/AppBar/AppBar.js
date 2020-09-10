@@ -9,8 +9,7 @@ import {
   ApplicationBar,
   FileContextProvider,
 } from 'gitea-react-toolkit';
-import Mail from '@material-ui/icons/Mail';
-import Folder from '@material-ui/icons/Folder';
+=import Folder from '@material-ui/icons/Folder';
 import ListIcon from '@material-ui/icons/List';
 import { appName } from '../../common/constants';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
@@ -34,12 +33,6 @@ export default function AppBar({
           <Folder />
         </ListItemIcon>
         <ListItemText primary='New Project' />
-      </ListItem>
-      <ListItem button key='Mail'>
-        <ListItemIcon style={{ margin: 0 }}>
-          <Mail />
-        </ListItemIcon>
-        <ListItemText primary='Mail' />
       </ListItem>
     </List>
   );
