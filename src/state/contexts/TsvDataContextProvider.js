@@ -149,6 +149,7 @@ export default function TsvDataContextProvider(props) {
     const { currentProject, projects } = state;
     const updatedProject = Object.assign({}, currentProject);
     updatedProject.targetNotes = targetRecords;
+    updatedProject.timestamp = generateTimestamp();
     const foundIndex = projects.findIndex(project => project.name === updatedProject.name)
     const newProjects = projects.map((project, index) => {
       if (foundIndex !== index) {
@@ -157,6 +158,7 @@ export default function TsvDataContextProvider(props) {
         return updatedProject;
       }
     })
+
     dispatch({ type: 'UPDATE_CURRENT_PROJECT', project: updatedProject })
     dispatch({ type: 'SET_PROJECTS', projects: newProjects })
   }

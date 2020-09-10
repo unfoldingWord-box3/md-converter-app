@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTable } from 'react-table';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -13,6 +13,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -43,11 +44,16 @@ const HtmlTooltip = withStyles((theme) => ({
 const DraggableTable = ({
   data,
   columns,
-  saveChanges,
   exportProject,
 }) => {
-  const [records, setRecords] = React.useState(data);
   const classes = useStyles();
+  const [records, setRecords] = React.useState(data);
+  const { saveProjectChanges } = React.useContext(TsvDataContext);
+
+  useEffect(() => {
+    saveProjectChanges(records);
+    // eslint-disable-next-line
+  }, [records])
 
   const getRowId = React.useCallback((row) => {
     return row.id;
@@ -113,9 +119,6 @@ const DraggableTable = ({
           </TableBody>
         </MaUTable>
         <div className={classes.buttons}>
-          <Button className={classes.button} variant="contained" color="primary" onClick={() => saveChanges(records)}>
-            Save Changes
-          </Button>
           <Button className={classes.button} variant="contained" color="primary" onClick={() => exportProject(records)}>
             Export to TSV
           </Button>

@@ -30,9 +30,9 @@ export default function App() {
   const classes = useStyles();
   const [authentication, setAuthentication] = useState();
   const [repository, setRepository] = useState();
+  const [showStepper, setshowStepper] = useState(false);
   const { state: { currentProject, projects }, fetchEnglishTsvs, setProject } = React.useContext(TsvDataContext);
 
-  console.log('projects', projects)
   useEffect(() => {
     async function fetchData() {
       return fetchEnglishTsvs()
@@ -88,15 +88,19 @@ export default function App() {
             // branch='master'
           >
             <div>
-              <AppBar/>
+              <AppBar setshowStepper={() => setshowStepper(true)} />
               <div className={classes.body}>
                 <ScrollingWrapper>
                   {
                     currentProject ?
                       <WorkingArea project={currentProject} />
                     :
-                    projects && projects.length ?
-                      <MyProjects projects={projects} onProjectSelection={(project) => setProject(project)} />
+                    !showStepper && projects && projects.length ?
+                      <MyProjects
+                        projects={projects}
+                        setshowStepper={() => setshowStepper(true)}
+                        onProjectSelection={(project) => setProject(project)}
+                      />
                     :
                       <AppStepper />
                   }

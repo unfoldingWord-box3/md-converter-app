@@ -5,7 +5,6 @@ import Paper from '@material-ui/core/Paper';
 import Table from '../Table';
 import DraggableTable from '../DraggableTable';
 import exportNotes from '../../helpers/exportNotes';
-import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
 
 const Styles = styled.div`
   display: flex;
@@ -34,7 +33,6 @@ const Styles = styled.div`
 export default function WorkingArea({
   project,
 }) {
-  const { saveProjectChanges } = React.useContext(TsvDataContext);
   const { targetNotes, sourceNotes, bookId } = project;
 
   const sourceColumns = React.useMemo(
@@ -109,7 +107,6 @@ export default function WorkingArea({
             columns={targetColumns}
             data={targetNotes}
             exportProject={exportProject}
-            saveChanges={saveProjectChanges}
           />
         </Styles>
       </Paper>

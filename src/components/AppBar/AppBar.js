@@ -10,12 +10,14 @@ import {
   FileContextProvider,
 } from 'gitea-react-toolkit';
 import Mail from '@material-ui/icons/Mail';
-import Inbox from '@material-ui/icons/Inbox';
+import Folder from '@material-ui/icons/Folder';
 import ListIcon from '@material-ui/icons/List';
 import { appName } from '../../common/constants';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
 
-export default function AppBar() {
+export default function AppBar({
+  setshowStepper,
+}) {
   const [filepath, setFilepath] = useState();
   const { removeProject } = useContext(TsvDataContext);
 
@@ -27,17 +29,17 @@ export default function AppBar() {
         </ListItemIcon>
         <ListItemText primary='My Projects' />
       </ListItem>
-      <ListItem button key='Inbox'>
+      <ListItem button key='New Project' onClick={() => setshowStepper()}>
         <ListItemIcon style={{ margin: 0 }}>
-          <Inbox />
+          <Folder />
         </ListItemIcon>
-        <ListItemText primary={'Inbox'} />
+        <ListItemText primary='New Project' />
       </ListItem>
       <ListItem button key='Mail'>
         <ListItemIcon style={{ margin: 0 }}>
           <Mail />
         </ListItemIcon>
-        <ListItemText primary={'Mail'} />
+        <ListItemText primary='Mail' />
       </ListItem>
     </List>
   );

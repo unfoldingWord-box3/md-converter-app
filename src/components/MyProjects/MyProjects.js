@@ -8,7 +8,9 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Button from '@material-ui/core/Button';
 import moment from 'moment';
+import generateTimestamp from '../../helpers/generateTimestamp';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,11 +42,16 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: theme.palette.primary.grey,
     }
-  }
+  },
+  button: {
+    width: '200px',
+    margin: '20px',
+  },
 }));
 
 const MyProjects = ({
   projects,
+  setshowStepper,
   onProjectSelection,
 }) => {
   const classes = useStyles();
@@ -71,7 +78,14 @@ const MyProjects = ({
               const { name, timestamp } = project;
 
               return (
-                <TableRow key={i} className={classes.tr} onClick={() => onProjectSelection(project)}>
+                <TableRow
+                  key={i}
+                  className={classes.tr}
+                  onClick={() => {
+                    project.timestamp = generateTimestamp();
+                    onProjectSelection(project);
+                  }}
+                >
                   <TableCell>
                     {name}
                   </TableCell>
@@ -83,6 +97,9 @@ const MyProjects = ({
             })}
           </TableBody>
         </MaUTable>
+        <Button className={classes.button} variant="contained" color="primary" onClick={() => setshowStepper()}>
+          New Project
+        </Button>
       </div>
     </Paper>
   );
