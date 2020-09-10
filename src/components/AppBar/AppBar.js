@@ -9,7 +9,7 @@ import {
   ApplicationBar,
   FileContextProvider,
 } from 'gitea-react-toolkit';
-=import Folder from '@material-ui/icons/Folder';
+import Folder from '@material-ui/icons/Folder';
 import ListIcon from '@material-ui/icons/List';
 import { appName } from '../../common/constants';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
