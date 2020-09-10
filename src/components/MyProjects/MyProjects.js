@@ -11,6 +11,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Button from '@material-ui/core/Button';
 import moment from 'moment';
 import generateTimestamp from '../../helpers/generateTimestamp';
+import NoData from '../../assets/images/undraw_no_data.svg'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '10px',
     margin: 'auto',
     width: '850px',
-    height: '650px'
+    minHeight: '650px'
   },
   title: {
     display: 'flex',
@@ -44,14 +45,25 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   button: {
-    width: '200px',
+    alignSelf: 'center',
+    width: '400px',
     margin: '20px',
   },
+  empty: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+  },
+  image: {
+    height: '400px',
+    margin: '30px',
+  }
 }));
 
 const MyProjects = ({
   projects,
-  setshowStepper,
+  toggleProjects,
   onProjectSelection,
 }) => {
   const classes = useStyles();
@@ -63,42 +75,49 @@ const MyProjects = ({
       <div className={classes.root}>
         <h2 className={classes.title}>My Projects</h2>
         <Divider className={classes.divider}/>
-        <MaUTable>
-          <TableHead>
-            <TableRow>
-              {headerGroups.map((headerGroup, i) => (
-                <TableCell key={i}>
-                  <b>{headerGroup}</b>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {projects.map((project, i) => {
-              const { name, timestamp } = project;
+        {projects.length ?
+          <MaUTable>
+            <TableHead>
+              <TableRow>
+                {headerGroups.map((headerGroup, i) => (
+                  <TableCell key={i}>
+                    <b>{headerGroup}</b>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {projects.map((project, i) => {
+                const { name, timestamp } = project;
 
-              return (
-                <TableRow
-                  key={i}
-                  className={classes.tr}
-                  onClick={() => {
-                    project.timestamp = generateTimestamp();
-                    onProjectSelection(project);
-                  }}
-                >
-                  <TableCell>
-                    {name}
-                  </TableCell>
-                  <TableCell>
-                    {moment().to(timestamp)}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </MaUTable>
-        <Button className={classes.button} variant="contained" color="primary" onClick={() => setshowStepper()}>
-          New Project
+                return (
+                  <TableRow
+                    key={i}
+                    className={classes.tr}
+                    onClick={() => {
+                      project.timestamp = generateTimestamp();
+                      onProjectSelection(project);
+                    }}
+                  >
+                    <TableCell>
+                      {name}
+                    </TableCell>
+                    <TableCell>
+                      {moment().to(timestamp)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </MaUTable>
+          :
+          <div className={classes.empty}>
+            <h2 className={classes.emptyMessage}>You have not started a project...</h2>
+            <img src={NoData} className={classes.image} alt="No projects started"/>
+          </div>
+        }
+        <Button className={classes.button} variant="contained" color="primary" onClick={() => toggleProjects(false)}>
+          Start a New Project
         </Button>
       </div>
     </Paper>

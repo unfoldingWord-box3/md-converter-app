@@ -15,20 +15,34 @@ import { appName } from '../../common/constants';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
 
 export default function AppBar({
-  setshowStepper,
+  toggleProjects,
 }) {
   const [filepath, setFilepath] = useState();
   const { removeProject } = useContext(TsvDataContext);
 
   const drawerMenu = (
     <List>
-      <ListItem button key='My Projects' onClick={() => removeProject()}>
+      <ListItem
+        button
+        key='My Projects'
+        onClick={() => {
+          removeProject();
+          toggleProjects(true);
+        }}
+      >
         <ListItemIcon style={{ margin: 0 }}>
           <ListIcon />
         </ListItemIcon>
         <ListItemText primary='My Projects' />
       </ListItem>
-      <ListItem button key='New Project' onClick={() => setshowStepper()}>
+      <ListItem
+        button
+        key='New Project'
+        onClick={() => {
+          removeProject();
+          toggleProjects(false);
+        }}
+      >
         <ListItemIcon style={{ margin: 0 }}>
           <Folder />
         </ListItemIcon>

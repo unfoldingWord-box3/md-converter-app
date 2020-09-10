@@ -30,7 +30,8 @@ export default function App() {
   const classes = useStyles();
   const [authentication, setAuthentication] = useState();
   const [repository, setRepository] = useState();
-  const [showStepper, setshowStepper] = useState(false);
+  const [showStepper, setShowStepper] = useState(false);
+  const [showProjects, setShowProjects] = useState(false);
   const { state: { currentProject, projects }, fetchEnglishTsvs, setProject } = React.useContext(TsvDataContext);
 
   useEffect(() => {
@@ -67,6 +68,11 @@ export default function App() {
     }
   };
 
+  const toggleProjects = (value) => {
+    setShowProjects(value);
+    setShowStepper(!value);
+  }
+
   return (
     <div className={classes.root}>
       <MuiThemeProvider theme={theme}>
@@ -88,17 +94,17 @@ export default function App() {
             // branch='master'
           >
             <div>
-              <AppBar setshowStepper={() => setshowStepper(true)} />
+              <AppBar toggleProjects={toggleProjects} />
               <div className={classes.body}>
                 <ScrollingWrapper>
                   {
                     currentProject ?
                       <WorkingArea project={currentProject} />
                     :
-                    !showStepper && projects && projects.length ?
+                    showProjects || (!showStepper && projects && projects.length) ?
                       <MyProjects
                         projects={projects}
-                        setshowStepper={() => setshowStepper(true)}
+                        toggleProjects={toggleProjects}
                         onProjectSelection={(project) => setProject(project)}
                       />
                     :

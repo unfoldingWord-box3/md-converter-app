@@ -76,7 +76,10 @@ function tsvDataReducer(state, action) {
         projects: action.projects,
       };
     case 'SET_CACHED_REDUCER':
-      return action.payload;
+      return {
+        ...initialState,
+        ...action.payload,
+      };
     default:
       return state;
   }
@@ -105,6 +108,9 @@ export default function TsvDataContextProvider(props) {
   }, [state])
 
   const fetchEnglishTsvs = async () => {
+    console.log('====================================');
+    console.log('fetchEnglishTsvs');
+    console.log('====================================');
     const enTsvs = await fetchEnglishTsvsAction(reducerName);
 
     dispatch({
@@ -114,6 +120,9 @@ export default function TsvDataContextProvider(props) {
   }
 
   const fetchTnMarkdown = async (bookUrl, bookId) => {
+    console.log('====================================');
+    console.log('fetchTnMarkdown');
+    console.log('====================================');
     const enTsvUrl = state.glTsvs.en[bookId];
     const sourceNotes = await getGlTsvContent(enTsvUrl);
     const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes);
@@ -141,11 +150,19 @@ export default function TsvDataContextProvider(props) {
 
   const setBookId = (bookId) => dispatch({ type: 'SET_BOOK_ID', bookId })
 
-  const setProject = (project) => dispatch({ type: 'SET_CURRENT_PROJECT', project })
+  const setProject = (project) => {
+    console.log('====================================');
+    console.log('setProject');
+    console.log('====================================');
+    dispatch({ type: 'SET_CURRENT_PROJECT', project })
+  }
 
   const removeProject = () => dispatch({ type: 'REMOVE_CURRENT_PROJECT' })
 
   const saveProjectChanges = (targetRecords) => {
+    console.log('====================================');
+    console.log('saveProjectChanges');
+    console.log('====================================');
     const { currentProject, projects } = state;
     const updatedProject = Object.assign({}, currentProject);
     updatedProject.targetNotes = targetRecords;
