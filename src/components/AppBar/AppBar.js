@@ -20,15 +20,17 @@ export default function AppBar({
   const [filepath, setFilepath] = useState();
   const { removeProject } = useContext(TsvDataContext);
 
+  const onProjectPage = () => {
+    removeProject();
+    toggleProjects(true);
+  }
+
   const drawerMenu = (
     <List>
       <ListItem
         button
         key='My Projects'
-        onClick={() => {
-          removeProject();
-          toggleProjects(true);
-        }}
+        onClick={onProjectPage}
       >
         <ListItemIcon style={{ margin: 0 }}>
           <ListIcon />
@@ -57,7 +59,7 @@ export default function AppBar({
       onFilepath={setFilepath}
     >
       <ApplicationBar
-        title={appName}
+        title={<div style={{ cursor: 'pointer' }} onClick={onProjectPage}>{appName}</div>}
         drawerMenu={drawerMenu}
       />
     </FileContextProvider>
