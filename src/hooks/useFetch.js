@@ -21,7 +21,7 @@ const useFetch = (tree_url, id) => {
         const cachedResult = await cacheLibrary.getAll().then(cacheData => cacheData ? cacheData[id] : null);
 
         try {
-          if (cachedResult) {
+          if (cachedResult && cachedResult.url === url) {
             setData(cachedResult);
           } else if (navigator.onLine) {
             const result = await fetch(url).then(data => data.json())
