@@ -8,7 +8,12 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import IconButton from '@material-ui/core/IconButton';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Delete from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import moment from 'moment';
 import generateTimestamp from '../../helpers/generateTimestamp';
 import NoData from '../../assets/images/undraw_no_data.svg'
@@ -39,10 +44,13 @@ const useStyles = makeStyles((theme) => ({
     margin: '4px 0',
   },
   tr: {
-    cursor: 'pointer',
     "&:hover": {
       backgroundColor: theme.palette.primary.grey,
     }
+  },
+  openButton: {
+    width: '100%',
+    margin: '0px',
   },
   button: {
     alignSelf: 'center',
@@ -58,15 +66,30 @@ const useStyles = makeStyles((theme) => ({
   image: {
     height: '400px',
     margin: '30px',
+  },
+  settingsTd: {
+    display: 'flex',
+    justifyContent: 'flex-end',
   }
 }));
 
 const MyProjects = ({
   projects,
+  deleteProject,
   toggleProjects,
   onProjectSelection,
 }) => {
   const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const headerGroups = ['Name', 'Last Opened'];
 
@@ -84,6 +107,12 @@ const MyProjects = ({
                     <b>{headerGroup}</b>
                   </TableCell>
                 ))}
+                <TableCell key="td-actions-button">
+                  {' '}
+                </TableCell>
+                <TableCell key="td-actions2-button">
+                  {' '}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -91,19 +120,58 @@ const MyProjects = ({
                 const { name, timestamp } = project;
 
                 return (
-                  <TableRow
-                    key={i}
-                    className={classes.tr}
-                    onClick={() => {
-                      project.timestamp = generateTimestamp();
-                      onProjectSelection(project);
-                    }}
-                  >
+                  <TableRow key={i} className={classes.tr}>
                     <TableCell>
                       {name}
                     </TableCell>
                     <TableCell>
                       {moment().to(timestamp)}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        className={classes.openButton}
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                          project.timestamp = generateTimestamp();
+                          onProjectSelection(project);
+                        }}
+                      >
+                        Open
+                      </Button>
+                    </TableCell>
+                    <TableCell className={classes.settingsTd}>
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                      <Menu
+                        id="long-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                          style: {
+                            maxHeight: 48 * 4.5,
+                            width: '20ch',
+                          },
+                        }}
+                      >
+                        <MenuItem
+                          key={'delte-project-menu-item'}
+                          onClick={() => {
+                            handleClose();
+                            deleteProject(name);
+                          }}
+                        >
+                          <Delete/> Delete Project
+                        </MenuItem>
+                      </Menu>
                     </TableCell>
                   </TableRow>
                 );

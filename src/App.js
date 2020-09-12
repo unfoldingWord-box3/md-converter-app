@@ -32,7 +32,7 @@ export default function App() {
   const [repository, setRepository] = useState();
   const [showStepper, setShowStepper] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
-  const { state: { currentProject, projects }, fetchEnglishTsvs, setProject } = React.useContext(TsvDataContext);
+  const { state: { currentProject, projects }, fetchEnglishTsvs, setProject, deleteProject } = React.useContext(TsvDataContext);
 
   useEffect(() => {
     async function fetchData() {
@@ -104,6 +104,7 @@ export default function App() {
                     showProjects || (!showStepper && projects && projects.length) ?
                       <MyProjects
                         projects={projects}
+                        deleteProject={deleteProject}
                         toggleProjects={toggleProjects}
                         onProjectSelection={(project) => setProject(project)}
                       />

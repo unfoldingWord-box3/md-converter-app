@@ -60,11 +60,11 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
     const unusedTargetItems = [];
 
     tsvItems = sourceNotes.map((sourceItem, index) => {
+      const sourceChapter = sourceItem.Chapter.toString();
+      const sourceVerse = sourceItem.Verse.toString();
       const targetItem = tsvItems[index]
       const targetChapter = targetItem?.Chapter.toString();
       const targetVerse = targetItem?.Verse.toString();
-      const sourceChapter = sourceItem.Chapter.toString();
-      const sourceVerse = sourceItem.Verse.toString();
 
       if (targetChapter === sourceChapter && targetVerse === sourceVerse) {
         return targetItem;
