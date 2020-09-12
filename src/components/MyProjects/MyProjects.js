@@ -81,15 +81,22 @@ const MyProjects = ({
 }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [projectClicked, setProjectClicked] = React.useState('');
   const open = Boolean(anchorEl);
 
-  const handleClick = (event) => {
+  const handleClick = (event, name) => {
+    setProjectClicked(name);
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const onDeleteProject = () => {
+    handleClose();
+    deleteProject(projectClicked);
+  }
 
   const headerGroups = ['Name', 'Last Opened'];
 
@@ -145,33 +152,10 @@ const MyProjects = ({
                         aria-label="more"
                         aria-controls="long-menu"
                         aria-haspopup="true"
-                        onClick={handleClick}
+                        onClick={(e) => handleClick(e, name)}
                       >
                         <MoreVertIcon />
                       </IconButton>
-                      <Menu
-                        id="long-menu"
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={open}
-                        onClose={handleClose}
-                        PaperProps={{
-                          style: {
-                            maxHeight: 48 * 4.5,
-                            width: '20ch',
-                          },
-                        }}
-                      >
-                        <MenuItem
-                          key={'delte-project-menu-item'}
-                          onClick={() => {
-                            handleClose();
-                            deleteProject(name);
-                          }}
-                        >
-                          <Delete/> Delete Project
-                        </MenuItem>
-                      </Menu>
                     </TableCell>
                   </TableRow>
                 );
@@ -188,6 +172,26 @@ const MyProjects = ({
           Start a New Project
         </Button>
       </div>
+      <Menu
+        id="long-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: 48 * 4.5,
+            width: '20ch',
+          },
+        }}
+      >
+        <MenuItem
+          key='delete-project-menu-item'
+          onClick={onDeleteProject}
+        >
+          <Delete/> Delete Project
+        </MenuItem>
+      </Menu>
     </Paper>
   );
 };
