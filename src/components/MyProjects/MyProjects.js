@@ -16,7 +16,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import moment from 'moment';
 import generateTimestamp from '../../helpers/generateTimestamp';
-import NoData from '../../assets/images/undraw_no_data.svg'
+import NoData from '../../assets/images/undraw_no_data.svg';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -98,6 +98,11 @@ const MyProjects = ({
     deleteProject(projectClicked);
   }
 
+  const openProject = async (project) => {
+    project.timestamp = generateTimestamp();
+    onProjectSelection(project);
+  }
+
   const headerGroups = ['Name', 'Last Opened'];
 
   return (
@@ -139,10 +144,7 @@ const MyProjects = ({
                         className={classes.openButton}
                         variant="contained"
                         color="primary"
-                        onClick={() => {
-                          project.timestamp = generateTimestamp();
-                          onProjectSelection(project);
-                        }}
+                        onClick={() => openProject(project)}
                       >
                         Open
                       </Button>
