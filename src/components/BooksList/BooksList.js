@@ -23,15 +23,26 @@ export default function BooksList({
   files,
 }) {
   const classes = useStyles();
-  const { fetchTnMarkdown, setBookId } = React.useContext(TsvDataContext);
+  const { state: { projects }, fetchTnMarkdown, setBookId } = React.useContext(TsvDataContext);
   const { isLoading, setIsLoading, setIsError } = useLoading();
   const books = files.filter(({ path: bookId }) => Object.keys(BIBLES_ABBRV_INDEX).includes(bookId))
 
-  const onItemClick = async (url, bookId) => {
+  const loadProject = async (url, bookId) => {
     setIsLoading(true);
     await fetchTnMarkdown(url, bookId).catch(() => setIsError());
     setBookId(bookId);
     setIsLoading(false);
+  }
+
+  const onItemClick = (url, bookId) => {
+    const found = projects.find(project => project.bookId === bookId);
+    if (found) {
+      if (window.confirm(`There's currently a ${bookId} project in your project list, Do you want to overwrite it?`)) {
+        loadProject(url, bookId);
+      }
+    } else {
+      loadProject(url, bookId);
+    }
   }
 
   if (isLoading) {
