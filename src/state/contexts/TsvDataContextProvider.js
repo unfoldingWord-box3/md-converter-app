@@ -108,9 +108,7 @@ export default function TsvDataContextProvider(props) {
   }, [state])
 
   const fetchEnglishTsvs = async () => {
-    console.info('====================================');
     console.info('fetchEnglishTsvs()');
-    console.info('====================================');
     const enTsvs = await fetchEnglishTsvsAction(reducerName);
 
     dispatch({
@@ -120,9 +118,7 @@ export default function TsvDataContextProvider(props) {
   }
 
   const fetchTnMarkdown = async (bookUrl, bookId) => {
-    console.info('====================================');
     console.info('fetchTnMarkdown()');
-    console.info('====================================');
     const enTsvUrl = state.glTsvs.en[bookId];
     const sourceNotes = await getGlTsvContent(enTsvUrl);
     const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes);
@@ -151,18 +147,14 @@ export default function TsvDataContextProvider(props) {
   const setBookId = (bookId) => dispatch({ type: 'SET_BOOK_ID', bookId })
 
   const setProject = (project) => {
-    console.info('====================================');
     console.info('setProject()');
-    console.info('====================================');
     dispatch({ type: 'SET_CURRENT_PROJECT', project })
   }
 
   const removeProject = () => dispatch({ type: 'REMOVE_CURRENT_PROJECT' })
 
   const saveProjectChanges = (targetRecords) => {
-    console.info('====================================');
     console.info('Saving Project Changes...');
-    console.info('====================================');
     const { currentProject, projects } = state;
     const updatedProject = Object.assign({}, currentProject);
     updatedProject.targetNotes = targetRecords;
