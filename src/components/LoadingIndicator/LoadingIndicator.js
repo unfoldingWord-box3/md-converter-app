@@ -1,7 +1,7 @@
 import React from 'react';
 import PropsTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Loader from 'react-loader-spinner';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,7 +25,7 @@ export default function LoadingIndicator({
 
   return (
     <div className={classes.root}>
-      <CircularProgress size={size} />
+      <Loader type="ThreeDots" color="#2B374B" height={size} width={size} />
       <h1 className={classes.message}>{message}</h1>
     </div>
   );
