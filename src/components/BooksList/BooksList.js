@@ -25,7 +25,8 @@ export default function BooksList({
   const classes = useStyles();
   const { state: { projects }, fetchTnMarkdown, setBookId } = React.useContext(TsvDataContext);
   const { isLoading, setIsLoading, setIsError } = useLoading();
-  const books = files.filter(({ path: bookId }) => Object.keys(BIBLES_ABBRV_INDEX).includes(bookId))
+  const bookIds = Object.keys(BIBLES_ABBRV_INDEX);
+  const books = files.filter(({ path: bookId }) => bookIds.includes(bookId)).sort((a, b) => bookIds.indexOf(a.path) - bookIds.indexOf(b.path));
 
   const loadProject = async (url, bookId) => {
     setIsLoading(true);
