@@ -56,20 +56,20 @@ const DraggableTable = ({
     // eslint-disable-next-line
   }, [records])
 
-  const getRowId = React.useCallback((row) => {
-    return row.id;
-  }, []);
+  const getRowId = React.useCallback((row, relativeIndex) => {
+    return relativeIndex + row.id
+  }, [])
 
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
-    prepareRow
+    prepareRow,
   } = useTable({
     data: records,
     columns,
-    getRowId
+    getRowId,
   });
 
   const moveRow = (dragIndex, hoverIndex) => {

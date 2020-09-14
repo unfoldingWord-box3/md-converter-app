@@ -75,9 +75,9 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
       } else {
         unusedTargetItems.push(targetItem);
         return {
-          Book: '',
-          Chapter: sourceChapter,
-          Verse: sourceVerse,
+          Book: bookId,
+          Chapter: parseNumber(sourceChapter),
+          Verse: parseNumber(sourceVerse),
           id: nanoid(),
           GLQuote: '',
           OccurrenceNote: '',
