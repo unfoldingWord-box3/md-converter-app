@@ -32,7 +32,7 @@ export default function App() {
   const [repository, setRepository] = useState();
   const [showStepper, setShowStepper] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
-  const { state: { currentProject, projects }, fetchEnglishTsvs, setProject, deleteProject } = React.useContext(TsvDataContext);
+  const { state: { currentProject, projects }, fetchEnglishTsvs, setProject, deleteProject, removeProject } = React.useContext(TsvDataContext);
 
   useEffect(() => {
     async function fetchData() {
@@ -56,6 +56,7 @@ export default function App() {
   const saveAuth = async (authentication) => {
     if (authentication === undefined || authentication === null) {
       await myAuthStore.removeItem('authentication');
+      removeProject();
     } else {
       await myAuthStore.setItem('authentication', authentication)
       .then(function (authentication) {
@@ -72,6 +73,8 @@ export default function App() {
     setShowProjects(value);
     setShowStepper(!value);
   }
+
+  console.log('authentication', authentication);
 
   return (
     <div className={classes.root}>
@@ -101,7 +104,7 @@ export default function App() {
                     currentProject ?
                       <WorkingArea project={currentProject} />
                     :
-                    showProjects || (!showStepper && projects && projects.length) ?
+                    (showProjects && authentication) || (!showStepper && projects && projects.length && authentication) ?
                       <MyProjects
                         projects={projects}
                         deleteProject={deleteProject}
