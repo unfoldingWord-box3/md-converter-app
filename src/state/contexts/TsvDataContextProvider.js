@@ -139,10 +139,10 @@ export default function TsvDataContextProvider(props) {
 
     setProject({
       name: `ru_${bookId}`,
+      bookId,
       languageId: 'ru',
       sourceNotes,
       targetNotes,
-      bookId,
       timestamp: generateTimestamp(),
     })
   }

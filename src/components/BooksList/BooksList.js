@@ -30,7 +30,7 @@ export default function BooksList({
 
   const loadProject = async (url, bookId) => {
     setIsLoading(true);
-    await fetchTnMarkdown(url, bookId).catch(() => setIsError());
+    await fetchTnMarkdown(url, bookId).catch(() => setIsError(true));
     setBookId(bookId);
     setIsLoading(false);
   }

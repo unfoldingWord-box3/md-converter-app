@@ -18,6 +18,7 @@ import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
+    flex: 'auto',
     flexDirection: 'column',
   },
   fill: {

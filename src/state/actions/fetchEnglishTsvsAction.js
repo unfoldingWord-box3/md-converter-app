@@ -29,14 +29,13 @@ export default async function fetchEnglishTsvsAction(reducerName) {
 
       return result;
     } else {
-      // result = await cacheLibrary.getAll().then(
-      cacheLibrary.getAll().then(
+      result = await cacheLibrary.getAll().then(
         cacheData => {
           return cacheData[reducerName]?.glTsvs?.en;
         }
       );
 
-      // return result;
+      return result;
     }
   } catch (error) {
     console.error(error);
