@@ -83,6 +83,9 @@ const MyProjects = ({
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [projectClicked, setProjectClicked] = React.useState('');
   const open = Boolean(anchorEl);
+  projects = projects.sort((x, y) => {
+    return new Date(y.timestamp) - new Date(x.timestamp);
+  });
 
   const handleClick = (event, name) => {
     setProjectClicked(name);
