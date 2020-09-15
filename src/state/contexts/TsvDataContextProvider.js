@@ -37,6 +37,7 @@ function tsvDataReducer(state, action) {
         sourceNotes: {
           ...state.sourceNotes,
           [action.bookId]: action.payload,
+          manifest: action.manifest,
         }
       };
     case 'STORE_EN_TSVS':
@@ -120,6 +121,7 @@ export default function TsvDataContextProvider(props) {
   const fetchTnMarkdown = async (bookUrl, bookId) => {
     console.info('fetchTnMarkdown()');
     const enTsvUrl = state.glTsvs.en[bookId];
+    const { manifest } = state.glTsvs.en;
     const sourceNotes = await getGlTsvContent(enTsvUrl);
     const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes);
 
@@ -127,6 +129,7 @@ export default function TsvDataContextProvider(props) {
       type: 'STORE_SOURCE_NOTES',
       payload: sourceNotes,
       bookId,
+      manifest,
     })
     dispatch({
       type: 'STORE_TARGET_NOTES',

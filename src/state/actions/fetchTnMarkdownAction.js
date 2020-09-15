@@ -1,6 +1,7 @@
 import { customAlphabet } from 'nanoid/non-secure'
 import * as cacheLibrary from 'money-clip';
 import mdToJson from '../../helpers/md2json';
+import base64DecodeUnicode from '../../helpers/base64DecodeUnicode';
 
 export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes) {
   console.info('fetchTnMarkdownAction()');
@@ -98,14 +99,6 @@ function parseNumber(number) {
   return result;
 }
 
-export function base64DecodeUnicode(str) {
-  // Convert Base64 encoded bytes to percent-encoding, and then get the original string.
-  const percentEncodedStr = atob(str).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join('');
-
-  return decodeURIComponent(percentEncodedStr);
-}
 
 function convertMarkdownToJson(markdown) {
   const tnJson = {};
