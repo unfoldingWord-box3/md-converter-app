@@ -37,7 +37,11 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 )
 
-function Table({ columns, data }) {
+function Table({
+  data,
+  columns,
+  sourceNoteVersion,
+}) {
   const classes = useStyles();
   const initialState = {
     hiddenColumns: ['ID', 'SupportReference', 'OrigQuote', 'Occurrence'],
@@ -103,6 +107,7 @@ function Table({ columns, data }) {
           })}
         </TableBody>
       </MaUTable>
+      {sourceNoteVersion && <h4>{sourceNoteVersion}</h4>}
     </div>
   );
 }

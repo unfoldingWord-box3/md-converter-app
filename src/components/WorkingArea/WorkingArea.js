@@ -32,8 +32,15 @@ const Styles = styled.div`
 
 export default function WorkingArea({
   project,
+  sourceManifest,
 }) {
   const { targetNotes, sourceNotes, bookId } = project;
+  const { language, subject, version } = sourceManifest?.dublin_core || {};
+  let sourceNoteVersion = null;
+
+  if (version) {
+    sourceNoteVersion = `${language?.title} ${subject} - Version ${version}`
+  }
 
   const sourceColumns = React.useMemo(
     () => [
@@ -100,8 +107,9 @@ export default function WorkingArea({
       <Paper>
         <Styles>
           <Table
-            columns={sourceColumns}
             data={sourceNotes}
+            columns={sourceColumns}
+            sourceNoteVersion={sourceNoteVersion}
           />
           <DraggableTable
             columns={targetColumns}
@@ -122,4 +130,5 @@ export default function WorkingArea({
 
 WorkingArea.propTypes = {
   project: PropsTypes.object.isRequired,
+  sourceManifests: PropsTypes.object.isRequired,
 };

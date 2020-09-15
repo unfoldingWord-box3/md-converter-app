@@ -18,6 +18,7 @@ import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
+    flex: 'auto',
     flexDirection: 'column',
   },
   fill: {
@@ -110,8 +111,9 @@ const DraggableTable = ({
               (row, index) =>
                 prepareRow(row) || (
                   <Row
-                    index={index}
+                    key={`${index}-${row.id}`}
                     row={row}
+                    index={index}
                     moveRow={moveRow}
                     {...row.getRowProps()}
                   />

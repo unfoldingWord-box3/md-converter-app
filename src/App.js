@@ -32,7 +32,19 @@ export default function App() {
   const [repository, setRepository] = useState();
   const [showStepper, setShowStepper] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
-  const { state: { currentProject, projects }, fetchEnglishTsvs, setProject, deleteProject, removeProject } = React.useContext(TsvDataContext);
+  const { 
+    setProject,
+    deleteProject,
+    removeProject,
+    fetchEnglishTsvs,
+    state: { 
+      projects, 
+      currentProject, 
+      sourceNotes: { 
+        manifest: sourceManifest
+      } 
+    },
+  } = React.useContext(TsvDataContext);
 
   useEffect(() => {
     async function fetchData() {
@@ -100,7 +112,7 @@ export default function App() {
                 <ScrollingWrapper>
                   {
                     currentProject ?
-                      <WorkingArea project={currentProject} />
+                      <WorkingArea project={currentProject} sourceManifest={sourceManifest} />
                     :
                     (showProjects && authentication) || (!showStepper && projects && projects.length && authentication) ?
                       <MyProjects

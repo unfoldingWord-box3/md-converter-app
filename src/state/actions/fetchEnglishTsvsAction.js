@@ -1,32 +1,41 @@
 import * as cacheLibrary from 'money-clip';
+import getManifest from '../../helpers/getManifest';
 
 async function fetchTsvs(url) {
   const { tree } = await fetch(url).then(data => data.json());
 
-  return tree.filter(item => item.path.includes('.tsv'));
+  return tree.filter(item => item.path.includes('.tsv') || item.path === 'manifest.yaml');
 }
 
 export default async function fetchEnglishTsvsAction(reducerName) {
-  console.info('fetchEnglishTsvsAction')
+  console.info('fetching English TSVs...')
+  let result = {};
 
   try {
     if (navigator.onLine) {
-      const result = {};
       const tsvs = await fetchTsvs('https://git.door43.org/api/v1/repos/unfoldingWord/en_tn/git/trees/master');
 
-      tsvs.forEach(({ path, url }) => {
-        const bookId = path.split('-')[1].replace('.tsv', '').toLowerCase();
+      tsvs.forEach(async ({ path, url }) => {
+        const isManifest = path === 'manifest.yaml';
+        const bookId = !isManifest ?
+          path.split('-')[1].replace('.tsv', '').toLowerCase() : path.replace('.yaml', '').toLowerCase();
+
+        if (isManifest) {
+          url = await getManifest(url);
+        }
 
         result[bookId] = url;
       });
 
       return result;
     } else {
-      cacheLibrary.getAll().then(
+      result = await cacheLibrary.getAll().then(
         cacheData => {
           return cacheData[reducerName]?.glTsvs?.en;
         }
       );
+
+      return result;
     }
   } catch (error) {
     console.error(error);
