@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
 export default function App() {
   const classes = useStyles();
   const [authentication, setAuthentication] = useState();
-  const [repository, setRepository] = useState();
+  const [repository, setRepository] = useState(null);
   const [showStepper, setShowStepper] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
   const {
@@ -69,6 +69,7 @@ export default function App() {
     if (authentication === undefined || authentication === null) {
       await myAuthStore.removeItem('authentication');
       removeProject();
+      setRepository(null);
     } else {
       await myAuthStore.setItem('authentication', authentication)
       .then(function (authentication) {
