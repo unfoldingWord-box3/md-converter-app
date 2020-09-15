@@ -32,17 +32,17 @@ export default function App() {
   const [repository, setRepository] = useState();
   const [showStepper, setShowStepper] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
-  const { 
+  const {
     setProject,
     deleteProject,
     removeProject,
     fetchEnglishTsvs,
-    state: { 
-      projects, 
-      currentProject, 
-      sourceNotes: { 
+    state: {
+      projects,
+      currentProject,
+      sourceNotes: {
         manifest: sourceManifest
-      } 
+      }
     },
   } = React.useContext(TsvDataContext);
 
@@ -86,6 +86,10 @@ export default function App() {
     setShowStepper(!value);
   }
 
+  console.log('====================================');
+  console.log('repository', repository);
+  console.log('====================================');
+
   return (
     <div className={classes.root}>
       <MuiThemeProvider theme={theme}>
@@ -101,7 +105,11 @@ export default function App() {
         >
           <RepositoryContextProvider
             repository={repository}
-            onRepository={setRepository}
+            onRepository={(repo) => {
+              toggleProjects(false);
+              removeProject();
+              setRepository(repo);
+            }}
             defaultOwner={authentication && authentication.user.name}
             defaultQuery=""
             // branch='master'
