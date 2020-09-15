@@ -56,8 +56,8 @@ const DraggableTable = ({
     // eslint-disable-next-line
   }, [records])
 
-  const getRowId = React.useCallback((row, relativeIndex) => {
-    return relativeIndex + row.id
+  const getRowId = React.useCallback((row) => {
+    return `${row.id}-${row.Chapter}-${row.Verse}`
   }, [])
 
   const {
