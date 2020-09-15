@@ -86,10 +86,6 @@ export default function App() {
     setShowStepper(!value);
   }
 
-  console.log('====================================');
-  console.log('repository', repository);
-  console.log('====================================');
-
   return (
     <div className={classes.root}>
       <MuiThemeProvider theme={theme}>
