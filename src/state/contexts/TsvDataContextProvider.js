@@ -40,6 +40,14 @@ function tsvDataReducer(state, action) {
           manifest: action.manifest,
         }
       };
+    case 'SET_SOURCE_NOTES_MANIFEST':
+      return {
+        ...state,
+        sourceNotes: {
+          ...state.sourceNotes,
+          manifest: action.manifest,
+        }
+      };
     case 'STORE_EN_TSVS':
       return {
         ...state,
@@ -151,6 +159,12 @@ export default function TsvDataContextProvider(props) {
 
   const setProject = (project) => {
     console.info('setProject()');
+    const { manifest } = state.glTsvs.en;
+
+    if (manifest) {
+      dispatch({ type: 'SET_SOURCE_NOTES_MANIFEST', manifest })
+    }
+
     dispatch({ type: 'SET_CURRENT_PROJECT', project })
   }
 
