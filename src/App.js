@@ -32,17 +32,17 @@ export default function App() {
   const [repository, setRepository] = useState();
   const [showStepper, setShowStepper] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
-  const { 
+  const {
     setProject,
     deleteProject,
     removeProject,
     fetchEnglishTsvs,
-    state: { 
-      projects, 
-      currentProject, 
-      sourceNotes: { 
+    state: {
+      projects,
+      currentProject,
+      sourceNotes: {
         manifest: sourceManifest
-      } 
+      }
     },
   } = React.useContext(TsvDataContext);
 
@@ -101,7 +101,11 @@ export default function App() {
         >
           <RepositoryContextProvider
             repository={repository}
-            onRepository={setRepository}
+            onRepository={(repo) => {
+              toggleProjects(false);
+              removeProject();
+              setRepository(repo);
+            }}
             defaultOwner={authentication && authentication.user.name}
             defaultQuery=""
             // branch='master'
