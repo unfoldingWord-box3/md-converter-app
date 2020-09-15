@@ -74,8 +74,6 @@ export default function App() {
     setShowStepper(!value);
   }
 
-  console.log('authentication', authentication);
-
   return (
     <div className={classes.root}>
       <MuiThemeProvider theme={theme}>
