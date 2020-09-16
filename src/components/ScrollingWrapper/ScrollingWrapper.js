@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
 import Fab from '@material-ui/core/Fab';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
 
 const ScrollingWrapperContainer = styled.div`
   overflow-y: scroll;
@@ -10,7 +11,7 @@ const ScrollingWrapperContainer = styled.div`
   position: relative;
 `
 
-const ScrollToTopIconContainer = styled.div`
+const ScrollToBottomIconContainer = styled.div`
   position: fixed;
   bottom: 20px;
   right: 0%;
@@ -20,11 +21,39 @@ const ScrollToTopIconContainer = styled.div`
   cursor: pointer;
   opacity: 0.5;
   text-align: center;
+
   &:hover {
     opacity: 1;
     animation: wiggle 1s ease;
     animation-iteration-count: 1;
   }
+
+  @keyframes wiggle {
+    20% { transform: translateY(6px); }
+    40% { transform: translateY(-6px); }
+    60% { transform: translateY(4px); }
+    80% { transform: translateY(-2px); }
+    100% { transform: translateY(0); }
+  }
+`
+
+const ScrollToTopIconContainer = styled.div`
+  position: fixed;
+  bottom: 70px;
+  right: 0%;
+  margin: 0px 20px;
+  margin-left: -50px;
+  z-index: 2;
+  cursor: pointer;
+  opacity: 0.5;
+  text-align: center;
+
+  &:hover {
+    opacity: 1;
+    animation: wiggle 1s ease;
+    animation-iteration-count: 1;
+  }
+
   @keyframes wiggle {
     20% { transform: translateY(6px); }
     40% { transform: translateY(-6px); }
@@ -62,28 +91,21 @@ const ScrollingWrapper = (props) => {
     }
   }
 
-  // const scrollToBottom = () => {
-  //   try {
-  //     window.scroll({
-  //       top: document.body.scrollHeight,
-  //       left: 0,
-  //       behavior: 'smooth',
-  //     });
-  //   } catch (error) {
-  //     // just a fallback for older browsers
-  //     window.scrollTo(0, document.body.scrollHeight);
-  //   }
-  // }
+  const scrollToBottom = () => {
+    try {
+      window.scroll({
+        top: document.body.scrollHeight,
+        left: 0,
+        behavior: 'smooth',
+      });
+    } catch (error) {
+      // just a fallback for older browsers
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+  }
 
   return (
     <React.Fragment>
-      {/* {!hasScrolled && (
-        <ScrollToTopIconContainer onClick={scrollToBottom}>
-          <Fab color="primary" size="small" aria-label="scroll back to top">
-            <KeyboardArrowDown />
-          </Fab>
-        </ScrollToTopIconContainer>
-      )} */}
       {hasScrolled && (
         <ScrollToTopIconContainer onClick={scrollToTop}>
           <Fab color="primary" size="small" aria-label="scroll back to top" title="Scroll back to top">
@@ -91,6 +113,11 @@ const ScrollingWrapper = (props) => {
           </Fab>
         </ScrollToTopIconContainer>
       )}
+      <ScrollToBottomIconContainer onClick={scrollToBottom}>
+        <Fab color="primary" size="small" aria-label="scroll back to top">
+          <KeyboardArrowDown />
+        </Fab>
+      </ScrollToBottomIconContainer>
       <ScrollingWrapperContainer ref={ref}>
         {props.children}
       </ScrollingWrapperContainer>
