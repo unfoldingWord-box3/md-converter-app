@@ -70,7 +70,11 @@ const useStyles = makeStyles((theme) => ({
   settingsTd: {
     display: 'flex',
     justifyContent: 'flex-end',
-  }
+  },
+  deleteButton: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
 }));
 
 const MyProjects = ({
@@ -191,10 +195,11 @@ const MyProjects = ({
         }}
       >
         <MenuItem
+          className={classes.deleteButton}
           key='delete-project-menu-item'
           onClick={onDeleteProject}
         >
-          <Delete/> Delete Project
+          <Delete/><span>Delete Project</span>
         </MenuItem>
       </Menu>
     </Paper>
