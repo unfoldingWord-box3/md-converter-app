@@ -9,7 +9,6 @@ import FolderIcon from '@material-ui/icons/FolderOpenOutlined';
 import { BIBLES_ABBRV_INDEX } from '../../common/BooksOfTheBible';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider'
 import LoadingIndicator from '../LoadingIndicator/LoadingIndicator';
-import useLoading from '../../hooks/useLoading';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,31 +22,24 @@ export default function BooksList({
   files,
 }) {
   const classes = useStyles();
-  const { state: { projects }, fetchTnMarkdown, setBookId } = React.useContext(TsvDataContext);
-  const { isLoading, setIsLoading, setIsError } = useLoading();
+  const { state: { projects }, isLoading, loadingMessage, fetchTnMarkdown } = React.useContext(TsvDataContext);
   const bookIds = Object.keys(BIBLES_ABBRV_INDEX);
   const books = files.filter(({ path: bookId }) => bookIds.includes(bookId)).sort((a, b) => bookIds.indexOf(a.path) - bookIds.indexOf(b.path));
 
-  const loadProject = async (url, bookId) => {
-    setIsLoading(true);
-    await fetchTnMarkdown(url, bookId).catch(() => setIsError(true));
-    setBookId(bookId);
-    setIsLoading(false);
-  }
-
-  const onItemClick = (url, bookId) => {
+  const onItemClick = async (url, bookId) => {
     const found = projects.find(project => project.bookId === bookId);
+
     if (found) {
       if (window.confirm(`There's currently a ${bookId} project in your project list, Do you want to overwrite it?`)) {
-        loadProject(url, bookId);
+        await fetchTnMarkdown(url, bookId);
       }
     } else {
-      loadProject(url, bookId);
+      await fetchTnMarkdown(url, bookId);
     }
   }
 
   if (isLoading) {
-    return <LoadingIndicator/>;
+    return <LoadingIndicator secondaryMessage={loadingMessage} />;
   } else {
     return (
       <div className={classes.root}>

@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
 export default function LoadingIndicator({
   size,
   message,
+  secondaryMessage,
 }) {
   const classes = useStyles();
 
@@ -27,6 +28,7 @@ export default function LoadingIndicator({
     <div className={classes.root}>
       <Loader type="ThreeDots" color="#2B374B" height={size} width={size} />
       <h1 className={classes.message}>{message}</h1>
+      <h2 className={classes.message}>{secondaryMessage}</h2>
     </div>
   );
 }
@@ -39,4 +41,5 @@ LoadingIndicator.defaultProps = {
 LoadingIndicator.propTypes = {
   size: PropsTypes.number,
   message: PropsTypes.string,
+  secondaryMessage: PropsTypes.string,
 };

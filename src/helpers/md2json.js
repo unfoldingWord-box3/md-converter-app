@@ -9,7 +9,12 @@ const parse = function(mdContent) {
         isOrdered = true,
         orderedDepth = 1,
         headingOrder = 1;
-    var output = json.reduce(function(result, item, index, array) {
+    const result = {};
+
+    // var output = json.reduce(function(result, item, index, array) {
+      for(var i = 0; i < json.length; i++){
+        const item = json[i];
+
         switch (item.type) {
             case 'heading':
                 if (!currentHeading || item.depth === 1) {
@@ -79,9 +84,11 @@ const parse = function(mdContent) {
             default:
                 break;
         }
-        return result;
-    }, {});
-    return output;
+    //     return result;
+    // }, {});
+    }
+    // return output;
+    return result;
 }
 exports.parse = parse;
 
