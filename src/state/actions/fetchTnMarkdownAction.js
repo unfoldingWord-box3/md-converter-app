@@ -3,7 +3,7 @@ import * as cacheLibrary from 'money-clip';
 import mdToJson from '../../helpers/md2json';
 import base64DecodeUnicode from '../../helpers/base64DecodeUnicode';
 
-export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes) {
+export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes, setLoadingMessage) {
   console.info('fetchTnMarkdownAction()');
   let tsvItems = [];
   const nanoid = customAlphabet('1234567890abcdef', 4)
@@ -30,6 +30,7 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
           const verse = verses[j];
           let { path: verseNumber, url: verseUrl } = verse;
           verseNumber = parseNumber(verseNumber);
+          setLoadingMessage(`${bookId} ${chapterNumber}:${verseNumber}`)
           const data = await fetch(verseUrl);
           const verseData = await data.json();
           const { content } = verseData;
@@ -52,11 +53,13 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
         }
       }
     } else {
-      cacheLibrary.getAll().then(
+      const data = await cacheLibrary.getAll().then(
         cacheData => {
           return cacheData[reducerName]?.glTsvs?.en || {}
         }
       );
+
+      return data;
     }
     const unusedTargetItems = [];
 
@@ -108,16 +111,16 @@ function convertMarkdownToJson(markdown) {
     json = mdToJson.parse(markdown);
   } catch (error) {
     json = { '': { raw: markdown } }
-    console.error(error);
   }
 
-  Object.keys(json).forEach((heading) => {
+  for (let i = 0; i < Object.keys(json).length; i++) {
+    const heading = Object.keys(json)[i];
     const { occurrence, raw } = json[heading];
     tnJson[occurrence || 1] = {
       heading,
       raw
     }
-  })
+  }
 
   return tnJson;
 }

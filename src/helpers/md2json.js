@@ -2,86 +2,90 @@ const marked = require('marked');
 const traverse = require('traverse');
 
 const parse = function(mdContent) {
-    var aligned = getAlignedContent(mdContent);
-    var json = marked.lexer(aligned);
-    var currentHeading,
-        headings = [],
-        isOrdered = true,
-        orderedDepth = 1,
-        headingOrder = 1;
-    var output = json.reduce(function(result, item, index, array) {
-        switch (item.type) {
-            case 'heading':
-                if (!currentHeading || item.depth === 1) {
-                    headings = [];
-                    result[item.text] = {};
-                    currentHeading = result[item.text];
-                    headings.push(item.text);
-                    currentHeading.occurrence = headingOrder;
-                    ++headingOrder;
-                } else {
-                    var parentHeading = getParentHeading(headings, item, result);
-                    headings = parentHeading.headings;
-                    currentHeading = parentHeading.parent;
-                    currentHeading[item.text] = {};
-                    currentHeading = currentHeading[item.text];
-                    currentHeading.occurrence = headingOrder;
-                    ++headingOrder;
-                }
-                break;
-            case 'list_start':
-                isOrdered = item.ordered;
-                orderedDepth = item.start;
-                break;
-            case 'list_end':
-                if (currentHeading.raw) {
-                    currentHeading.raw = checkNextLine(currentHeading.raw);
-                }
-                break;
-            case 'text':
-                if (isOrdered) {
-                  var ordered = orderedDepth + ". ";
-                  orderedDepth++;
-                }
-                else {
-                  ordered = '- ';
-                }
-                var text = ordered + item.text + '\n';
-                currentHeading.raw = currentHeading.raw ? currentHeading.raw + text : text;
-                break;
-            case 'html':
-                if (!currentHeading) {
-                    currentHeading = result;
-                }
-                var para = checkNextLine(item.text);
-                currentHeading.raw = currentHeading.raw ? currentHeading.raw + para : para;
-                break;
-            case 'table':
-                var tableContent = getTableContent(item);
-                currentHeading.raw = currentHeading.raw ? currentHeading.raw + tableContent : tableContent;
-                break;
-            case 'code':
-                var codeContent = getCodeContent(item);
-                currentHeading.raw = currentHeading.raw ? currentHeading.raw + codeContent : codeContent;
-                break;
-            case 'space':
-                if (currentHeading) {
-                    currentHeading.raw = currentHeading.raw ? currentHeading.raw + '\n' : '\n';
-                }
-                break;
-            case 'paragraph':
-                if (!currentHeading) {
-                    currentHeading = result;
-                }
-                para = checkNextLine(item.text);
-                currentHeading.raw = currentHeading.raw ? currentHeading.raw + para : para;
-                break;
-            default:
-                break;
-        }
-        return result;
-    }, {});
-    return output;
+  let aligned = getAlignedContent(mdContent);
+  let json = marked.lexer(aligned);
+  let currentHeading,
+      headings = [],
+      isOrdered = true,
+      orderedDepth = 1,
+      headingOrder = 1;
+  const result = {};
+
+  for (let i = 0; i < json.length; i++) {
+    const item = json[i];
+
+    switch (item.type) {
+        case 'heading':
+            if (!currentHeading || item.depth === 1) {
+                headings = [];
+                result[item.text] = {};
+                currentHeading = result[item.text];
+                headings.push(item.text);
+                currentHeading.occurrence = headingOrder;
+                ++headingOrder;
+            } else {
+                var parentHeading = getParentHeading(headings, item, result);
+                headings = parentHeading.headings;
+                currentHeading = parentHeading.parent;
+                currentHeading[item.text] = {};
+                currentHeading = currentHeading[item.text];
+                currentHeading.occurrence = headingOrder;
+                ++headingOrder;
+            }
+            break;
+        case 'list_start':
+            isOrdered = item.ordered;
+            orderedDepth = item.start;
+            break;
+        case 'list_end':
+            if (currentHeading.raw) {
+                currentHeading.raw = checkNextLine(currentHeading.raw);
+            }
+            break;
+        case 'text':
+            if (isOrdered) {
+              var ordered = orderedDepth + ". ";
+              orderedDepth++;
+            }
+            else {
+              ordered = '- ';
+            }
+            var text = ordered + item.text + '\n';
+            currentHeading.raw = currentHeading.raw ? currentHeading.raw + text : text;
+            break;
+        case 'html':
+            if (!currentHeading) {
+                currentHeading = result;
+            }
+            var para = checkNextLine(item.text);
+            currentHeading.raw = currentHeading.raw ? currentHeading.raw + para : para;
+            break;
+        case 'table':
+            var tableContent = getTableContent(item);
+            currentHeading.raw = currentHeading.raw ? currentHeading.raw + tableContent : tableContent;
+            break;
+        case 'code':
+            var codeContent = getCodeContent(item);
+            currentHeading.raw = currentHeading.raw ? currentHeading.raw + codeContent : codeContent;
+            break;
+        case 'space':
+            if (currentHeading) {
+                currentHeading.raw = currentHeading.raw ? currentHeading.raw + '\n' : '\n';
+            }
+            break;
+        case 'paragraph':
+            if (!currentHeading) {
+                currentHeading = result;
+            }
+            para = checkNextLine(item.text);
+            currentHeading.raw = currentHeading.raw ? currentHeading.raw + para : para;
+            break;
+        default:
+            break;
+    }
+  }
+
+  return result;
 }
 exports.parse = parse;
 

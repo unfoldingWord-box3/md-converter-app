@@ -41,8 +41,8 @@ export default function AppBar({
         button
         key='New Project'
         onClick={() => {
-          removeProject();
           toggleProjects(false);
+          removeProject();
         }}
       >
         <ListItemIcon style={{ margin: 0 }}>

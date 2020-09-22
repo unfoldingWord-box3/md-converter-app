@@ -130,5 +130,5 @@ export default function WorkingArea({
 
 WorkingArea.propTypes = {
   project: PropsTypes.object.isRequired,
-  sourceManifests: PropsTypes.object.isRequired,
+  sourceManifest: PropsTypes.object.isRequired,
 };

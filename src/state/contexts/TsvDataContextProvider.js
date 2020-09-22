@@ -6,6 +6,7 @@ import fetchEnglishTsvsAction from '../actions/fetchEnglishTsvsAction';
 import fetchTnMarkdownAction from '../actions/fetchTnMarkdownAction';
 import getGlTsvContent from '../../helpers/getGlTsvContent';
 import generateTimestamp from '../../helpers/generateTimestamp';
+import useLoading from '../../hooks/useLoading';
 
 export const TsvDataContext = React.createContext({});
 
@@ -96,6 +97,7 @@ function tsvDataReducer(state, action) {
 
 export default function TsvDataContextProvider(props) {
   const [state, dispatch] = React.useReducer(tsvDataReducer, initialState );
+  const { isLoading, setIsLoading, setIsError, setLoadingMessage, loadingMessage } = useLoading();
 
   useEffect(() => {
     cacheLibrary.getAll().then(cacheData => {
@@ -127,11 +129,13 @@ export default function TsvDataContextProvider(props) {
   }
 
   const fetchTnMarkdown = async (bookUrl, bookId) => {
-    console.info('fetchTnMarkdown()');
+    setIsLoading(true);
+    console.time('fetchTnMarkdown_')
     const enTsvUrl = state.glTsvs.en[bookId];
     const { manifest } = state.glTsvs.en;
     const sourceNotes = await getGlTsvContent(enTsvUrl);
-    const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes);
+    const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes, setLoadingMessage)
+      .catch(() => setIsError(true));
 
     dispatch({
       type: 'STORE_SOURCE_NOTES',
@@ -139,6 +143,7 @@ export default function TsvDataContextProvider(props) {
       bookId,
       manifest,
     })
+
     dispatch({
       type: 'STORE_TARGET_NOTES',
       payload: targetNotes,
@@ -153,6 +158,11 @@ export default function TsvDataContextProvider(props) {
       targetNotes,
       timestamp: generateTimestamp(),
     })
+
+    setBookId(bookId);
+    setIsLoading(false);
+
+    console.timeEnd('fetchTnMarkdown_')
   }
 
   const setBookId = (bookId) => dispatch({ type: 'SET_BOOK_ID', bookId })
@@ -203,8 +213,12 @@ export default function TsvDataContextProvider(props) {
     dispatch,
     setBookId,
     setProject,
+    isLoading,
+    setIsError,
+    setIsLoading,
     removeProject,
     deleteProject,
+    loadingMessage,
     fetchTnMarkdown,
     fetchEnglishTsvs,
     saveProjectChanges,
