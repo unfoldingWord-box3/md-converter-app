@@ -32,8 +32,7 @@ export default function LoadingIndicator({
   return (
     <div className={classes.root}>
       <Loader type="ThreeDots" color="#2B374B" height={size} width={size} />
-      <h1 className={classes.message}>{message}</h1>
-      <p className={classes.p}>{secondaryMessage}</p>
+      <h1 className={classes.message}>{`${message} ${secondaryMessage || ''}`}</h1>
     </div>
   );
 }
