@@ -14,6 +14,11 @@ const useStyles = makeStyles((theme) => ({
   },
   message: {
     color: theme.palette.primary.main,
+  },
+  p: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+    color: theme.palette.primary.main,
   }
 }));
 
@@ -28,7 +33,7 @@ export default function LoadingIndicator({
     <div className={classes.root}>
       <Loader type="ThreeDots" color="#2B374B" height={size} width={size} />
       <h1 className={classes.message}>{message}</h1>
-      <h2 className={classes.message}>{secondaryMessage}</h2>
+      <p className={classes.p}>{secondaryMessage}</p>
     </div>
   );
 }

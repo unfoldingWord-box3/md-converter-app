@@ -87,6 +87,14 @@ export default function WorkingArea({
   const targetColumns = React.useMemo(
     () => [
       {
+        Header: "Chapter",
+        accessor: "Chapter"
+      },
+      {
+        Header: "Verse",
+        accessor: "Verse"
+      },
+      {
         Header: "GLQuote",
         accessor: "GLQuote"
       },
