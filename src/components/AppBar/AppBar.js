@@ -53,14 +53,22 @@ export default function AppBar({
     </List>
   );
 
+  const title = (
+    <div style={{ cursor: 'pointer' }} onClick={onProjectPage}>{appName}</div>
+  );
+
   return (
     <FileContextProvider
       filepath={filepath}
       onFilepath={setFilepath}
     >
       <ApplicationBar
-        title={<div style={{ cursor: 'pointer' }} onClick={onProjectPage}>{appName}</div>}
+        title={title}
         drawerMenu={drawerMenu}
+        drawerMenuProps={{
+          hideRepoContents: true,
+          closeOnListItemsClick: true,
+        }}
       />
     </FileContextProvider>
   );
