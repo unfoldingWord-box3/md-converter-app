@@ -130,7 +130,6 @@ export default function TsvDataContextProvider(props) {
 
   const fetchTnMarkdown = async (bookUrl, bookId) => {
     setIsLoading(true);
-    console.time('fetchTnMarkdown_')
     const enTsvUrl = state.glTsvs.en[bookId];
     const { manifest } = state.glTsvs.en;
     const sourceNotes = await getGlTsvContent(enTsvUrl);
@@ -161,8 +160,6 @@ export default function TsvDataContextProvider(props) {
 
     setBookId(bookId);
     setIsLoading(false);
-
-    console.timeEnd('fetchTnMarkdown_')
   }
 
   const setBookId = (bookId) => dispatch({ type: 'SET_BOOK_ID', bookId })
