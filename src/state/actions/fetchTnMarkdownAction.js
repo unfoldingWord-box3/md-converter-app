@@ -38,6 +38,10 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
           const tnJson = convertMarkdownToJson(markdown)
           const tnItemKeys = Object.keys(tnJson);
 
+          if (chapterNumber === 1 && verseNumber === 10) {
+            console.log('tnJson', tnJson);
+          }
+
           for (let k = 0; k < tnItemKeys.length; k++) {
             const key = tnItemKeys[k];
             const { heading, raw } = tnJson[key];
@@ -70,13 +74,31 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
       const targetChapter = targetItem?.Chapter.toString();
       const targetVerse = targetItem?.Verse.toString();
 
+      // if (targetChapter === '1' && targetVerse === '10') {
+      //   console.log('sourceChapter', sourceChapter);
+      //   console.log('sourceVerse', sourceVerse);
+      // }
       if (targetChapter === sourceChapter && targetVerse === sourceVerse) {
+        // if (targetChapter === '1' && targetVerse === '10') {
+        //   console.log('1');
+        // }
         return targetItem;
       } else if (unusedTargetItems[0] && unusedTargetItems[0].Chapter.toString() === sourceChapter && unusedTargetItems[0].Verse.toString() === sourceVerse) {
+        // if (targetChapter === '1' && targetVerse === '10') {
+        //   console.log('2');
+        //   console.log('unusedTargetItems', unusedTargetItems);
+        // }
         const result = unusedTargetItems[0];
         unusedTargetItems.shift();
         return result;
       } else {
+        // if (targetChapter === '1' && targetVerse === '10') {
+        //   console.log('3');
+        // }
+        if (sourceChapter === '1' && sourceVerse === '10') {
+          console.log('3');
+          console.log('unusedTargetItems', unusedTargetItems);
+        }
         unusedTargetItems.push(targetItem);
         return {
           Book: bookId,
