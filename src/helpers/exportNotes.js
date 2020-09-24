@@ -17,9 +17,6 @@ export default function exportNotes(sourceNotes, targetNotes, bookId, languageId
 
   const tsvFile = parser.TSV.stringify(linedUpNotes);
   const filename = `${languageId}${TN_FILENAMES[bookId]}.tsv`;
-  console.log('====================================');
-  console.log('filename', filename);
-  console.log('====================================');
   const blob = new Blob([tsvFile], {type: "text/plain;charset=utf-8"});
 
   saveAs(blob, filename);
