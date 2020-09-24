@@ -46,6 +46,10 @@ export default function App() {
     },
   } = React.useContext(TsvDataContext);
 
+  console.log('====================================');
+  console.log('currentProject', currentProject);
+  console.log('====================================');
+
   useEffect(() => {
     async function fetchData() {
       return fetchEnglishTsvs()

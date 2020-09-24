@@ -22,6 +22,9 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column',
   },
   fill: {
+    display: 'flex',
+    justifyContent: 'center',
+    fontWeight: 'bold',
     height: '19px',
   },
   buttons: {
@@ -45,7 +48,9 @@ const HtmlTooltip = withStyles((theme) => ({
 
 const DraggableTable = ({
   data,
+  bookId,
   columns,
+  languageId,
   exportProject,
 }) => {
   const classes = useStyles();
@@ -88,7 +93,7 @@ const DraggableTable = ({
   return (
     <DndProvider backend={HTML5Backend}>
       <div className={classes.root}>
-        <div className={classes.fill}/>
+        <div className={classes.fill}>Target Notes ({`${languageId}_${bookId}`})</div>
         <MaUTable {...getTableProps()}>
           <TableHead>
             {headerGroups.map((headerGroup) => (

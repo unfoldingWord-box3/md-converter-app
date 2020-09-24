@@ -100,6 +100,10 @@ const MyProjects = ({
     return new Date(y.timestamp) - new Date(x.timestamp);
   });
 
+  console.log('====================================');
+  console.log('projects', projects);
+  console.log('====================================');
+
   const handleClick = (event, name) => {
     setProjectClicked(name);
     setAnchorEl(event.currentTarget);

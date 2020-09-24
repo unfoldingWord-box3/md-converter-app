@@ -8,7 +8,6 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
 
   try {
     if (navigator.onLine) {
-      console.info('fetchTnMarkdownAction()');
       const nanoid = customAlphabet('1234567890abcdef', 4);
       const data = await fetch(bookUrl + '?recursive=1');
       const bookData = await data.json();
