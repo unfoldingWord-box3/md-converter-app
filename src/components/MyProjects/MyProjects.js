@@ -31,6 +31,11 @@ const useStyles = makeStyles((theme) => ({
     width: '850px',
     minHeight: '650px'
   },
+  titleContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   title: {
     display: 'flex',
     marginTop: '8px',
@@ -56,6 +61,10 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: 'center',
     width: '400px',
     margin: '20px',
+  },
+  newProjectButton: {
+    width: '220px',
+    margin: '8px',
   },
   empty: {
     display: 'flex',
@@ -115,7 +124,12 @@ const MyProjects = ({
   return (
     <Paper classes={{ root: classes.paper }}>
       <div className={classes.root}>
-        <h2 className={classes.title}>My Projects</h2>
+        <div className={classes.titleContainer}>
+          <h2 className={classes.title}>My Projects</h2>
+          <Button className={classes.newProjectButton} variant="contained" color="primary" onClick={() => toggleProjects(false)}>
+            Start a New Project
+          </Button>
+        </div>
         <Divider className={classes.divider}/>
         {projects.length ?
           <MaUTable>
@@ -175,11 +189,11 @@ const MyProjects = ({
           <div className={classes.empty}>
             <h2 className={classes.emptyMessage}>You have not started a project...</h2>
             <img src={NoData} className={classes.image} alt="No projects started"/>
+            <Button className={classes.button} variant="contained" color="primary" onClick={() => toggleProjects(false)}>
+              Start a New Project
+            </Button>
           </div>
         }
-        <Button className={classes.button} variant="contained" color="primary" onClick={() => toggleProjects(false)}>
-          Start a New Project
-        </Button>
       </div>
       <Menu
         id="long-menu"
