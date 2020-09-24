@@ -120,11 +120,16 @@ function getParentHeading(headings, item, result) {
     const keyHeading = headings[i];
 
     if (!parent) {
-      const foundIndex = Object.keys(result).find(key => {
+      let found = undefined;
+      for (var j = 0; j < Object.keys(result).length; j++) {
+        const key = Object.keys(result)[j]
         const value = result[key];
-        return value.heading === keyHeading;
-      });
-      const found = foundIndex ? result[foundIndex] : foundIndex;
+        if (value.heading === keyHeading) {
+          found = value;
+          break;
+        }
+      }
+
       parent = found;
     } else {
       parent = parent[keyHeading];
