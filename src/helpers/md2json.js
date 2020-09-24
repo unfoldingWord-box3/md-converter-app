@@ -15,73 +15,74 @@ const parse = function(mdContent) {
     const item = json[i];
 
     switch (item.type) {
-        case 'heading':
-            if (!currentHeading || item.depth === 1) {
-                headings = [];
-                result[item.text] = {};
-                currentHeading = result[item.text];
-                headings.push(item.text);
-                currentHeading.occurrence = headingOrder;
-                ++headingOrder;
-            } else {
-                var parentHeading = getParentHeading(headings, item, result);
-                headings = parentHeading.headings;
-                currentHeading = parentHeading.parent;
-                currentHeading[item.text] = {};
-                currentHeading = currentHeading[item.text];
-                currentHeading.occurrence = headingOrder;
-                ++headingOrder;
-            }
-            break;
-        case 'list_start':
-            isOrdered = item.ordered;
-            orderedDepth = item.start;
-            break;
-        case 'list_end':
-            if (currentHeading.raw) {
-                currentHeading.raw = checkNextLine(currentHeading.raw);
-            }
-            break;
-        case 'text':
-            if (isOrdered) {
-              var ordered = orderedDepth + ". ";
-              orderedDepth++;
-            }
-            else {
-              ordered = '- ';
-            }
-            var text = ordered + item.text + '\n';
-            currentHeading.raw = currentHeading.raw ? currentHeading.raw + text : text;
-            break;
-        case 'html':
-            if (!currentHeading) {
-                currentHeading = result;
-            }
-            var para = checkNextLine(item.text);
-            currentHeading.raw = currentHeading.raw ? currentHeading.raw + para : para;
-            break;
-        case 'table':
-            var tableContent = getTableContent(item);
-            currentHeading.raw = currentHeading.raw ? currentHeading.raw + tableContent : tableContent;
-            break;
-        case 'code':
-            var codeContent = getCodeContent(item);
-            currentHeading.raw = currentHeading.raw ? currentHeading.raw + codeContent : codeContent;
-            break;
-        case 'space':
-            if (currentHeading) {
-                currentHeading.raw = currentHeading.raw ? currentHeading.raw + '\n' : '\n';
-            }
-            break;
-        case 'paragraph':
-            if (!currentHeading) {
-                currentHeading = result;
-            }
-            para = checkNextLine(item.text);
-            currentHeading.raw = currentHeading.raw ? currentHeading.raw + para : para;
-            break;
-        default:
-            break;
+      case 'heading':
+        if (!currentHeading || item.depth === 1) {
+          headings = [];
+          result[headingOrder] = {};
+          currentHeading = result[headingOrder];
+          headings.push(item.text);
+          currentHeading.occurrence = headingOrder;
+          currentHeading.heading = item.text;
+          ++headingOrder;
+        } else {
+          var parentHeading = getParentHeading(headings, item, result);
+          headings = parentHeading.headings;
+          currentHeading = parentHeading.parent;
+          currentHeading[headingOrder] = {};
+          currentHeading = currentHeading[headingOrder];
+          currentHeading.occurrence = headingOrder;
+          ++headingOrder;
+        }
+        break;
+      case 'list_start':
+        isOrdered = item.ordered;
+        orderedDepth = item.start;
+        break;
+      case 'list_end':
+        if (currentHeading.raw) {
+            currentHeading.raw = checkNextLine(currentHeading.raw);
+        }
+        break;
+      case 'text':
+        if (isOrdered) {
+          var ordered = orderedDepth + ". ";
+          orderedDepth++;
+        }
+        else {
+          ordered = '- ';
+        }
+        var text = ordered + item.text + '\n';
+        currentHeading.raw = currentHeading.raw ? currentHeading.raw + text : text;
+        break;
+      case 'html':
+        if (!currentHeading) {
+            currentHeading = result;
+        }
+        var para = checkNextLine(item.text);
+        currentHeading.raw = currentHeading.raw ? currentHeading.raw + para : para;
+        break;
+      case 'table':
+        var tableContent = getTableContent(item);
+        currentHeading.raw = currentHeading.raw ? currentHeading.raw + tableContent : tableContent;
+        break;
+      case 'code':
+        var codeContent = getCodeContent(item);
+        currentHeading.raw = currentHeading.raw ? currentHeading.raw + codeContent : codeContent;
+        break;
+      case 'space':
+        if (currentHeading) {
+          currentHeading.raw = currentHeading.raw ? currentHeading.raw + '\n' : '\n';
+        }
+        break;
+      case 'paragraph':
+        if (!currentHeading) {
+          currentHeading = result;
+        }
+        para = checkNextLine(item.text);
+        currentHeading.raw = currentHeading.raw ? currentHeading.raw + para : para;
+        break;
+      default:
+        break;
     }
   }
 
@@ -106,23 +107,34 @@ function getAlignedContent(mdContent) {
 }
 
 function getParentHeading(headings, item, result) {
-    var parent, index = item.depth - 1;
-    var currentHeading = headings[index];
-    if (currentHeading) {
-        headings.splice(index, headings.length - index);
+  var parent, index = item.depth - 1;
+  var currentHeading = headings[index];
+
+  if (currentHeading) {
+    headings.splice(index, headings.length - index);
+  }
+
+  headings.push(item.text);
+
+  for (var i = 0; i < index; i++) {
+    const keyHeading = headings[i];
+
+    if (!parent) {
+      const foundIndex = Object.keys(result).find(key => {
+        const value = result[key];
+        return value.heading === keyHeading;
+      });
+      const found = foundIndex ? result[foundIndex] : foundIndex;
+      parent = found;
+    } else {
+      parent = parent[keyHeading];
     }
-    headings.push(item.text);
-    for (var i = 0; i < index; i++) {
-        if (!parent) {
-            parent = result[headings[i]];
-        } else {
-            parent = parent[headings[i]];
-        }
-    }
-    return {
-        headings: headings,
-        parent: parent
-    };
+  }
+
+  return {
+    headings: headings,
+    parent: parent
+  };
 }
 
 function getTableContent(item) {
