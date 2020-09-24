@@ -15,9 +15,11 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
       const targetItems = {};
       const items = bookData.tree.filter(item => item.type === 'blob');
 
+      // TODO: Debug perf in loop below
       for (let j = 0; j < items.length; j++) {
         const { path, url } = items[j];
         const key = path.split('.').slice(0, -1).join('.');
+        setLoadingMessage(key);
         const data = await fetch(url);
         const itemData = await data.json();
         const { content } = itemData;
@@ -31,7 +33,6 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
         const sourceChapter = parseNumber(sourceItem.Chapter);
         const sourceVerse = parseNumber(sourceItem.Verse);
         const reference = `${prependZero(sourceChapter)}/${prependZero(sourceVerse)}`
-        setLoadingMessage(reference)
         const noteJson = targetItems[reference];
 
         if (noteJson) {
