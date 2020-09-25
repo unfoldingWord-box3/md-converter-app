@@ -167,7 +167,6 @@ export default function TsvDataContextProvider(props) {
 
   const setProject = (project) => {
     console.info('setProject()');
-    console.info('project', project);
     const { manifest } = state.glTsvs.en;
 
     if (manifest) {
