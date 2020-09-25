@@ -29,7 +29,7 @@ function tsvDataReducer(state, action) {
         ...state,
         targetNotes: {
           ...state.targetNotes,
-          [action.bookId]: action.payload,
+          [action.bookId]: action.targetNotes,
         }
       };
     case 'STORE_SOURCE_NOTES':
@@ -37,7 +37,7 @@ function tsvDataReducer(state, action) {
         ...state,
         sourceNotes: {
           ...state.sourceNotes,
-          [action.bookId]: action.payload,
+          [action.bookId]: action.sourceNotes,
           manifest: action.manifest,
         }
       };
@@ -96,7 +96,7 @@ function tsvDataReducer(state, action) {
 }
 
 export default function TsvDataContextProvider(props) {
-  const [state, dispatch] = React.useReducer(tsvDataReducer, initialState );
+  const [state, dispatch] = React.useReducer(tsvDataReducer, initialState);
   const { isLoading, setIsLoading, setIsError, setLoadingMessage, loadingMessage } = useLoading();
 
   useEffect(() => {
@@ -119,7 +119,6 @@ export default function TsvDataContextProvider(props) {
   }, [state])
 
   const fetchEnglishTsvs = async () => {
-    console.info('fetchEnglishTsvs()');
     const enTsvs = await fetchEnglishTsvsAction(reducerName);
 
     dispatch({
@@ -128,33 +127,35 @@ export default function TsvDataContextProvider(props) {
     })
   }
 
-  const fetchTnMarkdown = async (bookUrl, bookId) => {
+  const fetchTnMarkdown = async (bookUrl, bookId, manifest) => {
+    console.info(`Fetching ${bookId} Markdown files and converting to JSON format`)
     setIsLoading(true);
     const enTsvUrl = state.glTsvs.en[bookId];
-    const { manifest } = state.glTsvs.en;
+    const { manifest: sourceManifest } = state.glTsvs.en;
     const sourceNotes = await getGlTsvContent(enTsvUrl);
     const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes, setLoadingMessage)
       .catch(() => setIsError(true));
+    const { dublin_core: { language } } = manifest;
 
     dispatch({
       type: 'STORE_SOURCE_NOTES',
-      payload: sourceNotes,
       bookId,
-      manifest,
+      sourceNotes,
+      manifest: sourceManifest,
     })
 
     dispatch({
       type: 'STORE_TARGET_NOTES',
-      payload: targetNotes,
+      targetNotes,
       bookId,
     })
 
     setProject({
-      name: `ru_${bookId}`,
+      name: `${language.identifier}_${bookId}`,
       bookId,
-      languageId: 'ru',
       sourceNotes,
       targetNotes,
+      languageId: language.identifier,
       timestamp: generateTimestamp(),
     })
 

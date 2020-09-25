@@ -2,7 +2,7 @@ import parser from 'tsv';
 import { saveAs } from 'file-saver';
 import { TN_FILENAMES } from '../common/BooksOfTheBible';
 
-export default function exportNotes(sourceNotes, targetNotes, bookId) {
+export default function exportNotes(sourceNotes, targetNotes, bookId, languageId) {
   const linedUpNotes = [];
 
   for (let i = 0; i < sourceNotes.length; i++) {
@@ -16,7 +16,7 @@ export default function exportNotes(sourceNotes, targetNotes, bookId) {
   }
 
   const tsvFile = parser.TSV.stringify(linedUpNotes);
-  const filename = TN_FILENAMES[bookId] + '.tsv';
+  const filename = `${languageId}${TN_FILENAMES[bookId]}.tsv`;
   const blob = new Blob([tsvFile], {type: "text/plain;charset=utf-8"});
 
   saveAs(blob, filename);

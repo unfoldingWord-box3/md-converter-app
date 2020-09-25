@@ -15,7 +15,7 @@ const ScrollToBottomIconContainer = styled.div`
   position: fixed;
   bottom: 20px;
   right: 0%;
-  margin: 0px 20px;
+  margin: 0px 15px;
   margin-left: -50px;
   z-index: 2;
   cursor: pointer;
@@ -41,7 +41,7 @@ const ScrollToTopIconContainer = styled.div`
   position: fixed;
   bottom: 70px;
   right: 0%;
-  margin: 0px 20px;
+  margin: 0px 15px;
   margin-left: -50px;
   z-index: 2;
   cursor: pointer;

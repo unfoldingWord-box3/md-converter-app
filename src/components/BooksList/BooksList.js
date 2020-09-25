@@ -9,6 +9,7 @@ import FolderIcon from '@material-ui/icons/FolderOpenOutlined';
 import { BIBLES_ABBRV_INDEX } from '../../common/BooksOfTheBible';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider'
 import LoadingIndicator from '../LoadingIndicator/LoadingIndicator';
+import getManifest from '../../helpers/getManifest';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,17 +25,21 @@ export default function BooksList({
   const classes = useStyles();
   const { state: { projects }, isLoading, loadingMessage, fetchTnMarkdown } = React.useContext(TsvDataContext);
   const bookIds = Object.keys(BIBLES_ABBRV_INDEX);
+  const { url: manifestUrl } = files.find(file => file.path === 'manifest.yaml');
   const books = files.filter(({ path: bookId }) => bookIds.includes(bookId)).sort((a, b) => bookIds.indexOf(a.path) - bookIds.indexOf(b.path));
 
   const onItemClick = async (url, bookId) => {
-    const found = projects.find(project => project.bookId === bookId);
+    const manifest = await getManifest(manifestUrl);
+    const { dublin_core: { language } } = manifest;
+    const projectName = `${language.identifier}_${bookId}`;
+    const found = projects.find(project => project.name === projectName);
 
     if (found) {
       if (window.confirm(`There's currently a ${bookId} project in your project list, Do you want to overwrite it?`)) {
-        await fetchTnMarkdown(url, bookId);
+        await fetchTnMarkdown(url, bookId, manifest);
       }
     } else {
-      await fetchTnMarkdown(url, bookId);
+      await fetchTnMarkdown(url, bookId, manifest);
     }
   }
 
