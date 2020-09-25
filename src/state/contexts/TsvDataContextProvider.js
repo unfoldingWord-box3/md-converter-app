@@ -96,7 +96,7 @@ function tsvDataReducer(state, action) {
 }
 
 export default function TsvDataContextProvider(props) {
-  const [state, dispatch] = React.useReducer(tsvDataReducer, initialState );
+  const [state, dispatch] = React.useReducer(tsvDataReducer, initialState);
   const { isLoading, setIsLoading, setIsError, setLoadingMessage, loadingMessage } = useLoading();
 
   useEffect(() => {
