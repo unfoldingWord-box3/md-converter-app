@@ -34,7 +34,7 @@ export default function WorkingArea({
   project,
   sourceManifest,
 }) {
-  const { targetNotes, sourceNotes, bookId } = project;
+  const { targetNotes, sourceNotes, bookId, languageId } = project;
   const { language, subject, version } = sourceManifest?.dublin_core || {};
   let sourceNoteVersion = null;
 
@@ -99,7 +99,7 @@ export default function WorkingArea({
   );
 
   const exportProject = (targetRecords) => {
-    exportNotes(sourceNotes, targetRecords, bookId);
+    exportNotes(sourceNotes, targetRecords, bookId, languageId);
   }
 
   if (targetNotes) {
@@ -112,8 +112,10 @@ export default function WorkingArea({
             sourceNoteVersion={sourceNoteVersion}
           />
           <DraggableTable
-            columns={targetColumns}
+            bookId={bookId}
             data={targetNotes}
+            languageId={languageId}
+            columns={targetColumns}
             exportProject={exportProject}
           />
         </Styles>
