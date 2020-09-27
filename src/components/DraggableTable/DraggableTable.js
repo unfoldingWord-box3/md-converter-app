@@ -101,6 +101,10 @@ const DraggableTable = ({
                 {headerGroup.headers.map((column) => {
                   const tCellStyle = {};
                   if (column.Header === "GLQuote") tCellStyle.minWidth = '160px';
+                  if (column.Header === "Chapter" || column.Header === "Verse") {
+                    tCellStyle.width = '10px';
+                    tCellStyle.padding = '12px 2px';
+                  }
 
                   return (
                     <TableCell {...column.getHeaderProps()} style={tCellStyle}>
@@ -223,6 +227,8 @@ const Record = ({
     setOpen(true);
   };
 
+  const tcStyle = { borderLeft: '1px solid rgba(224, 224, 224, 1)' }
+
   return (
     <ClickAwayListener onClickAway={handleTooltipClose}>
       <HtmlTooltip
@@ -235,7 +241,7 @@ const Record = ({
         <TableCell
           {...cell.getCellProps()}
           onClick={handleTooltipOpen}
-          style={{ borderLeft: '1px solid rgba(224, 224, 224, 1)' }}
+          style={tcStyle}
         >
           {cell.render('Cell')}
         </TableCell>

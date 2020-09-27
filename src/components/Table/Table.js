@@ -82,11 +82,19 @@ function Table({
         <TableHead>
           {headerGroups.map((headerGroup) => (
             <TableRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <TableCell {...column.getHeaderProps()}>
-                  {column.render('Header')}
-                </TableCell>
-              ))}
+              {headerGroup.headers.map((column) => {
+                const tCellStyle = {};
+                console.log('column', column);
+                if (column.Header === "Book") tCellStyle.width = '10px';
+                if (column.Header === "Chapter") tCellStyle.width = '10px';
+                if (column.Header === "Verse") tCellStyle.width = '10px';
+
+                return (
+                  <TableCell {...column.getHeaderProps()} style={tCellStyle}>
+                    {column.render('Header')}
+                  </TableCell>
+                )
+              })}
             </TableRow>
           ))}
         </TableHead>

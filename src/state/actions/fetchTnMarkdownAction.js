@@ -27,6 +27,7 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
         targetItems[key] = tnJson;
       }
 
+      setLoadingMessage(null);
       for (let index = 0; index < sourceNotes.length; index++) {
         const sourceItem = sourceNotes[index];
         const sourceChapter = parseNumber(sourceItem.Chapter);
