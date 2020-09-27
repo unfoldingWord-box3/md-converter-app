@@ -29,6 +29,7 @@ export default function BooksList({
       projects,
     },
     isLoading,
+    setIsLoading,
     loadingMessage,
     fetchTnMarkdown,
     fetchEnglishTsvs,
@@ -42,14 +43,16 @@ export default function BooksList({
     const { dublin_core: { language } } = manifest;
     const projectName = `${language.identifier}_${bookId}`;
     const found = projects.find(project => project.name === projectName);
-
-    if (!glTsvs?.en && !glTsvs?.en[bookId]) await fetchEnglishTsvs();
+    const fetchSourceTsv = !glTsvs?.en && !glTsvs?.en?.manifest;
 
     if (found) {
       if (window.confirm(`There's currently a ${bookId} project in your project list, Do you want to overwrite it?`)) {
+        setIsLoading(true);
+        if (fetchSourceTsv) await fetchEnglishTsvs();
         await fetchTnMarkdown(url, bookId, manifest);
       }
     } else {
+      if (fetchSourceTsv) await fetchEnglishTsvs();
       await fetchTnMarkdown(url, bookId, manifest);
     }
   }

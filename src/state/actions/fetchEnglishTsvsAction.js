@@ -21,7 +21,14 @@ export default async function fetchEnglishTsvsAction(reducerName) {
           path.split('-')[1].replace('.tsv', '').toLowerCase() : path.replace('.yaml', '').toLowerCase();
 
         if (isManifest) {
+          console.log('====================================');
+          console.log('isManifest');
+          console.log('url', url);
+          console.log('====================================');
           url = await getManifest(url);
+          console.log('====================================');
+          console.log(typeof url, url);
+          console.log('====================================');
         }
 
         result[bookId] = url;
