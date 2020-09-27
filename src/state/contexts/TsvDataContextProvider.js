@@ -132,10 +132,6 @@ export default function TsvDataContextProvider(props) {
     setIsLoading(true);
     const enTsvUrl = state.glTsvs.en[bookId];
     const { manifest: sourceManifest } = state.glTsvs.en;
-    console.log('====================================');
-    console.log(' state.glTsvs.en', state.glTsvs.en);
-    console.log('sourceManifest', sourceManifest);
-    console.log('====================================');
     const sourceNotes = await getGlTsvContent(enTsvUrl);
     const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes, setLoadingMessage)
       .catch(() => setIsError(true));
