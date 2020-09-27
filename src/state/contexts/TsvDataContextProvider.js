@@ -54,7 +54,7 @@ function tsvDataReducer(state, action) {
         ...state,
         glTsvs: {
           ...state.glTsvs,
-          en: action.payload || {},
+          en: action.enTsvs || {},
         }
       };
     case 'SET_BOOK_ID':
@@ -123,7 +123,7 @@ export default function TsvDataContextProvider(props) {
 
     dispatch({
       type: 'STORE_EN_TSVS',
-      payload: enTsvs
+      enTsvs,
     })
   }
 
