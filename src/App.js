@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import localforage from 'localforage';
 import { makeStyles } from '@material-ui/core/styles';
 import { MuiThemeProvider } from '@material-ui/core/styles';
@@ -36,7 +36,6 @@ export default function App() {
     setProject,
     deleteProject,
     removeProject,
-    fetchEnglishTsvs,
     state: {
       projects,
       currentProject,
@@ -45,15 +44,6 @@ export default function App() {
       }
     },
   } = React.useContext(TsvDataContext);
-
-  useEffect(() => {
-    async function fetchData() {
-      return fetchEnglishTsvs()
-    }
-
-    fetchData();
-    // eslint-disable-next-line
-  }, []);
 
   const myAuthStore = localforage.createInstance({
     driver: [localforage.INDEXEDDB],

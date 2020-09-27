@@ -54,7 +54,7 @@ function tsvDataReducer(state, action) {
         ...state,
         glTsvs: {
           ...state.glTsvs,
-          en: action.payload || {},
+          en: action.enTsvs || {},
         }
       };
     case 'SET_BOOK_ID':
@@ -123,15 +123,21 @@ export default function TsvDataContextProvider(props) {
 
     dispatch({
       type: 'STORE_EN_TSVS',
-      payload: enTsvs
+      enTsvs,
     })
+
+    return enTsvs;
   }
 
   const fetchTnMarkdown = async (bookUrl, bookId, manifest) => {
     console.info(`Fetching ${bookId} Markdown files and converting to JSON format`)
     setIsLoading(true);
-    const enTsvUrl = state.glTsvs.en[bookId];
-    const { manifest: sourceManifest } = state.glTsvs.en;
+    let glTsvs = {};
+
+    glTsvs = !state.glTsvs.en ? await fetchEnglishTsvs() : state.glTsvs;
+
+    const enTsvUrl = glTsvs.en[bookId];
+    const { manifest: sourceManifest } = glTsvs.en;
     const sourceNotes = await getGlTsvContent(enTsvUrl);
     const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes, setLoadingMessage)
       .catch(() => setIsError(true));
