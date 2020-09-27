@@ -125,19 +125,13 @@ export default function TsvDataContextProvider(props) {
       type: 'STORE_EN_TSVS',
       enTsvs,
     })
-
-    return enTsvs;
   }
 
   const fetchTnMarkdown = async (bookUrl, bookId, manifest) => {
     console.info(`Fetching ${bookId} Markdown files and converting to JSON format`)
     setIsLoading(true);
-    let glTsvs = {};
-
-    glTsvs = !state.glTsvs.en ? await fetchEnglishTsvs() : state.glTsvs;
-
-    const enTsvUrl = glTsvs.en[bookId];
-    const { manifest: sourceManifest } = glTsvs.en;
+    const enTsvUrl = state.glTsvs.en[bookId];
+    const { manifest: sourceManifest } = state.glTsvs.en;
     const sourceNotes = await getGlTsvContent(enTsvUrl);
     const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes, setLoadingMessage)
       .catch(() => setIsError(true));

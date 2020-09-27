@@ -23,7 +23,16 @@ export default function BooksList({
   files,
 }) {
   const classes = useStyles();
-  const { state: { projects }, isLoading, loadingMessage, fetchTnMarkdown } = React.useContext(TsvDataContext);
+  const {
+    state: {
+      glTsvs,
+      projects,
+    },
+    isLoading,
+    loadingMessage,
+    fetchTnMarkdown,
+    fetchEnglishTsvs,
+  } = React.useContext(TsvDataContext);
   const bookIds = Object.keys(BIBLES_ABBRV_INDEX);
   const { url: manifestUrl } = files.find(file => file.path === 'manifest.yaml');
   const books = files.filter(({ path: bookId }) => bookIds.includes(bookId)).sort((a, b) => bookIds.indexOf(a.path) - bookIds.indexOf(b.path));
@@ -33,6 +42,8 @@ export default function BooksList({
     const { dublin_core: { language } } = manifest;
     const projectName = `${language.identifier}_${bookId}`;
     const found = projects.find(project => project.name === projectName);
+
+    if (!glTsvs?.en && !glTsvs?.en[bookId]) await fetchEnglishTsvs();
 
     if (found) {
       if (window.confirm(`There's currently a ${bookId} project in your project list, Do you want to overwrite it?`)) {
