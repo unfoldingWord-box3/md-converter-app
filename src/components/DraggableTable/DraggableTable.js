@@ -103,7 +103,7 @@ const DraggableTable = ({
                   if (column.Header === "GLQuote") tCellStyle.minWidth = '160px';
                   if (column.Header === "Chapter" || column.Header === "Verse") {
                     tCellStyle.width = '10px';
-                    tCellStyle.padding = '12px 2px';
+                    tCellStyle.padding = '12px 4px';
                   }
 
                   return (

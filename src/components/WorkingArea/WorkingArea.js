@@ -112,7 +112,7 @@ export default function WorkingArea({
 
   if (targetNotes) {
     return (
-      <Paper>
+      <Paper style={{ flex: 1 }}>
         <Styles>
           <Table
             data={sourceNotes}
