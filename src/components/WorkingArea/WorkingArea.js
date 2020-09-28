@@ -87,6 +87,14 @@ export default function WorkingArea({
   const targetColumns = React.useMemo(
     () => [
       {
+        Header: "Chapter",
+        accessor: "Chapter"
+      },
+      {
+        Header: "Verse",
+        accessor: "Verse"
+      },
+      {
         Header: "GLQuote",
         accessor: "GLQuote"
       },
@@ -104,7 +112,7 @@ export default function WorkingArea({
 
   if (targetNotes) {
     return (
-      <Paper>
+      <Paper style={{ flex: 1 }}>
         <Styles>
           <Table
             data={sourceNotes}

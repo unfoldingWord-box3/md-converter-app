@@ -1,11 +1,13 @@
 import React from 'react';
 import { useTable } from 'react-table';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Tooltip from '@material-ui/core/Tooltip';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,6 +25,16 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
   },
 }));
+
+const HtmlTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 200,
+    fontSize: theme.typography.pxToRem(12),
+    border: '1px solid #dadde9',
+  },
+}))(Tooltip);
 
 const IndeterminateCheckbox = React.forwardRef(
   ({ indeterminate, classes, ...rest }, ref) => {
@@ -82,11 +94,19 @@ function Table({
         <TableHead>
           {headerGroups.map((headerGroup) => (
             <TableRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <TableCell {...column.getHeaderProps()}>
-                  {column.render('Header')}
-                </TableCell>
-              ))}
+              {headerGroup.headers.map((column) => {
+                const tCellStyle = {};
+                if (column.Header === "Chapter" || column.Header === "Verse" || column.Header === "Book") {
+                  tCellStyle.width = '10px';
+                  tCellStyle.padding = '12px 2px';
+                }
+
+                return (
+                  <TableCell {...column.getHeaderProps()} style={tCellStyle}>
+                    {column.render('Header')}
+                  </TableCell>
+                )
+              })}
             </TableRow>
           ))}
         </TableHead>
@@ -95,13 +115,7 @@ function Table({
             prepareRow(row);
             return (
               <TableRow {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <TableCell {...cell.getCellProps()} style={{ color: 'grey' }}>
-                      {cell.render('Cell')}
-                    </TableCell>
-                  );
-                })}
+                {row.cells.map((cell, key) => <Record key={key} cell={cell} />)}
               </TableRow>
             );
           })}
@@ -112,4 +126,44 @@ function Table({
   );
 }
 
+const Record = ({
+  cell,
+}) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
+
+  const tCellStyle = { color: 'grey' };
+
+  if (cell.column.Header === "Chapter" || cell.column.Header === "Verse" || cell.column.Header === "Book") {
+    tCellStyle.width = '10px';
+    tCellStyle.padding = '12px 0px';
+  }
+
+  return (
+    <ClickAwayListener onClickAway={handleTooltipClose}>
+      <HtmlTooltip
+        arrow
+        open={open}
+        disableHoverListener
+        title={cell.value}
+        onClose={handleTooltipClose}
+      >
+        <TableCell
+          {...cell.getCellProps()}
+          onClick={handleTooltipOpen}
+          style={tCellStyle}
+        >
+          {cell.render('Cell')}
+        </TableCell>
+      </HtmlTooltip>
+    </ClickAwayListener>
+  );
+}
 export default Table;

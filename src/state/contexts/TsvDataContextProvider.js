@@ -133,6 +133,7 @@ export default function TsvDataContextProvider(props) {
     const enTsvUrl = state.glTsvs.en[bookId];
     const { manifest: sourceManifest } = state.glTsvs.en;
     const sourceNotes = await getGlTsvContent(enTsvUrl);
+    setLoadingMessage(null);
     const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes, setLoadingMessage)
       .catch(() => setIsError(true));
     const { dublin_core: { language } } = manifest;

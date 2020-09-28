@@ -5,6 +5,8 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
 
 const ScrollingWrapperContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   height: 100%;

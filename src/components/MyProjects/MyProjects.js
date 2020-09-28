@@ -14,12 +14,14 @@ import Delete from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import moment from 'moment';
+import { formatDistanceToNowStrict, parseJSON } from 'date-fns';
 import generateTimestamp from '../../helpers/generateTimestamp';
 import NoData from '../../assets/images/undraw_no_data.svg';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
+    alignSelf: 'center',
+    width: '100%',
     margin: '5px',
     padding: '20px',
   },
@@ -158,7 +160,7 @@ const MyProjects = ({
                       {name}
                     </TableCell>
                     <TableCell>
-                      {moment().to(timestamp)}
+                      {formatDistanceToNowStrict(parseJSON(timestamp), { addSuffix: true })}
                     </TableCell>
                     <TableCell>
                       <Button
