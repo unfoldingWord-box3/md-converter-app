@@ -21,6 +21,7 @@ import NoData from '../../assets/images/undraw_no_data.svg';
 const useStyles = makeStyles((theme) => ({
   paper: {
     alignSelf: 'center',
+    width: '100%',
     margin: '5px',
     padding: '20px',
   },

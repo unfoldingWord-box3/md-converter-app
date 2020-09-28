@@ -84,7 +84,7 @@ function AppStepper() {
 
   if (steps[activeStep]) {
     return (
-      <Paper style={{ alignSelf: 'center' }}>
+      <Paper style={{ alignSelf: 'center', width: '100%' }}>
         <div className={classes.root}>
           <Stepper activeStep={activeStep}>
             {steps.map((step, index) => (
