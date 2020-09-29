@@ -10,13 +10,21 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MenuItem from '@material-ui/core/MenuItem';
 import Delete from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import Typography from '@material-ui/core/Typography';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { formatDistanceToNowStrict, parseJSON } from 'date-fns';
+import downloadProjectBackup from '../../helpers/downloadProjectBackup';
 import generateTimestamp from '../../helpers/generateTimestamp';
+import exportNotes from '../../helpers/exportNotes';
 import NoData from '../../assets/images/undraw_no_data.svg';
+import useLoading from '../../hooks/useLoading';
+import BackdropComponent from '../Backdrop';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -82,9 +90,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'flex-end',
   },
-  deleteButton: {
+  menuItem: {
     display: 'flex',
-    justifyContent: 'center',
   },
 }));
 
@@ -97,6 +104,7 @@ const MyProjects = ({
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [projectClicked, setProjectClicked] = React.useState('');
+  const { isLoading, setIsLoading } = useLoading();
   const open = Boolean(anchorEl);
   projects = projects.sort((x, y) => {
     return new Date(y.timestamp) - new Date(x.timestamp);
@@ -111,20 +119,36 @@ const MyProjects = ({
     setAnchorEl(null);
   };
 
+  const openProject = async (project) => {
+    project.timestamp = generateTimestamp();
+    onProjectSelection(project);
+  }
+
   const onDeleteProject = () => {
     handleClose();
     deleteProject(projectClicked);
   }
 
-  const openProject = async (project) => {
-    project.timestamp = generateTimestamp();
-    onProjectSelection(project);
+  const onProjectBackup = async () => {
+    setIsLoading(true);
+    const projectBackup = projects.find(project => project.name === projectClicked);
+    await downloadProjectBackup(projectBackup);
+    handleClose();
+    setIsLoading(false);
+  }
+
+  const onProjectExport = () => {
+    const project = projects.find(project => project.name === projectClicked);
+    const { sourceNotes, targetNotes, bookId, languageId } = project;
+    exportNotes(sourceNotes, targetNotes, bookId, languageId);
+    handleClose();
   }
 
   const headerGroups = ['Name', 'Last Opened'];
 
   return (
     <Paper classes={{ root: classes.paper }}>
+      {isLoading && <BackdropComponent open={true} />}
       <div className={classes.root}>
         <div className={classes.titleContainer}>
           <h2 className={classes.title}>My Projects</h2>
@@ -155,7 +179,7 @@ const MyProjects = ({
                 const { name, timestamp } = project;
 
                 return (
-                  <TableRow key={i} className={classes.tr}>
+                  <TableRow key={`${i}-${name}`} className={classes.tr}>
                     <TableCell>
                       {name}
                     </TableCell>
@@ -211,11 +235,34 @@ const MyProjects = ({
         }}
       >
         <MenuItem
-          className={classes.deleteButton}
+          className={classes.menuItem}
           key='delete-project-menu-item'
           onClick={onDeleteProject}
         >
-          <Delete/><span>Delete Project</span>
+          <ListItemIcon style={{ minWidth: "40px" }}>
+            <Delete color="primary"/>
+          </ListItemIcon>
+          <Typography variant="inherit">Delete Project</Typography>
+        </MenuItem>
+        <MenuItem
+          className={classes.menuItem}
+          key='backup-project-menu-item'
+          onClick={onProjectBackup}
+        >
+          <ListItemIcon style={{ minWidth: "40px" }}>
+            <GetAppIcon color="primary"/>
+          </ListItemIcon>
+          <Typography variant="inherit">Download Backup</Typography>
+        </MenuItem>
+        <MenuItem
+          className={classes.menuItem}
+          key='backup-project-menu-item'
+          onClick={onProjectExport}
+        >
+          <ListItemIcon style={{ minWidth: "40px" }}>
+            <SaveAltIcon color="primary"/>
+          </ListItemIcon>
+          <Typography variant="inherit">Export to TSV</Typography>
         </MenuItem>
       </Menu>
     </Paper>

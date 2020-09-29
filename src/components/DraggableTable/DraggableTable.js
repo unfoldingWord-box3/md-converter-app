@@ -11,6 +11,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
+import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
@@ -29,10 +31,12 @@ const useStyles = makeStyles(() => ({
   },
   buttons: {
     display: 'flex',
+    justifyContent: 'center',
+    padding: '0px',
   },
   button: {
-    width: '100%',
-    margin: '20px',
+    width: '240px',
+    margin: '15px 5px',
   },
 }));
 
@@ -52,6 +56,7 @@ const DraggableTable = ({
   columns,
   languageId,
   exportProject,
+  saveBackup,
 }) => {
   const classes = useStyles();
   const [records, setRecords] = React.useState(data);
@@ -131,8 +136,25 @@ const DraggableTable = ({
           </TableBody>
         </MaUTable>
         <div className={classes.buttons}>
-          <Button className={classes.button} variant="contained" color="primary" onClick={() => exportProject(records)}>
-            Export to TSV
+          <Button
+            size="medium"
+            color="primary"
+            variant="outlined"
+            startIcon={<GetAppIcon />}
+            className={classes.button}
+            onClick={saveBackup}
+          >
+            DOWNLOAD BACKUP
+          </Button>
+          <Button
+            size="medium"
+            color="primary"
+            variant="contained"
+            startIcon={<SaveAltIcon />}
+            className={classes.button}
+            onClick={() => exportProject(records)}
+          >
+            EXPORT TO TSV
           </Button>
         </div>
       </div>
