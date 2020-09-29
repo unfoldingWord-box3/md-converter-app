@@ -14,12 +14,14 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Delete from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import Menu from '@material-ui/core/Menu';
 import Typography from '@material-ui/core/Typography';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { formatDistanceToNowStrict, parseJSON } from 'date-fns';
 import downloadProjectBackup from '../../helpers/downloadProjectBackup';
 import generateTimestamp from '../../helpers/generateTimestamp';
+import exportNotes from '../../helpers/exportNotes';
 import NoData from '../../assets/images/undraw_no_data.svg';
 import useLoading from '../../hooks/useLoading';
 import BackdropComponent from '../Backdrop';
@@ -135,6 +137,13 @@ const MyProjects = ({
     setIsLoading(false);
   }
 
+  const onProjectExport = () => {
+    const project = projects.find(project => project.name === projectClicked);
+    const { sourceNotes, targetNotes, bookId, languageId } = project;
+    exportNotes(sourceNotes, targetNotes, bookId, languageId);
+    handleClose();
+  }
+
   const headerGroups = ['Name', 'Last Opened'];
 
   return (
@@ -244,6 +253,16 @@ const MyProjects = ({
             <GetAppIcon color="primary"/>
           </ListItemIcon>
           <Typography variant="inherit">Download Backup</Typography>
+        </MenuItem>
+        <MenuItem
+          className={classes.menuItem}
+          key='backup-project-menu-item'
+          onClick={onProjectExport}
+        >
+          <ListItemIcon style={{ minWidth: "40px" }}>
+            <SaveAltIcon color="primary"/>
+          </ListItemIcon>
+          <Typography variant="inherit">Export to TSV</Typography>
         </MenuItem>
       </Menu>
     </Paper>
