@@ -13,7 +13,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MenuItem from '@material-ui/core/MenuItem';
 import Delete from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
-import SaveIcon from '@material-ui/icons/Save';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import Menu from '@material-ui/core/Menu';
 import Typography from '@material-ui/core/Typography';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -88,9 +88,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'flex-end',
   },
-  deleteButton: {
+  menuItem: {
     display: 'flex',
-    justifyContent: 'center',
   },
 }));
 
@@ -227,7 +226,7 @@ const MyProjects = ({
         }}
       >
         <MenuItem
-          className={classes.deleteButton}
+          className={classes.menuItem}
           key='delete-project-menu-item'
           onClick={onDeleteProject}
         >
@@ -237,14 +236,14 @@ const MyProjects = ({
           <Typography variant="inherit">Delete Project</Typography>
         </MenuItem>
         <MenuItem
-          className={classes.deleteButton}
+          className={classes.menuItem}
           key='backup-project-menu-item'
           onClick={onProjectBackup}
         >
           <ListItemIcon style={{ minWidth: "40px" }}>
-            <SaveIcon color="primary"/>
+            <GetAppIcon color="primary"/>
           </ListItemIcon>
-          <Typography variant="inherit">Save Backup</Typography>
+          <Typography variant="inherit">Download Backup</Typography>
         </MenuItem>
       </Menu>
     </Paper>

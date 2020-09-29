@@ -11,8 +11,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
-import SaveIcon from '@material-ui/icons/Save';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
@@ -31,12 +31,12 @@ const useStyles = makeStyles(() => ({
   },
   buttons: {
     display: 'flex',
-    justifyContent: 'flex-end',
-    padding: '0px 25px',
+    justifyContent: 'center',
+    padding: '0px',
   },
   button: {
-    width: '160px',
-    margin: '15px 10px',
+    width: '240px',
+    margin: '15px 5px',
   },
 }));
 
@@ -137,17 +137,17 @@ const DraggableTable = ({
         </MaUTable>
         <div className={classes.buttons}>
           <Button
-            size="small"
+            size="medium"
             color="primary"
             variant="outlined"
-            startIcon={<SaveIcon />}
+            startIcon={<GetAppIcon />}
             className={classes.button}
             onClick={saveBackup}
           >
-            Save Backup
+            DOWNLOAD BACKUP
           </Button>
           <Button
-            size="small"
+            size="medium"
             color="primary"
             variant="contained"
             startIcon={<SaveAltIcon />}
