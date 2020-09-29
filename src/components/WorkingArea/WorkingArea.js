@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import Table from '../Table';
 import DraggableTable from '../DraggableTable';
 import exportNotes from '../../helpers/exportNotes';
+import downloadProjectBackup from '../../helpers/downloadProjectBackup';
 
 const Styles = styled.div`
   display: flex;
@@ -110,6 +111,10 @@ export default function WorkingArea({
     exportNotes(sourceNotes, targetRecords, bookId, languageId);
   }
 
+  const saveBackup = () => {
+    downloadProjectBackup(project);
+  }
+
   if (targetNotes) {
     return (
       <Paper style={{ flex: 1 }}>
@@ -124,6 +129,7 @@ export default function WorkingArea({
             data={targetNotes}
             languageId={languageId}
             columns={targetColumns}
+            saveBackup={saveBackup}
             exportProject={exportProject}
           />
         </Styles>
