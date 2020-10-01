@@ -35,11 +35,11 @@ export default function BooksList({
     fetchEnglishTsvs,
   } = React.useContext(TsvDataContext);
   const bookIds = Object.keys(BIBLES_ABBRV_INDEX);
-  const { url: manifestUrl } = files.find(file => file.path === 'manifest.yaml');
+  const { url: manifestUrl } = files.find(file => file.path === 'manifest.yaml') || {};
   const books = files.filter(({ path: bookId }) => bookIds.includes(bookId)).sort((a, b) => bookIds.indexOf(a.path) - bookIds.indexOf(b.path));
 
   const onItemClick = async (url, bookId) => {
-    const manifest = await getManifest(manifestUrl);
+    const manifest = manifestUrl ? await getManifest(manifestUrl) : {};
     const { dublin_core: { language } } = manifest;
     const projectName = `${language.identifier}_${bookId}`;
     const found = projects.find(project => project.name === projectName);
