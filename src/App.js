@@ -32,6 +32,7 @@ export default function App() {
   const [repository, setRepository] = useState(null);
   const [showStepper, setShowStepper] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
+  const [savedBackup, setSavedBackup] = useState(false);
   const {
     setProject,
     deleteProject,
@@ -102,12 +103,17 @@ export default function App() {
             // branch='master'
           >
             <div>
-              <AppBar toggleProjects={toggleProjects} />
+              <AppBar toggleProjects={toggleProjects} savedBackup={savedBackup} currentProject={currentProject}/>
               <div className={classes.body}>
                 <ScrollingWrapper>
                   {
                     currentProject ?
-                      <WorkingArea project={currentProject} sourceManifest={sourceManifest} />
+                      <WorkingArea
+                        project={currentProject}
+                        savedBackup={savedBackup}
+                        sourceManifest={sourceManifest}
+                        setSavedBackup={setSavedBackup}
+                      />
                     :
                     (showProjects && authentication) || (!showStepper && projects && projects.length && authentication) ?
                       <MyProjects

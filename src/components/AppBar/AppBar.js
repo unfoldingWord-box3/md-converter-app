@@ -15,14 +15,37 @@ import { appName } from '../../common/constants';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
 
 export default function AppBar({
+  savedBackup,
+  currentProject,
   toggleProjects,
 }) {
   const [filepath, setFilepath] = useState();
   const { removeProject } = useContext(TsvDataContext);
+  const noPrompt = !currentProject ? true : savedBackup;
+  const promptText = 'Changes you made may not be locally backed up. Do you wish to continue?';
 
   const onProjectPage = () => {
-    removeProject();
-    toggleProjects(true);
+    if (noPrompt) {
+      removeProject();
+      toggleProjects(true);
+    } else {
+      if (window.confirm(promptText)) {
+        removeProject();
+        toggleProjects(true);
+      }
+    }
+  }
+
+  const onNewProject = () => {
+    if (noPrompt) {
+      toggleProjects(false);
+      removeProject();
+    } else {
+      if (window.confirm(promptText)) {
+        toggleProjects(false);
+        removeProject();
+      }
+    }
   }
 
   const drawerMenu = (
@@ -40,10 +63,7 @@ export default function AppBar({
       <ListItem
         button
         key='New Project'
-        onClick={() => {
-          toggleProjects(false);
-          removeProject();
-        }}
+        onClick={onNewProject}
       >
         <ListItemIcon style={{ margin: 0 }}>
           <Folder />

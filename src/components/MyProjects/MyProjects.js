@@ -252,7 +252,7 @@ const MyProjects = ({
           <ListItemIcon style={{ minWidth: "40px" }}>
             <GetAppIcon color="primary"/>
           </ListItemIcon>
-          <Typography variant="inherit">Download Backup</Typography>
+          <Typography variant="inherit">Save Backup</Typography>
         </MenuItem>
         <MenuItem
           className={classes.menuItem}
