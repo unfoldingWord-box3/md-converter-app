@@ -43,7 +43,7 @@ export default function BooksList({
     const { dublin_core: { language } } = manifest;
     const projectName = `${language.identifier}_${bookId}`;
     const found = projects.find(project => project.name === projectName);
-    const fetchSourceTsv = !glTsvs?.en && !glTsvs?.en?.manifest && !glTsvs?.en?.[bookId];
+    const fetchSourceTsv = !glTsvs?.en || !glTsvs?.en?.manifest || !glTsvs?.en?.[bookId];
 
     if (found) {
       if (window.confirm(`There's currently a ${bookId} project in your project list, Do you want to overwrite it?`)) {
