@@ -52,12 +52,14 @@ export default function WorkingArea({
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeunload);
+    if (!savedBackup) {
+      window.addEventListener('beforeunload', handleBeforeunload);
+    }
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeunload);
     };
-  }, []);
+  }, [savedBackup]);
 
   const { targetNotes, sourceNotes, bookId, languageId } = project;
   const { language, subject, version } = sourceManifest?.dublin_core || {};

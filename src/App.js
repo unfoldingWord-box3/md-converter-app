@@ -32,11 +32,12 @@ export default function App() {
   const [repository, setRepository] = useState(null);
   const [showStepper, setShowStepper] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
-  const [savedBackup, setSavedBackup] = useState(false);
   const {
     setProject,
+    savedBackup,
     deleteProject,
     removeProject,
+    setSavedBackup,
     state: {
       projects,
       currentProject,
