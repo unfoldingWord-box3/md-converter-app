@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropsTypes from 'prop-types';
 import styled from 'styled-components';
 import Paper from '@material-ui/core/Paper';
@@ -33,8 +33,34 @@ const Styles = styled.div`
 
 export default function WorkingArea({
   project,
+  savedBackup,
   sourceManifest,
+  setSavedBackup,
 }) {
+  useEffect(() => {
+    const handleBeforeunload = (event) => {
+      const returnValue = 'Changes you made may not be locally backed up. Do you wish to continue?';
+
+      // Chrome requires `returnValue` to be set.
+      if (event.defaultPrevented) {
+        event.returnValue = '';
+      }
+
+      if (typeof returnValue === 'string') {
+        event.returnValue = returnValue;
+        return returnValue;
+      }
+    };
+
+    if (!savedBackup) {
+      window.addEventListener('beforeunload', handleBeforeunload);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeunload);
+    };
+  }, [savedBackup]);
+
   const { targetNotes, sourceNotes, bookId, languageId } = project;
   const { language, subject, version } = sourceManifest?.dublin_core || {};
   let sourceNoteVersion = null;
@@ -111,8 +137,9 @@ export default function WorkingArea({
     exportNotes(sourceNotes, targetRecords, bookId, languageId);
   }
 
-  const saveBackup = () => {
-    downloadProjectBackup(project);
+  const saveBackup = async () => {
+    await downloadProjectBackup(project);
+    setSavedBackup(true);
   }
 
   if (targetNotes) {
@@ -130,7 +157,9 @@ export default function WorkingArea({
             languageId={languageId}
             columns={targetColumns}
             saveBackup={saveBackup}
+            savedBackup={savedBackup}
             exportProject={exportProject}
+            setSavedBackup={setSavedBackup}
           />
         </Styles>
       </Paper>

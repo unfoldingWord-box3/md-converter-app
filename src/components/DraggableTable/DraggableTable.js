@@ -13,6 +13,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
@@ -54,9 +55,11 @@ const DraggableTable = ({
   data,
   bookId,
   columns,
-  languageId,
-  exportProject,
   saveBackup,
+  languageId,
+  savedBackup,
+  exportProject,
+  setSavedBackup,
 }) => {
   const classes = useStyles();
   const [records, setRecords] = React.useState(data);
@@ -93,6 +96,7 @@ const DraggableTable = ({
         ]
       })
     );
+    setSavedBackup(false);
   };
 
   return (
@@ -140,11 +144,11 @@ const DraggableTable = ({
             size="medium"
             color="primary"
             variant="outlined"
-            startIcon={<GetAppIcon />}
+            startIcon={savedBackup ? <CheckBoxRoundedIcon htmlColor='green'/> : <GetAppIcon />}
             className={classes.button}
             onClick={saveBackup}
           >
-            DOWNLOAD BACKUP
+            SAVE BACKUP
           </Button>
           <Button
             size="medium"

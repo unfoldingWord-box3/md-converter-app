@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ric from 'ric-shim'
 import equal from 'deep-equal';
 import * as cacheLibrary from 'money-clip';
@@ -98,6 +98,7 @@ function tsvDataReducer(state, action) {
 export default function TsvDataContextProvider(props) {
   const [state, dispatch] = React.useReducer(tsvDataReducer, initialState);
   const { isLoading, setIsLoading, setIsError, setLoadingMessage, loadingMessage } = useLoading();
+  const [savedBackup, setSavedBackup] = useState(false);
 
   useEffect(() => {
     cacheLibrary.getAll().then(cacheData => {
@@ -167,6 +168,7 @@ export default function TsvDataContextProvider(props) {
   const setBookId = (bookId) => dispatch({ type: 'SET_BOOK_ID', bookId })
 
   const setProject = (project) => {
+    setSavedBackup(false);
     console.info('setProject()');
     const { manifest } = state.glTsvs.en;
 
@@ -214,9 +216,11 @@ export default function TsvDataContextProvider(props) {
     setProject,
     isLoading,
     setIsError,
+    savedBackup,
     setIsLoading,
     removeProject,
     deleteProject,
+    setSavedBackup,
     loadingMessage,
     fetchTnMarkdown,
     fetchEnglishTsvs,
