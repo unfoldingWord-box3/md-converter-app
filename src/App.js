@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function App() {
   const classes = useStyles();
-  const [authentication, setAuthentication] = useState();
+  const [authentication, setAuthentication] = useState(null);
   const [repository, setRepository] = useState(null);
   const [showStepper, setShowStepper] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
@@ -108,7 +108,7 @@ export default function App() {
               <div className={classes.body}>
                 <ScrollingWrapper>
                   {
-                    currentProject ?
+                    currentProject && authentication ?
                       <WorkingArea
                         project={currentProject}
                         savedBackup={savedBackup}
