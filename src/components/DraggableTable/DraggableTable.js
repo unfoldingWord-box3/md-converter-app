@@ -10,12 +10,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
-import Button from '@material-ui/core/Button';
-import SaveAltIcon from '@material-ui/icons/SaveAlt';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import CheckBoxRoundedIcon from '@material-ui/icons/CheckBoxRounded';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import ProjectFab from '../ProjectFab';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
 
 const useStyles = makeStyles(() => ({
@@ -23,6 +20,9 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flex: 'auto',
     flexDirection: 'column',
+  },
+  flex: {
+    display: 'flex',
   },
   fill: {
     display: 'flex',
@@ -103,6 +103,12 @@ const DraggableTable = ({
     <DndProvider backend={HTML5Backend}>
       <div className={classes.root}>
         <div className={classes.fill}>Target Notes ({`${languageId}_${bookId}`})</div>
+        <ProjectFab
+          records={records}
+          saveBackup={saveBackup}
+          savedBackup={savedBackup}
+          exportProject={exportProject}
+        />
         <MaUTable {...getTableProps()}>
           <TableHead>
             {headerGroups.map((headerGroup) => (
@@ -139,28 +145,6 @@ const DraggableTable = ({
             )}
           </TableBody>
         </MaUTable>
-        <div className={classes.buttons}>
-          <Button
-            size="medium"
-            color="primary"
-            variant="outlined"
-            startIcon={savedBackup ? <CheckBoxRoundedIcon htmlColor='green'/> : <GetAppIcon />}
-            className={classes.button}
-            onClick={saveBackup}
-          >
-            SAVE BACKUP
-          </Button>
-          <Button
-            size="medium"
-            color="primary"
-            variant="contained"
-            startIcon={<SaveAltIcon />}
-            className={classes.button}
-            onClick={() => exportProject(records)}
-          >
-            EXPORT TO TSV
-          </Button>
-        </div>
       </div>
     </DndProvider>
   );
