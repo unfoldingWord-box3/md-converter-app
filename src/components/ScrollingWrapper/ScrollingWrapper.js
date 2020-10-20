@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
-import styled from 'styled-components'
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import styled from 'styled-components';
 import Fab from '@material-ui/core/Fab';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
@@ -15,7 +15,7 @@ const ScrollingWrapperContainer = styled.div`
 
 const ScrollToBottomIconContainer = styled.div`
   position: fixed;
-  bottom: 20px;
+  bottom: 62px;
   right: 0%;
   margin: 0px 15px;
   margin-left: -50px;
@@ -41,7 +41,7 @@ const ScrollToBottomIconContainer = styled.div`
 
 const ScrollToTopIconContainer = styled.div`
   position: fixed;
-  bottom: 70px;
+  bottom: 115px;
   right: 0%;
   margin: 0px 15px;
   margin-left: -50px;
@@ -110,13 +110,13 @@ const ScrollingWrapper = (props) => {
     <React.Fragment>
       {hasScrolled && (
         <ScrollToTopIconContainer onClick={scrollToTop}>
-          <Fab color="primary" size="small" aria-label="scroll back to top" title="Scroll back to top">
+          <Fab color="primary" size="medium" aria-label="scroll back to top" title="Scroll back to top">
             <KeyboardArrowUpIcon />
           </Fab>
         </ScrollToTopIconContainer>
       )}
       <ScrollToBottomIconContainer onClick={scrollToBottom}>
-        <Fab color="primary" size="small" aria-label="scroll back to top">
+        <Fab color="primary" size="medium" aria-label="scroll back to top">
           <KeyboardArrowDown />
         </Fab>
       </ScrollToBottomIconContainer>

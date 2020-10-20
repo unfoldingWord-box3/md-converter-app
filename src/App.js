@@ -65,7 +65,7 @@ export default function App() {
     } else {
       await myAuthStore.setItem('authentication', authentication)
       .then(function (authentication) {
-        console.info("saveAuth() success. authentication is:", authentication);
+        console.info("saveAuth() success. authentication user is:", authentication.user.login);
       }).catch(function(err) {
           // This code runs if there were any errors
           console.info("saveAuth() failed. err:", err);
