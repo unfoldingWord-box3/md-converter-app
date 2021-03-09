@@ -27,8 +27,10 @@ function AppStepper() {
     0: !!authentication,
     1: !!sourceRepository,
   });
+  console.log({ sourceRepository })
   const { tree_url } = sourceRepository || {};
   const { data, isLoading, isError } = useFetch(tree_url, 'repo-data');
+
 
   useEffect(() => {
     setCompleted({
