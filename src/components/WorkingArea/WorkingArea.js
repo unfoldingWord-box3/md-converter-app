@@ -69,46 +69,16 @@ export default function WorkingArea({
     sourceNoteVersion = `${language?.title} ${subject} - Version ${version}`
   }
 
+
+
+  const headers = Object.keys(sourceNotes[0]).map(key => ({
+    Header: key,
+    accessor: key
+  }))
+
   const sourceColumns = React.useMemo(
-    () => [
-      {
-        Header: "Book",
-        accessor: "Book"
-      },
-      {
-        Header: "Chapter",
-        accessor: "Chapter"
-      },
-      {
-        Header: "Verse",
-        accessor: "Verse"
-      },
-      {
-        Header: "ID",
-        accessor: "ID"
-      },
-      {
-        Header: "SupportReference",
-        accessor: "SupportReference"
-      },
-      {
-        Header: "OrigQuote",
-        accessor: "OrigQuote"
-      },
-      {
-        Header: "Occurrence",
-        accessor: "Occurrence"
-      },
-      {
-        Header: "GLQuote",
-        accessor: "GLQuote"
-      },
-      {
-        Header: "OccurrenceNote",
-        accessor: "OccurrenceNote"
-      }
-    ],
-    []
+    () => headers,
+    [headers]
   );
 
   const targetColumns = React.useMemo(
