@@ -6,7 +6,7 @@
 export default function getSupportedResourceId(sourceRepository) {
   const tqLabels = ['Translation Questions', 'translationQuestions', 'tQuestions', 'TranslationQuestions']
   const tnLabels = ['Translation Notes', 'translationNotes', 'tNotes', 'TranslationNotes']
-  const isTnOrTq = (str) => tqLabels.includes(str) ? 'tq' : tnLabels.includes(str) ? 'tn' : null
+  const isTnOrTq = (str) => tqLabels.find(element => str.includes(element)) ? 'tq' : tnLabels.find(element => str.includes(element)) ? 'tn' : null
 
   if (sourceRepository?.subject) {
     const subject = sourceRepository?.subject
