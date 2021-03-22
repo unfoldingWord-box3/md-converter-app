@@ -1,4 +1,3 @@
-// import * as cacheLibrary from 'money-clip';
 import getManifest from '../../helpers/getManifest';
 
 async function fetchTsvs(url) {
@@ -27,7 +26,7 @@ export default async function fetchEnglishTsvsAction(resourceId) {
         const isManifest = path === 'manifest.yaml';
         const separator = path.includes('-') ? '-' : '_'
         const bookId = !isManifest ?
-         path.split(separator)[1].replace('.tsv', '').toLowerCase()  : path.replace('.yaml', '').toLowerCase();
+          path.split(separator)[1].replace('.tsv', '').toLowerCase()  : path.replace('.yaml', '').toLowerCase();
 
         if (isManifest) {
           url = await getManifest(url);
