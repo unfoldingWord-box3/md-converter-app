@@ -22,8 +22,6 @@ const initialState = {
 
 function tsvDataReducer(state, action) {
   switch (action.type) {
-    case 'SET_TSV_DATA':
-      return action.payload;
     case 'SET_BOOK_ID':
       return {
         ...state,
