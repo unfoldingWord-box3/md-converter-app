@@ -70,9 +70,6 @@ export default function BooksList({
   const bookIds = Object.keys(BIBLES_ABBRV_INDEX);
   const books = files.filter(({ path: bookId }) => bookIds.includes(bookId) && !path.extname(bookId)).sort((a, b) => bookIds.indexOf(a.path) - bookIds.indexOf(b.path));
 
-  console.log('BooksList files', {files})
-  console.log('BooksList books', {books})
-
   async function onItemClick(url, bookId) {
     console.info('onItemClick')
     const { dublin_core: { language } } = manifest;
@@ -92,7 +89,7 @@ export default function BooksList({
 
   if (isLoading) {
     return <LoadingIndicator secondaryMessage={loadingMessage} />;
-  } else if (!hasMarkdownContent || books.length === 0 || !books) {// TODO: Test !hasMarkdownContent
+  } else if (!hasMarkdownContent || books.length === 0 || !books) {
     return (
       <h2 className={classes.centered}>
         This repo may not have the necessary contents to convert from markdown to TSV
