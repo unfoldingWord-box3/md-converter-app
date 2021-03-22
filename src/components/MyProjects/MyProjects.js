@@ -21,7 +21,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { formatDistanceToNowStrict, parseJSON } from 'date-fns';
 import downloadProjectBackup from '../../helpers/downloadProjectBackup';
 import generateTimestamp from '../../helpers/generateTimestamp';
-import exportNotes from '../../helpers/exportNotes';
+import exportToTSV from '../../helpers/exportToTSV';
 import NoData from '../../assets/images/undraw_no_data.svg';
 import useLoading from '../../hooks/useLoading';
 import BackdropComponent from '../Backdrop';
@@ -140,7 +140,7 @@ const MyProjects = ({
   const onProjectExport = () => {
     const project = projects.find(project => project.name === projectClicked);
     const { sourceNotes, targetNotes, bookId, languageId } = project;
-    exportNotes(sourceNotes, targetNotes, bookId, languageId);
+    exportToTSV(sourceNotes, targetNotes, bookId, languageId);
     handleClose();
   }
 

@@ -1,9 +1,8 @@
 import { customAlphabet } from 'nanoid/non-secure'
-import * as cacheLibrary from 'money-clip';
 import mdToJson from '../../helpers/md2json';
 import base64DecodeUnicode from '../../helpers/base64DecodeUnicode';
 
-export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes, setLoadingMessage) {
+export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes, setLoadingMessage) {
   const result = [];
   const extraSourceNotes = [];
 
@@ -32,22 +31,26 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
       for (let index = 0; index < sourceNotes.length; index++) {
         const sourceItem = sourceNotes[index];
         const previousSourceItem = sourceNotes[index - 1];
-        const sourceChapter = parseNumber(sourceItem.Chapter);
-        const sourceVerse = parseNumber(sourceItem.Verse);
-        const previousSourceChapter = previousSourceItem ? parseNumber(previousSourceItem.Chapter) : null;
-        const previousSourceVerse = previousSourceItem ? parseNumber(previousSourceItem.Verse) : null;
+        const bibleBeferenceArray = getchapterVerseFromReference(sourceItem)
+        const sourceChapter = parseNumber(sourceItem.Chapter || bibleBeferenceArray[0]);
+        const sourceVerse = parseNumber(sourceItem.Verse || bibleBeferenceArray[1]);
+        const previousBibleBeference = getchapterVerseFromReference(previousSourceItem)
+        const previousSourceChapter = previousSourceItem ? parseNumber(previousSourceItem.Chapter || previousBibleBeference[0]) : null;
+        const previousSourceVerse = previousSourceItem ? parseNumber(previousSourceItem.Verse || previousBibleBeference[1]) : null;
         const previousReference = getReference(previousSourceChapter, previousSourceVerse);
         const reference = getReference(sourceChapter, sourceVerse);
         const previousNoteJson = targetItems[previousReference];
         const noteJson = targetItems[reference];
 
+
         if (previousSourceVerse && previousNoteJson && Object.keys(previousNoteJson).length && sourceVerse > previousSourceVerse) {
-          populateExtraeSourceNotes({
+          populateExtraSourceNotes({
             index,
             bookId,
             result,
             nanoid,
             extraSourceNotes,
+            previousSourceItem,
             json: previousNoteJson,
             verse: previousSourceVerse,
             chapter: previousSourceChapter,
@@ -67,7 +70,7 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
               const json = targetItems[getReference(previousSourceChapter, verse)]
 
               if (json) {
-                populateExtraeSourceNotes({
+                populateExtraSourceNotes({
                   json,
                   index,
                   verse,
@@ -75,6 +78,7 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
                   result,
                   nanoid,
                   extraSourceNotes,
+                  previousSourceItem,
                   chapter: previousSourceChapter,
                 });
               }
@@ -83,13 +87,14 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
             const json = targetItems[getReference(previousSourceChapter, missingVerse)]
 
             if (json) {
-              populateExtraeSourceNotes({
+              populateExtraSourceNotes({
                 json,
                 index,
                 bookId,
                 result,
                 nanoid,
                 extraSourceNotes,
+                previousSourceItem,
                 verse: missingVerse,
                 chapter: previousSourceChapter,
               });
@@ -104,45 +109,48 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, reducerName
             const firstKey = keys[0];
             const { heading, raw } = noteJson[firstKey];
 
-            result.push({
-              Book: bookId,
-              Chapter: parseNumber(sourceChapter),
-              Verse: parseNumber(sourceVerse),
-              id: nanoid(),
-              GLQuote: heading,
-              OccurrenceNote: raw,
+            const resultItem = populateHeaders({
+              raw,
+              bookId,
+              nanoid,
+              heading,
+              sourceVerse,
+              sourceChapter,
+              item: sourceItem,
             })
+
+            result.push(resultItem)
 
             delete noteJson[firstKey];
           } else {
-            result.push({
-              Book: bookId,
-              Chapter: parseNumber(sourceChapter),
-              Verse: parseNumber(sourceVerse),
-              id: nanoid(),
-              GLQuote: '',
-              OccurrenceNote: '',
+            const resultItem = populateHeaders({
+              bookId,
+              nanoid,
+              raw: '',
+              heading: '',
+              sourceVerse,
+              sourceChapter,
+              item: sourceItem,
             })
+
+            result.push(resultItem)
           }
         } else {
-          result.push({
-            Book: bookId,
-            Chapter: parseNumber(sourceChapter),
-            Verse: parseNumber(sourceVerse),
-            id: nanoid(),
-            GLQuote: '',
-            OccurrenceNote: '',
+          const resultItem = populateHeaders({
+            bookId,
+            nanoid,
+            raw: '',
+            heading: '',
+            sourceVerse,
+            sourceChapter,
+            item: sourceItem,
           })
+
+          result.push(resultItem)
         }
       }
     } else {
-      const data = await cacheLibrary.getAll().then(
-        cacheData => {
-          return cacheData[reducerName]?.glTsvs?.en || {}
-        }
-      );
-
-      return data;
+      return result;
     }
 
     if (extraSourceNotes.length) {
@@ -163,7 +171,7 @@ function getReference(chapter, verse) {
   return `${prependZero(chapter)}/${prependZero(verse)}`;
 }
 
-function populateExtraeSourceNotes({
+function populateExtraSourceNotes({
   json,
   index,
   verse,
@@ -172,28 +180,33 @@ function populateExtraeSourceNotes({
   nanoid,
   chapter,
   extraSourceNotes,
+  previousSourceItem,
 }) {
   const keys = Object.keys(json);
   const key = keys[0];
   const { heading, raw } = json[key];
 
-  result.push({
-    Book: bookId,
-    Chapter: parseNumber(chapter),
-    Verse: parseNumber(verse),
-    id: nanoid(),
-    GLQuote: heading,
-    OccurrenceNote: raw,
+  const resultItem = populateHeaders({
+    raw,
+    bookId,
+    nanoid,
+    heading,
+    item: previousSourceItem,
+    sourceVerse: parseNumber(verse),
+    sourceChapter: parseNumber(chapter),
   })
 
-  const emptySourceNote = {
-    Book: bookId,
-    Chapter: parseNumber(chapter),
-    Verse: parseNumber(verse),
-    id: nanoid(),
-    GLQuote: '',
-    OccurrenceNote: '',
-  };
+  result.push(resultItem)
+
+  const emptySourceNote = populateHeaders({
+    bookId,
+    nanoid,
+    raw: '',
+    heading: '',
+    item: previousSourceItem,
+    sourceVerse: parseNumber(verse),
+    sourceChapter: parseNumber(chapter),
+  })
 
   const extraIndexNumber = extraSourceNotes.length >= 0 ? extraSourceNotes.length : 1;
 
@@ -231,4 +244,48 @@ function convertMarkdownToJson(markdown) {
   }
 
   return json;
+}
+
+/**
+ * Returns an array of the reference first value being the chapter and the second value being the verse
+ * @param {object} item
+ * @returns {array|null} bible reference array
+ */
+function getchapterVerseFromReference(item) {
+  return item && item?.Chapter ? null : item?.Reference.split(':')
+}
+
+function populateHeaders({
+  raw,
+  item,
+  bookId,
+  nanoid,
+  heading,
+  sourceVerse,
+  sourceChapter,
+}) {
+  const referenceHeader = item?.Reference
+  const resultItem = {
+    Book: bookId,
+    id: nanoid(),
+  }
+
+  if (item && referenceHeader && item?.Question && item?.Response) {
+    resultItem.Reference = referenceHeader.trim()
+    resultItem.Question = heading.trim()
+    resultItem.Response = raw.trim()
+  } else if (item && item?.Reference && item?.Note && item?.Quote) {
+    resultItem.Reference = referenceHeader.trim()
+    resultItem.Note = raw
+  } else if (item && item?.Reference && item?.Annotation) {
+    resultItem.Reference = referenceHeader.trim()
+    resultItem.Annotation = raw.trim()
+  } else {
+    resultItem.Chapter = parseNumber(sourceChapter)
+    resultItem.Verse = parseNumber(sourceVerse)
+    resultItem.GLQuote = heading.trim()
+    resultItem.OccurrenceNote = raw.trim()
+  }
+
+  return resultItem
 }

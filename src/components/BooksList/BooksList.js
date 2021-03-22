@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PropsTypes from 'prop-types';
+import path from 'path';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -17,48 +18,86 @@ const useStyles = makeStyles((theme) => ({
     margin: 'auto',
     backgroundColor: theme.palette.background.paper,
   },
+  centered: {
+    display: 'flex',
+    width: '100%',
+    textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 }));
 
 export default function BooksList({
   files,
+  resourceId,
 }) {
   const classes = useStyles();
+  const [manifest, setManifest] = useState({})
+  const [manifestUrl, setManifestUrl] = useState(null)
+  const [hasMarkdownContent, setHasMarkdownContent] = useState(false)
   const {
     state: {
-      glTsvs,
       projects,
     },
     isLoading,
     setIsLoading,
     loadingMessage,
     fetchTnMarkdown,
-    fetchEnglishTsvs,
-  } = React.useContext(TsvDataContext);
-  const bookIds = Object.keys(BIBLES_ABBRV_INDEX);
-  const { url: manifestUrl } = files.find(file => file.path === 'manifest.yaml') || {};
-  const books = files.filter(({ path: bookId }) => bookIds.includes(bookId)).sort((a, b) => bookIds.indexOf(a.path) - bookIds.indexOf(b.path));
+  } = useContext(TsvDataContext);
 
-  const onItemClick = async (url, bookId) => {
-    const manifest = manifestUrl ? await getManifest(manifestUrl) : {};
+  useEffect(() => {
+    const { url: manifestUrl } = files.find(file => file.path === 'manifest.yaml') || {};
+
+    setManifestUrl(manifestUrl)
+  }, [files])
+
+  useEffect(() => {
+    async function fetchManifest() {
+      setIsLoading(true);
+      const emptyManifest = { dublin_core: {} }
+      const manifest = manifestUrl ? await getManifest(manifestUrl) : emptyManifest;
+      let { dublin_core: { format } } = manifest;
+
+      if (!format) format = manifest.format
+
+      setHasMarkdownContent(format?.includes('markdown') || false)
+      setManifest(manifest || emptyManifest)
+      setIsLoading(false);
+    }
+
+    fetchManifest()
+  }, [manifestUrl, setIsLoading])
+  const bookIds = Object.keys(BIBLES_ABBRV_INDEX);
+  const books = files.filter(({ path: bookId }) => bookIds.includes(bookId) && !path.extname(bookId)).sort((a, b) => bookIds.indexOf(a.path) - bookIds.indexOf(b.path));
+
+  console.log('BooksList files', {files})
+  console.log('BooksList books', {books})
+
+  async function onItemClick(url, bookId) {
+    console.info('onItemClick')
     const { dublin_core: { language } } = manifest;
-    const projectName = `${language.identifier}_${bookId}`;
+    const projectName = `${language?.identifier}_${bookId}${resourceId ? `_${resourceId}` : ''}`;
     const found = projects.find(project => project.name === projectName);
-    const fetchSourceTsv = !glTsvs?.en || !glTsvs?.en?.manifest || !glTsvs?.en?.[bookId];
 
     if (found) {
-      if (window.confirm(`There's currently a ${bookId} project in your project list, Do you want to overwrite it?`)) {
+      if (window.confirm(`There's currently a ${bookId} ${resourceId} project in your project list, Do you want to overwrite it?`)) {
         setIsLoading(true);
-        if (fetchSourceTsv) await fetchEnglishTsvs();
-        await fetchTnMarkdown(url, bookId, manifest);
+        await fetchTnMarkdown(url, bookId, manifest, resourceId);
       }
     } else {
-      if (fetchSourceTsv) await fetchEnglishTsvs();
-      await fetchTnMarkdown(url, bookId, manifest);
+      setIsLoading(true);
+      await fetchTnMarkdown(url, bookId, manifest, resourceId);
     }
   }
 
   if (isLoading) {
     return <LoadingIndicator secondaryMessage={loadingMessage} />;
+  } else if (!hasMarkdownContent || books.length === 0 || !books) {// TODO: Test !hasMarkdownContent
+    return (
+      <h2 className={classes.centered}>
+        This repo may not have the necessary contents to convert from markdown to TSV
+      </h2>
+    )
   } else {
     return (
       <div className={classes.root}>
@@ -84,5 +123,5 @@ BooksList.defaultProps = {
 }
 
 BooksList.propTypes = {
-  files: PropsTypes.array.isRequired,
+  files: PropsTypes.array,
 };

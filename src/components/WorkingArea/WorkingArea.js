@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Paper from '@material-ui/core/Paper';
 import Table from '../Table';
 import DraggableTable from '../DraggableTable';
-import exportNotes from '../../helpers/exportNotes';
+import exportToTSV from '../../helpers/exportToTSV';
 import downloadProjectBackup from '../../helpers/downloadProjectBackup';
 
 const Styles = styled.div`
@@ -61,7 +61,7 @@ export default function WorkingArea({
     };
   }, [savedBackup]);
 
-  const { targetNotes, sourceNotes, bookId, languageId } = project;
+  const { targetNotes, sourceNotes, bookId, languageId, resourceId } = project;
   const { language, subject, version } = sourceManifest?.dublin_core || {};
   let sourceNoteVersion = null;
 
@@ -69,42 +69,33 @@ export default function WorkingArea({
     sourceNoteVersion = `${language?.title} ${subject} - Version ${version}`
   }
 
-
-
-  const headers = Object.keys(sourceNotes[0]).map(key => ({
+  const sourceHeaders = Object.keys(sourceNotes[0]).map(key => ({
     Header: key,
     accessor: key
   }))
 
   const sourceColumns = React.useMemo(
-    () => headers,
-    [headers]
+    () => sourceHeaders || [],
+    [sourceHeaders]
   );
 
+
+  const targetHeaders = Object.keys(targetNotes[0]).map(key => ({
+    Header: key,
+    accessor: key
+  }))
+
   const targetColumns = React.useMemo(
-    () => [
-      {
-        Header: "Chapter",
-        accessor: "Chapter"
-      },
-      {
-        Header: "Verse",
-        accessor: "Verse"
-      },
-      {
-        Header: "GLQuote",
-        accessor: "GLQuote"
-      },
-      {
-        Header: "OccurrenceNote",
-        accessor: "OccurrenceNote"
-      }
-    ],
-    []
+    () => {
+      const shouldInclude = ['Reference', 'Chapter', 'Verse', 'GLQuote', 'Quote', 'OccurrenceNote', 'Annotation', 'Question', 'Response' ]
+
+      return targetHeaders.filter(({Header}) => shouldInclude.includes(Header))
+    },
+    [targetHeaders]
   );
 
   const exportProject = (targetRecords) => {
-    exportNotes(sourceNotes, targetRecords, bookId, languageId);
+    exportToTSV(sourceNotes, targetRecords, bookId, resourceId);
   }
 
   const saveBackup = async () => {
@@ -123,6 +114,7 @@ export default function WorkingArea({
           />
           <DraggableTable
             bookId={bookId}
+            subject={subject}
             data={targetNotes}
             languageId={languageId}
             columns={targetColumns}

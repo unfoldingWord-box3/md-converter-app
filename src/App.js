@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import localforage from 'localforage';
 import { makeStyles } from '@material-ui/core/styles';
 import { MuiThemeProvider } from '@material-ui/core/styles';
@@ -45,7 +45,7 @@ export default function App() {
         manifest: sourceManifest
       }
     },
-  } = React.useContext(TsvDataContext);
+  } = useContext(TsvDataContext);
 
   const myAuthStore = localforage.createInstance({
     driver: [localforage.INDEXEDDB],
@@ -112,7 +112,7 @@ export default function App() {
                       <WorkingArea
                         project={currentProject}
                         savedBackup={savedBackup}
-                        sourceManifest={sourceManifest}
+                        sourceManifest={currentProject?.sourceManifest || sourceManifest || {}}
                         setSavedBackup={setSavedBackup}
                       />
                     :

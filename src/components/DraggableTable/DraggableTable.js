@@ -55,6 +55,7 @@ const DraggableTable = ({
   data,
   bookId,
   columns,
+  subject,
   saveBackup,
   languageId,
   savedBackup,
@@ -102,7 +103,7 @@ const DraggableTable = ({
   return (
     <DndProvider backend={HTML5Backend}>
       <div className={classes.root}>
-        <div className={classes.fill}>Target Notes ({`${languageId}_${bookId}`})</div>
+        <div className={classes.fill}>{`Target ${subject} (${languageId}_${bookId})`}</div>
         <ProjectFab
           records={records}
           saveBackup={saveBackup}
@@ -116,7 +117,7 @@ const DraggableTable = ({
                 {headerGroup.headers.map((column) => {
                   const tCellStyle = {};
                   if (column.Header === "GLQuote") tCellStyle.minWidth = '160px';
-                  if (column.Header === "Chapter" || column.Header === "Verse") {
+                  if (column.Header === "Chapter" || column.Header === "Verse" || column.Header === "Reference") {
                     tCellStyle.width = '10px';
                     tCellStyle.padding = '12px 4px';
                   }
