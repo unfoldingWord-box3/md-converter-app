@@ -1,5 +1,5 @@
 {
-  "name": "tn-converter-app",
+  "name": "md-tsv-converter-app",
   "version": "0.1.0",
   "description": "Markdown to TSV conversion App.",
   "private": true,
