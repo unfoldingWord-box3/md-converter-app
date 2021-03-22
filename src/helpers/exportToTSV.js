@@ -5,7 +5,7 @@ function cleanNote(note) {
   if (note) {
     return note.length > 95 ? note.replace(/\n/g, '<br>') : note.replace(/\n/g, ' ');
   }
-  return note.trim()
+  return note?.trim()
 }
 
 export default function exportToTSV(sourceNotes, targetNotes, bookId, resourceId) {
@@ -17,14 +17,14 @@ export default function exportToTSV(sourceNotes, targetNotes, bookId, resourceId
     const finalNote = sourceNote;
 
     if (targetNote?.Reference && targetNote?.Question && targetNote?.Response) {
-      finalNote.Question = targetNote?.Question.trim()
-      finalNote.Response = targetNote?.Response.trim()
+      finalNote.Question = targetNote?.Question?.trim()
+      finalNote.Response = targetNote?.Response?.trim()
     } else if (targetNote?.Reference && targetNote?.Note && targetNote?.Quote) {
       finalNote.Note = cleanNote(targetNote?.Note)
     } else if (targetNote?.Reference && targetNote?.Annotation) {
       finalNote.Annotation = cleanNote(targetNote?.Annotation)
     } else {
-      finalNote.GLQuote = targetNote?.GLQuote.trim();
+      finalNote.GLQuote = targetNote?.GLQuote?.trim();
       finalNote.OccurrenceNote = cleanNote(targetNote?.OccurrenceNote)
     }
 

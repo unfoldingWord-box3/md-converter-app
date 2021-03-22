@@ -79,8 +79,7 @@ export default function WorkingArea({
     [sourceHeaders]
   );
 
-
-  const targetHeaders = Object.keys(targetNotes[0]).map(key => ({
+  const targetHeaders = Object.keys(targetNotes[0] || {}).map(key => ({
     Header: key,
     accessor: key
   }))

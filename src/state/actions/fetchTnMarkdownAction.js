@@ -27,7 +27,7 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes
         targetItems[key] = tnJson;
       }
 
-      setLoadingMessage(bookId);
+      setLoadingMessage(bookId.toUpperCase());
       for (let index = 0; index < sourceNotes.length; index++) {
         const sourceItem = sourceNotes[index];
         const previousSourceItem = sourceNotes[index - 1];
@@ -41,7 +41,6 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes
         const reference = getReference(sourceChapter, sourceVerse);
         const previousNoteJson = targetItems[previousReference];
         const noteJson = targetItems[reference];
-
 
         if (previousSourceVerse && previousNoteJson && Object.keys(previousNoteJson).length && sourceVerse > previousSourceVerse) {
           populateExtraSourceNotes({
@@ -266,25 +265,25 @@ function populateHeaders({
 }) {
   const referenceHeader = item?.Reference
   const resultItem = {
-    Book: bookId,
+    Book: bookId.toUpperCase(),
     id: nanoid(),
   }
 
   if (item && referenceHeader && item?.Question && item?.Response) {
-    resultItem.Reference = referenceHeader.trim()
-    resultItem.Question = heading.trim()
-    resultItem.Response = raw.trim()
+    resultItem.Reference = referenceHeader?.trim()
+    resultItem.Question = heading?.trim()
+    resultItem.Response = raw?.trim()
   } else if (item && item?.Reference && item?.Note && item?.Quote) {
-    resultItem.Reference = referenceHeader.trim()
+    resultItem.Reference = referenceHeader?.trim()
     resultItem.Note = raw
   } else if (item && item?.Reference && item?.Annotation) {
-    resultItem.Reference = referenceHeader.trim()
-    resultItem.Annotation = raw.trim()
+    resultItem.Reference = referenceHeader?.trim()
+    resultItem.Annotation = raw?.trim()
   } else {
     resultItem.Chapter = parseNumber(sourceChapter)
     resultItem.Verse = parseNumber(sourceVerse)
-    resultItem.GLQuote = heading.trim()
-    resultItem.OccurrenceNote = raw.trim()
+    resultItem.GLQuote = heading?.trim()
+    resultItem.OccurrenceNote = raw?.trim()
   }
 
   return resultItem
