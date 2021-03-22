@@ -69,7 +69,7 @@ export default function WorkingArea({
     sourceNoteVersion = `${language?.title} ${subject} - Version ${version}`
   }
 
-  const sourceHeaders = Object.keys(sourceNotes[0]).map(key => ({
+  const sourceHeaders = Object.keys(sourceNotes[0] || {}).map(key => ({
     Header: key,
     accessor: key
   }))
