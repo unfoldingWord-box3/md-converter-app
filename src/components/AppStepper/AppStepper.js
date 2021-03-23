@@ -17,6 +17,7 @@ import BooksList from '../BooksList';
 import useFetch from '../../hooks/useFetch';
 import LoadingIndicator from '../LoadingIndicator/LoadingIndicator';
 import { getActiveStep } from '../../helpers/getActiveStep';
+import getSupportedResourceId from '../../helpers/getSupportedResourceId';
 
 function AppStepper() {
   const classes = useStyles();
@@ -27,6 +28,7 @@ function AppStepper() {
     0: !!authentication,
     1: !!sourceRepository,
   });
+
   const { tree_url } = sourceRepository || {};
   const { data, isLoading, isError } = useFetch(tree_url, 'repo-data');
 
@@ -50,14 +52,14 @@ function AppStepper() {
     },
     {
       label: 'Repository',
-      instructions: 'Select a Markdown translationNotes Repository to Convert to TSV',
+      instructions: 'Select a markdown resource (e.g., tn, tq) to Convert to TSV',
       component: () => (repositoryComponent),
     },
     {
       label: 'Book',
-      instructions: 'Select a Book to Start a Project',
+      instructions: 'Select a book to start a project',
       component: () => (
-        <BooksList files={data?.tree} />
+        <BooksList files={data?.tree} resourceId={getSupportedResourceId(sourceRepository)} />
       ),
     },
   ];

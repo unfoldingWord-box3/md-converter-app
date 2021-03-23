@@ -22,41 +22,6 @@ const initialState = {
 
 function tsvDataReducer(state, action) {
   switch (action.type) {
-    case 'SET_TSV_DATA':
-      return action.payload;
-    case 'STORE_TARGET_NOTES':
-      return {
-        ...state,
-        targetNotes: {
-          ...state.targetNotes,
-          [action.bookId]: action.targetNotes,
-        }
-      };
-    case 'STORE_SOURCE_NOTES':
-      return {
-        ...state,
-        sourceNotes: {
-          ...state.sourceNotes,
-          [action.bookId]: action.sourceNotes,
-          manifest: action.manifest,
-        }
-      };
-    case 'SET_SOURCE_NOTES_MANIFEST':
-      return {
-        ...state,
-        sourceNotes: {
-          ...state.sourceNotes,
-          manifest: action.manifest,
-        }
-      };
-    case 'STORE_EN_TSVS':
-      return {
-        ...state,
-        glTsvs: {
-          ...state.glTsvs,
-          en: action.enTsvs || {},
-        }
-      };
     case 'SET_BOOK_ID':
       return {
         ...state,
@@ -119,45 +84,26 @@ export default function TsvDataContextProvider(props) {
     }
   }, [state])
 
-  const fetchEnglishTsvs = async () => {
-    const enTsvs = await fetchEnglishTsvsAction(reducerName);
-
-    dispatch({
-      type: 'STORE_EN_TSVS',
-      enTsvs,
-    })
-  }
-
-  const fetchTnMarkdown = async (bookUrl, bookId, manifest) => {
+  const fetchTnMarkdown = async (bookUrl, bookId, targetManifest, resourceId) => {
     console.info(`Fetching ${bookId} Markdown files and converting to JSON format`)
     setIsLoading(true);
-    const enTsvUrl = state.glTsvs.en[bookId];
-    const { manifest: sourceManifest } = state.glTsvs.en;
-    const sourceNotes = await getGlTsvContent(enTsvUrl);
+    const resourceContentUrls = await fetchEnglishTsvsAction(resourceId);
+    const bookContentUrl = resourceContentUrls[bookId];
+    const sourceNotes = await getGlTsvContent(bookContentUrl);
     setLoadingMessage(null);
-    const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, reducerName, sourceNotes, setLoadingMessage)
+    const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, sourceNotes, setLoadingMessage)
       .catch(() => setIsError(true));
-    const { dublin_core: { language } } = manifest;
-
-    dispatch({
-      type: 'STORE_SOURCE_NOTES',
-      bookId,
-      sourceNotes,
-      manifest: sourceManifest,
-    })
-
-    dispatch({
-      type: 'STORE_TARGET_NOTES',
-      targetNotes,
-      bookId,
-    })
+    const { dublin_core: { language } } = targetManifest;
 
     setProject({
-      name: `${language.identifier}_${bookId}`,
+      name: `${language?.identifier}_${bookId}_${resourceId}`,
       bookId,
+      resourceId,
       sourceNotes,
       targetNotes,
-      languageId: language.identifier,
+      sourceManifest: resourceContentUrls['manifest'] || {},
+      targetManifest,
+      languageId: language?.identifier,
       timestamp: generateTimestamp(),
     })
 
@@ -170,11 +116,6 @@ export default function TsvDataContextProvider(props) {
   const setProject = (project) => {
     setSavedBackup(false);
     console.info('setProject()');
-    const { manifest } = state.glTsvs.en;
-
-    if (manifest) {
-      dispatch({ type: 'SET_SOURCE_NOTES_MANIFEST', manifest })
-    }
 
     dispatch({ type: 'SET_CURRENT_PROJECT', project })
   }
@@ -223,7 +164,6 @@ export default function TsvDataContextProvider(props) {
     setSavedBackup,
     loadingMessage,
     fetchTnMarkdown,
-    fetchEnglishTsvs,
     saveProjectChanges,
    }
 

@@ -56,7 +56,7 @@ function Table({
 }) {
   const classes = useStyles();
   const initialState = {
-    hiddenColumns: ['ID', 'SupportReference', 'OrigQuote', 'Occurrence'],
+    hiddenColumns: ['ID', 'SupportReference', 'OrigQuote', 'Occurrence', 'Quote', 'Tags'],
   }
   // Use the state and functions returned from useTable to build your UI
   const {
