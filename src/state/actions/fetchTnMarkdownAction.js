@@ -35,8 +35,8 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes
         const sourceChapter = parseNumber(sourceItem.Chapter || bibleBeferenceArray[0]);
         const sourceVerse = parseNumber(sourceItem.Verse || bibleBeferenceArray[1]);
         const previousBibleBeference = getchapterVerseFromReference(previousSourceItem)
-        const previousSourceChapter = previousSourceItem ? parseNumber(previousSourceItem.Chapter || previousBibleBeference[0]) : null;
-        const previousSourceVerse = previousSourceItem ? parseNumber(previousSourceItem.Verse || previousBibleBeference[1]) : null;
+        const previousSourceChapter = previousSourceItem || previousBibleBeference ? parseNumber(previousSourceItem.Chapter || previousBibleBeference[0]) : null;
+        const previousSourceVerse = previousSourceItem || previousBibleBeference ? parseNumber(previousSourceItem.Verse || previousBibleBeference[1]) : null;
         const previousReference = getReference(previousSourceChapter, previousSourceVerse);
         const reference = getReference(sourceChapter, sourceVerse);
         const previousNoteJson = targetItems[previousReference];
@@ -182,37 +182,40 @@ function populateExtraSourceNotes({
   previousSourceItem,
 }) {
   const keys = Object.keys(json);
-  const key = keys[0];
-  const { heading, raw } = json[key];
 
-  const resultItem = populateHeaders({
-    raw,
-    bookId,
-    nanoid,
-    heading,
-    item: previousSourceItem,
-    sourceVerse: parseNumber(verse),
-    sourceChapter: parseNumber(chapter),
-  })
+  for (let j = 0; j < keys.length; j++) {
+    const key = keys[j];
+    const { heading, raw } = json[key];
 
-  result.push(resultItem)
+    const resultItem = populateHeaders({
+      raw,
+      bookId,
+      nanoid,
+      heading,
+      item: previousSourceItem,
+      sourceVerse: parseNumber(verse),
+      sourceChapter: parseNumber(chapter),
+    })
 
-  const emptySourceNote = populateHeaders({
-    bookId,
-    nanoid,
-    raw: '',
-    heading: '',
-    item: previousSourceItem,
-    sourceVerse: parseNumber(verse),
-    sourceChapter: parseNumber(chapter),
-  })
+    result.push(resultItem)
 
-  const extraIndexNumber = extraSourceNotes.length >= 0 ? extraSourceNotes.length : 1;
+    const emptySourceNote = populateHeaders({
+      bookId,
+      nanoid,
+      raw: '',
+      heading: '',
+      item: previousSourceItem,
+      sourceVerse: parseNumber(verse),
+      sourceChapter: parseNumber(chapter),
+    })
 
-  extraSourceNotes.push({
-    emptySourceNote,
-    index: index + extraIndexNumber,
-  })
+    const extraIndexNumber = extraSourceNotes.length >= 0 ? extraSourceNotes.length : 1;
+
+    extraSourceNotes.push({
+      emptySourceNote,
+      index: index + extraIndexNumber,
+    })
+  }
 }
 
 function prependZero(number) {
@@ -263,7 +266,7 @@ function populateHeaders({
   sourceVerse,
   sourceChapter,
 }) {
-  const referenceHeader = item?.Reference
+  const referenceHeader = sourceChapter && sourceVerse ? `${sourceChapter}:${sourceVerse}` : item?.Reference
   const resultItem = {
     Book: bookId.toUpperCase(),
     id: nanoid(),
