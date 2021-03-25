@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useContext, useCallback, useRef } from 'react';
 import { useTable } from 'react-table';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -63,16 +63,17 @@ const DraggableTable = ({
   setSavedBackup,
 }) => {
   const classes = useStyles();
-  const [records, setRecords] = React.useState(data);
-  const { saveProjectChanges } = React.useContext(TsvDataContext);
+  const [records, setRecords] = useState(data);
+  const { saveProjectChanges } = useContext(TsvDataContext);
 
   useEffect(() => {
     saveProjectChanges(records);
     // eslint-disable-next-line
   }, [records])
 
-  const getRowId = React.useCallback((row) => {
-    return `${row.id}-${row.Chapter}-${row.Verse}`
+  const getRowId = useCallback((row) => {
+    const reference = row.Reference ? `${row.Reference}` : `${row.Chapter}-${row.Verse}`
+    return `${row.id}-${reference}`
   }, [])
 
   const {
@@ -154,8 +155,8 @@ const DraggableTable = ({
 const DND_ITEM_TYPE = 'row';
 
 const Row = ({ row, index, moveRow }) => {
-  const dropRef = React.useRef(null);
-  const dragRef = React.useRef(null);
+  const dropRef = useRef(null);
+  const dragRef = useRef(null);
 
   const [, drop] = useDrop({
     accept: DND_ITEM_TYPE,
@@ -228,7 +229,7 @@ const Row = ({ row, index, moveRow }) => {
 const Record = ({
   cell,
 }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleTooltipClose = () => {
     setOpen(false);
