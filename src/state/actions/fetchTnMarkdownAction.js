@@ -5,13 +5,13 @@ import base64DecodeUnicode from '../../helpers/base64DecodeUnicode';
 export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes, setLoadingMessage) {
   const result = [];
   const extraSourceNotes = [];
+  const targetItems = {};
+  const nanoid = customAlphabet('1234567890abcdef', 4);
 
   try {
     if (navigator.onLine) {
-      const nanoid = customAlphabet('1234567890abcdef', 4);
       const data = await fetch(bookUrl + '?recursive=1');
       const bookData = await data.json();
-      const targetItems = {};
       const items = bookData.tree.filter(item => item.type === 'blob');
 
       // TODO: Debug perf in loop below
@@ -152,6 +152,62 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes
       return result;
     }
 
+    console.log({ extraSourceNotes, targetItems, result })
+
+    const targetItemKeys = Object.keys(targetItems)
+
+    for (let i = 0; i < targetItemKeys.length; i++) {
+      const key = targetItemKeys[i]
+      const targetItem = targetItems[key]
+      const valueKeys = Object.keys(targetItem)
+
+      if (valueKeys.length > 0) {
+          console.log({
+            key,
+            valueKeys,
+            targetItem,
+          })
+          const references = key.split('/')
+          const chapter = parseInt(references[0])
+          const verse = parseInt(references[1])
+          const referenceKey = `${chapter}:${verse}`
+          const index = result.findIndex(({ Reference }) => {
+            console.log({
+              key,
+              Reference,
+              referenceKey,
+              'Reference === referenceKey': Reference === referenceKey,
+              comparison: `${chapter}:${verse + 1}`,
+              compare: Reference === `${references[0]}:${verse + 1}`
+            })
+            return Reference === referenceKey || Reference === `${chapter}:${verse + 1}` || Reference === `${chapter}:${verse + 2}`
+          })
+
+          console.log('index', index)
+          if (index) {
+            for (let j = 0; j < valueKeys.length; j++) {
+              const valueKey = valueKeys[j]
+              const { heading, raw } = targetItem[valueKey]
+              const newTargetRow = populateHeaders({
+                raw,
+                bookId,
+                nanoid,
+                heading,
+                sourceVerse: verse,
+                sourceChapter: chapter,
+                item: result[index],
+              })
+              console.log('value', newTargetRow)
+
+              // result.splice(index, 0, newTargetRow})
+            }
+          }
+        // }
+      }
+    }
+
+    console.log({ extraSourceNotes })
+
     if (extraSourceNotes.length) {
       for (let i = 0; i < extraSourceNotes.length; i++) {
         const { index, emptySourceNote } = extraSourceNotes[i]
@@ -215,6 +271,8 @@ function populateExtraSourceNotes({
       emptySourceNote,
       index: index + extraIndexNumber,
     })
+
+    delete json[key];
   }
 }
 
