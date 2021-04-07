@@ -152,38 +152,50 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes
       return result;
     }
 
-    console.log({ extraSourceNotes, targetItems, result })
+    if (extraSourceNotes.length) {
+      for (let i = 0; i < extraSourceNotes.length; i++) {
+        const { index, emptySourceNote } = extraSourceNotes[i]
+        sourceNotes.splice(index, 0, emptySourceNote)
+      }
+    }
 
     const targetItemKeys = Object.keys(targetItems)
 
+    // Still missing target rows? then ...
     for (let i = 0; i < targetItemKeys.length; i++) {
       const key = targetItemKeys[i]
       const targetItem = targetItems[key]
-      const valueKeys = Object.keys(targetItem)
+      const valueKeys = Object.keys(targetItem).reverse()
 
       if (valueKeys.length > 0) {
-          console.log({
-            key,
-            valueKeys,
-            targetItem,
-          })
           const references = key.split('/')
           const chapter = parseInt(references[0])
           const verse = parseInt(references[1])
           const referenceKey = `${chapter}:${verse}`
-          const index = result.findIndex(({ Reference }) => {
-            console.log({
-              key,
-              Reference,
-              referenceKey,
-              'Reference === referenceKey': Reference === referenceKey,
-              comparison: `${chapter}:${verse + 1}`,
-              compare: Reference === `${references[0]}:${verse + 1}`
-            })
-            return Reference === referenceKey || Reference === `${chapter}:${verse + 1}` || Reference === `${chapter}:${verse + 2}`
+          let addition = 0
+
+          let index = result.findIndex(({ Reference }) => {
+            const condition1 = Reference === referenceKey
+            const condition2 = Reference === `${chapter}:${verse + 1}`
+            const condition3 = Reference === `${chapter}:${verse + 2}`
+            const condition4 = Reference === `${chapter}:${verse + 3}`
+
+            // Based on the condition used we determined how much to add to the index where we'll add the missing item.
+            if (condition1) {
+              addition = 1 // +1
+            } else if (condition2) {
+              addition = 0 // +0
+            } else if (condition3) {
+              addition = 0 // +0
+            } else if (condition4) {
+              addition = 0 // +0
+            }
+
+            return condition1 || condition2 || condition3 || condition4
           })
 
-          console.log('index', index)
+          index = index + addition
+
           if (index) {
             for (let j = 0; j < valueKeys.length; j++) {
               const valueKey = valueKeys[j]
@@ -194,24 +206,23 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes
                 nanoid,
                 heading,
                 sourceVerse: verse,
+                item: sourceNotes[0],
                 sourceChapter: chapter,
-                item: result[index],
               })
-              console.log('value', newTargetRow)
+              const emptySourceNote = populateHeaders({
+                bookId,
+                nanoid,
+                raw: '',
+                heading: '',
+                sourceVerse: verse,
+                item: sourceNotes[0],
+                sourceChapter: chapter,
+              })
 
-              // result.splice(index, 0, newTargetRow})
+              result.splice(index, 0, newTargetRow)
+              sourceNotes.splice(index, 0, emptySourceNote)
             }
           }
-        // }
-      }
-    }
-
-    console.log({ extraSourceNotes })
-
-    if (extraSourceNotes.length) {
-      for (let i = 0; i < extraSourceNotes.length; i++) {
-        const { index, emptySourceNote } = extraSourceNotes[i]
-        sourceNotes.splice(index, 0, emptySourceNote)
       }
     }
 
