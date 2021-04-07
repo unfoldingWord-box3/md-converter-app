@@ -67,6 +67,7 @@ export default function BooksList({
 
     fetchManifest()
   }, [manifestUrl, setIsLoading])
+
   const bookIds = Object.keys(BIBLES_ABBRV_INDEX);
   const books = files.filter(({ path: bookId }) => bookIds.includes(bookId) && !path.extname(bookId)).sort((a, b) => bookIds.indexOf(a.path) - bookIds.indexOf(b.path));
 
