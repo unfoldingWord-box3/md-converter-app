@@ -5,13 +5,13 @@ import base64DecodeUnicode from '../../helpers/base64DecodeUnicode';
 export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes, setLoadingMessage) {
   const result = [];
   const extraSourceNotes = [];
+  const targetItems = {};
+  const nanoid = customAlphabet('1234567890abcdef', 4);
 
   try {
     if (navigator.onLine) {
-      const nanoid = customAlphabet('1234567890abcdef', 4);
       const data = await fetch(bookUrl + '?recursive=1');
       const bookData = await data.json();
-      const targetItems = {};
       const items = bookData.tree.filter(item => item.type === 'blob');
 
       // TODO: Debug perf in loop below
@@ -159,6 +159,73 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes
       }
     }
 
+    const targetItemKeys = Object.keys(targetItems)
+
+    // Still missing target rows? then ...
+    for (let i = 0; i < targetItemKeys.length; i++) {
+      const key = targetItemKeys[i]
+      const targetItem = targetItems[key]
+      const valueKeys = Object.keys(targetItem).reverse()
+
+      if (valueKeys.length > 0) {
+          const references = key.split('/')
+          const chapter = parseInt(references[0])
+          const verse = parseInt(references[1])
+          const referenceKey = `${chapter}:${verse}`
+          let addition = 0
+
+          let index = result.findIndex(({ Reference }) => {
+            const condition1 = Reference === referenceKey
+            const condition2 = Reference === `${chapter}:${verse + 1}`
+            const condition3 = Reference === `${chapter}:${verse + 2}`
+            const condition4 = Reference === `${chapter}:${verse + 3}`
+
+            // Based on the condition used we determined how much to add to the index where we'll add the missing item.
+            if (condition1) {
+              addition = 1 // +1
+            } else if (condition2) {
+              addition = 0 // +0
+            } else if (condition3) {
+              addition = 0 // +0
+            } else if (condition4) {
+              addition = 0 // +0
+            }
+
+            return condition1 || condition2 || condition3 || condition4
+          })
+
+          index = index + addition
+
+          if (index) {
+            for (let j = 0; j < valueKeys.length; j++) {
+              const valueKey = valueKeys[j]
+              const { heading, raw } = targetItem[valueKey]
+              const newTargetRow = populateHeaders({
+                raw,
+                bookId,
+                nanoid,
+                heading,
+                sourceVerse: verse,
+                item: sourceNotes[0],
+                sourceChapter: chapter,
+              })
+              const emptySourceNote = populateHeaders({
+                bookId,
+                nanoid,
+                raw: '',
+                heading: '',
+                sourceVerse: verse,
+                item: sourceNotes[0],
+                sourceChapter: chapter,
+              })
+
+              result.splice(index, 0, newTargetRow)
+              sourceNotes.splice(index, 0, emptySourceNote)
+            }
+          }
+      }
+    }
+
     return result;
   } catch (error) {
     console.error(error);
@@ -215,6 +282,8 @@ function populateExtraSourceNotes({
       emptySourceNote,
       index: index + extraIndexNumber,
     })
+
+    delete json[key];
   }
 }
 
