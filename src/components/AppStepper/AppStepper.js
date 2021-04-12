@@ -1,13 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Stepper,
   Step,
-  StepButton,
-  Button,
-  Typography,
   Paper,
+  Button,
+  Stepper,
   Divider,
+  Backdrop,
+  StepButton,
+  Typography,
+  CircularProgress,
 } from '@material-ui/core';
 import {
   RepositoryContext,
@@ -15,14 +17,16 @@ import {
 } from 'gitea-react-toolkit';
 import BooksList from '../BooksList';
 import useFetch from '../../hooks/useFetch';
-import LoadingIndicator from '../LoadingIndicator/LoadingIndicator';
+import LoadingIndicator from '../LoadingIndicator';
 import { getActiveStep } from '../../helpers/getActiveStep';
 import getSupportedResourceId from '../../helpers/getSupportedResourceId';
+import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider'
 
 function AppStepper() {
   const classes = useStyles();
   const { state: authentication, component: authenticationComponent } = useContext(AuthenticationContext);
   const { state: sourceRepository, component: repositoryComponent } = useContext(RepositoryContext);
+  const { isLoading: isFetching } = useContext(TsvDataContext);
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = useState({
     0: !!authentication,
@@ -87,11 +91,14 @@ function AppStepper() {
   if (steps[activeStep]) {
     return (
       <Paper style={{ alignSelf: 'center', width: '100%' }}>
+        <Backdrop className={classes.backdrop} open={isFetching}>
+          <CircularProgress color="inherit" size={80} />
+        </Backdrop>
         <div className={classes.root}>
           <Stepper activeStep={activeStep}>
             {steps.map((step, index) => (
               <Step key={step.label}>
-                <StepButton onClick={handleStep(index)} completed={completed[index]}>
+                <StepButton onClick={handleStep(index)} completed={completed[index]} disabled={isFetching}>
                   {step.label}
                 </StepButton>
               </Step>
@@ -110,7 +117,7 @@ function AppStepper() {
               }
               <Divider className={classes.divider} />
               <div className={classes.buttons}>
-                <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
+                <Button disabled={activeStep === 0 || isFetching} onClick={handleBack} className={classes.button}>
                   Back
                 </Button>
                 <Button
@@ -153,6 +160,10 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
   },
 }));
 

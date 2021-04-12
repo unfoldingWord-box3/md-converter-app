@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import ric from 'ric-shim'
 import equal from 'deep-equal';
 import * as cacheLibrary from 'money-clip';
@@ -61,7 +61,7 @@ function tsvDataReducer(state, action) {
 }
 
 export default function TsvDataContextProvider(props) {
-  const [state, dispatch] = React.useReducer(tsvDataReducer, initialState);
+  const [state, dispatch] = useReducer(tsvDataReducer, initialState);
   const { isLoading, setIsLoading, setIsError, setLoadingMessage, loadingMessage } = useLoading();
   const [savedBackup, setSavedBackup] = useState(false);
 
@@ -85,30 +85,35 @@ export default function TsvDataContextProvider(props) {
   }, [state])
 
   const fetchTnMarkdown = async (bookUrl, bookId, targetManifest, resourceId) => {
-    console.info(`Fetching ${bookId} Markdown files and converting to JSON format`)
-    setIsLoading(true);
-    const resourceContentUrls = await fetchEnglishTsvsAction(resourceId);
-    const bookContentUrl = resourceContentUrls[bookId];
-    const sourceNotes = await getGlTsvContent(bookContentUrl);
-    setLoadingMessage(null);
-    const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, sourceNotes, setLoadingMessage)
-      .catch(() => setIsError(true));
-    const { dublin_core: { language } } = targetManifest;
+    try {
+      removeProject()
+      console.info(`Fetching ${bookId} Markdown files and converting to JSON format`)
+      setIsLoading(true);
+      const resourceContentUrls = await fetchEnglishTsvsAction(resourceId);
+      const bookContentUrl = resourceContentUrls[bookId];
+      const sourceNotes = await getGlTsvContent(bookContentUrl);
+      setLoadingMessage(null);
+      const targetNotes = await fetchTnMarkdownAction(bookUrl, bookId, sourceNotes, setLoadingMessage)
+        .catch(() => setIsError(true));
+      const { dublin_core: { language } } = targetManifest;
 
-    setProject({
-      name: `${language?.identifier}_${bookId}_${resourceId}`,
-      bookId,
-      resourceId,
-      sourceNotes,
-      targetNotes,
-      sourceManifest: resourceContentUrls['manifest'] || {},
-      targetManifest,
-      languageId: language?.identifier,
-      timestamp: generateTimestamp(),
-    })
+      setProject({
+        name: `${language?.identifier}_${bookId}_${resourceId}`,
+        bookId,
+        resourceId,
+        sourceNotes,
+        targetNotes,
+        sourceManifest: resourceContentUrls['manifest'] || {},
+        targetManifest,
+        languageId: language?.identifier,
+        timestamp: generateTimestamp(),
+      })
 
-    setBookId(bookId);
-    setIsLoading(false);
+      setBookId(bookId);
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const setBookId = (bookId) => dispatch({ type: 'SET_BOOK_ID', bookId })

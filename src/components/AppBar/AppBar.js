@@ -20,7 +20,7 @@ export default function AppBar({
   toggleProjects,
 }) {
   const [filepath, setFilepath] = useState();
-  const { removeProject } = useContext(TsvDataContext);
+  const { removeProject, isLoading } = useContext(TsvDataContext);
   const noPrompt = !currentProject ? true : savedBackup;
   const promptText = 'Changes you made may not be locally backed up. Do you wish to continue?';
 
@@ -85,6 +85,7 @@ export default function AppBar({
       <ApplicationBar
         title={title}
         drawerMenu={drawerMenu}
+        hideRepositoryMenu={isLoading}
         drawerMenuProps={{
           hideRepoContents: true,
           closeOnListItemsClick: true,

@@ -12,9 +12,6 @@ const useStyles = makeStyles((theme) => ({
     margin: '30px',
     padding: '30px',
   },
-  message: {
-    color: theme.palette.primary.main,
-  },
   p: {
     fontSize: '20px',
     fontWeight: 'bold',
@@ -24,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LoadingIndicator({
   size,
+  color,
   message,
   secondaryMessage,
 }) {
@@ -31,14 +29,17 @@ export default function LoadingIndicator({
 
   return (
     <div className={classes.root}>
-      <Loader type="ThreeDots" color="#2B374B" height={size} width={size} />
-      <h1 className={classes.message}>{`${message} ${secondaryMessage || ''}`}</h1>
+      <Loader type="ThreeDots" color={color} height={size} width={size} />
+      <h1 style={{ color }}>
+        {`${message} ${secondaryMessage || ''}`}
+      </h1>
     </div>
   );
 }
 
 LoadingIndicator.defaultProps = {
   size: 300,
+  color: '#2B374B',
   message: 'Loading ...',
 };
 
