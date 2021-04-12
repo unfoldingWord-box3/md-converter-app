@@ -14,9 +14,9 @@ export default function exportToTSV(sourceNotes, targetNotes, bookId, resourceId
   for (let i = 0; i < sourceNotes.length; i++) {
     const sourceNote = sourceNotes[i];
     const targetNote = targetNotes[i];
-    const finalNote = sourceNote;
+    const finalNote = { ...sourceNote };
 
-    if (targetNote?.Reference && targetNote?.Question && targetNote?.Response) {
+    if (targetNote?.Reference && typeof targetNote?.Question === 'string' && typeof targetNote?.Response === 'string') {
       finalNote.Question = targetNote?.Question?.trim()
       finalNote.Response = targetNote?.Response?.trim()
     } else if (targetNote?.Reference && targetNote?.Note && targetNote?.Quote) {
