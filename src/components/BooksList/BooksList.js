@@ -81,15 +81,17 @@ export default function BooksList({
       if (window.confirm(`There's currently a ${bookId} ${resourceId} project in your project list, Do you want to overwrite it?`)) {
         setIsLoading(true);
         await fetchTnMarkdown(url, bookId, manifest, resourceId);
+        setIsLoading(false);
       }
     } else {
       setIsLoading(true);
       await fetchTnMarkdown(url, bookId, manifest, resourceId);
+      setIsLoading(false);
     }
   }
 
   if (isLoading) {
-    return <LoadingIndicator secondaryMessage={loadingMessage} />;
+    return <LoadingIndicator message={loadingMessage ? 'Processing ...' : 'Loading ...'} secondaryMessage={loadingMessage} />;
   } else if (!hasMarkdownContent || books.length === 0 || !books) {
     return (
       <h2 className={classes.centered}>
