@@ -4,9 +4,11 @@
  * @returns 'tq', 'tn' or null
  */
 export default function getSupportedResourceId(sourceRepository) {
-  const tqLabels = ['Translation Questions', 'translationQuestions', 'tQuestions', 'TranslationQuestions']
+  // const tqLabels = ['Translation Questions', 'translationQuestions', 'tQuestions', 'TranslationQuestions']
   const tnLabels = ['Translation Notes', 'translationNotes', 'tNotes', 'TranslationNotes']
-  const isTnOrTq = (str) => tqLabels.find(element => str.includes(element)) ? 'tq' : tnLabels.find(element => str.includes(element)) ? 'tn' : null
+  const isTnOrTq = (str) =>
+    // tqLabels.find(element => str.includes(element)) ? 'tq' : // TODO: Temporary disabled tQ
+    tnLabels.find(element => str.includes(element)) ? 'tn' : null
 
   if (sourceRepository?.subject) {
     const subject = sourceRepository?.subject
