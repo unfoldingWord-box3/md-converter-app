@@ -53,20 +53,22 @@ export default function BooksList({
 
   useEffect(() => {
     async function fetchManifest() {
-      setIsLoading(true);
-      const emptyManifest = { dublin_core: {} }
-      const manifest = manifestUrl ? await getManifest(manifestUrl) : emptyManifest;
-      let { dublin_core: { format } } = manifest;
+      if (resourceId) {
+        setIsLoading(true);
+        const emptyManifest = { dublin_core: {} }
+        const manifest = manifestUrl ? await getManifest(manifestUrl) : emptyManifest;
+        let { dublin_core: { format } } = manifest;
 
-      if (!format) format = manifest.format
+        if (!format) format = manifest.format
 
-      setHasMarkdownContent(format?.includes('markdown') || false)
-      setManifest(manifest || emptyManifest)
-      setIsLoading(false);
+        setHasMarkdownContent(format?.includes('markdown') || false)
+        setManifest(manifest || emptyManifest)
+        setIsLoading(false);
+      }
     }
 
     fetchManifest()
-  }, [manifestUrl, setIsLoading])
+  }, [manifestUrl, setIsLoading, resourceId])
 
   const bookIds = Object.keys(BIBLES_ABBRV_INDEX);
   const books = files.filter(({ path: bookId }) => bookIds.includes(bookId) && !path.extname(bookId)).sort((a, b) => bookIds.indexOf(a.path) - bookIds.indexOf(b.path));

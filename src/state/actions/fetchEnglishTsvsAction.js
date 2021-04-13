@@ -17,7 +17,6 @@ export default async function fetchEnglishTsvsAction(resourceId) {
       if (resourceId === 'tQ' || resourceId === 'tq') {
         // TODO: Use newFormat branch until it's merged w/ master
         tsvs = await fetchTsvs('https://git.door43.org/api/v1/repos/unfoldingWord/en_tq/git/trees/newFormat');
-
       } else {
         tsvs = await fetchTsvs('https://git.door43.org/api/v1/repos/unfoldingWord/en_tn/git/trees/master');
       }

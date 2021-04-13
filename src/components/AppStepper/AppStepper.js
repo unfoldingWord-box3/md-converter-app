@@ -56,7 +56,7 @@ function AppStepper() {
     },
     {
       label: 'Repository',
-      instructions: 'Select a markdown resource (e.g., tn, tq) to Convert to TSV',
+      instructions: 'Select a markdown resource (Only tn for now) to Convert to TSV',
       component: () => (repositoryComponent),
     },
     {
