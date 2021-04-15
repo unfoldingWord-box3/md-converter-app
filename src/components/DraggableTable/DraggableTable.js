@@ -62,10 +62,15 @@ const DraggableTable = ({
   savedBackup,
   exportProject,
   setSavedBackup,
+  toggleRecordView,
 }) => {
   const classes = useStyles();
   const [records, setRecords] = useState(data);
   const { saveProjectChanges } = useContext(TsvDataContext);
+
+  useEffect(() => {
+    setRecords(data)
+  }, [data])
 
   useEffect(() => {
     saveProjectChanges(records);
@@ -143,6 +148,7 @@ const DraggableTable = ({
                     index={index}
                     moveRow={moveRow}
                     {...row.getRowProps()}
+                    toggleRecordView={toggleRecordView}
                   />
                 )
             )}
@@ -155,7 +161,7 @@ const DraggableTable = ({
 
 const DND_ITEM_TYPE = 'row';
 
-const Row = ({ row, index, moveRow }) => {
+const Row = ({ row, index, moveRow, toggleRecordView }) => {
   const dropRef = useRef(null);
   const dragRef = useRef(null);
 
@@ -219,7 +225,7 @@ const Row = ({ row, index, moveRow }) => {
       ref={dropRef}
       style={{ opacity }}
     >
-      {row.cells.map((cell, key) => <Record key={key} cell={cell} />)}
+      {row.cells.map((cell, key) => <Record key={key} cell={cell} index={index} toggleRecordView={toggleRecordView}/>)}
       <TableCell ref={dragRef} style={{ maxWidth: '50px', padding: '5px', cursor }} title="Drag">
         <DragIndicatorIcon />
       </TableCell>
@@ -229,6 +235,8 @@ const Row = ({ row, index, moveRow }) => {
 
 const Record = ({
   cell,
+  index,
+  toggleRecordView,
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -240,8 +248,14 @@ const Record = ({
     setOpen(true);
   };
 
-  const isIncludedCheckbox = cell.column.Header === 'Included'
+  const columnHeader = cell.column.Header
+  const isIncludedCheckbox = columnHeader === 'Included'
   const tcStyle = { borderLeft: '1px solid rgba(224, 224, 224, 1)' }
+
+  if ((columnHeader === "Question" || columnHeader === "Response") && cell?.row?.values?.Included === false) {
+    tcStyle.textDecoration = 'line-through';
+    tcStyle.backgroundColor = 'rgba(0, 0, 0, 0.04)';
+  }
 
   if (isIncludedCheckbox) tcStyle.textAlign = 'center'
 
@@ -249,10 +263,10 @@ const Record = ({
     <ClickAwayListener onClickAway={handleTooltipClose}>
       <HtmlTooltip
         arrow
-        open={isIncludedCheckbox ? false : open}
-        disableHoverListener
         title={cell.value}
+        disableHoverListener
         onClose={handleTooltipClose}
+        open={isIncludedCheckbox ? false : open}
       >
         <TableCell
           {...cell.getCellProps()}
@@ -261,11 +275,11 @@ const Record = ({
         >
           {isIncludedCheckbox ?
             <Checkbox
-              checked={cell.value}
-              // onChange={handleChange}
               name="Included"
               color="primary"
+              checked={cell.value}
               style={{ padding: '0px' }}
+              onChange={(e) => toggleRecordView(e, index)}
             />
             :
             cell.render('Cell')

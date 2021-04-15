@@ -1,6 +1,11 @@
 import { customAlphabet } from 'nanoid/non-secure'
-import mdToJson from '../../helpers/md2json';
+import getchapterVerseFromReference from '../../helpers/getchapterVerseFromReference';
+import populateExtraSourceNotes from '../../helpers/populateExtraSourceNotes';
+import convertMarkdownToJson from '../../helpers/convertMarkdownToJson';
 import base64DecodeUnicode from '../../helpers/base64DecodeUnicode';
+import populateHeaders from '../../helpers/populateHeaders';
+import getReference from '../../helpers/getReference';
+import parseNumber from '../../helpers/parseNumber';
 
 export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes, setLoadingMessage) {
   const result = [];
@@ -231,134 +236,4 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes
     console.error(error);
     return result;
   }
-}
-
-function getReference(chapter, verse) {
-  return `${prependZero(chapter)}/${prependZero(verse)}`;
-}
-
-function populateExtraSourceNotes({
-  json,
-  index,
-  verse,
-  bookId,
-  result,
-  nanoid,
-  chapter,
-  extraSourceNotes,
-  previousSourceItem,
-}) {
-  const keys = Object.keys(json);
-
-  for (let j = 0; j < keys.length; j++) {
-    const key = keys[j];
-    const { heading, raw } = json[key];
-
-    const resultItem = populateHeaders({
-      raw,
-      bookId,
-      nanoid,
-      heading,
-      item: previousSourceItem,
-      sourceVerse: parseNumber(verse),
-      sourceChapter: parseNumber(chapter),
-    })
-
-    result.push(resultItem)
-
-    const emptySourceNote = populateHeaders({
-      bookId,
-      nanoid,
-      raw: '',
-      heading: '',
-      item: previousSourceItem,
-      sourceVerse: parseNumber(verse),
-      sourceChapter: parseNumber(chapter),
-    })
-
-    const extraIndexNumber = extraSourceNotes.length >= 0 ? extraSourceNotes.length : 1;
-
-    extraSourceNotes.push({
-      emptySourceNote,
-      index: index + extraIndexNumber,
-    })
-
-    delete json[key];
-  }
-}
-
-function prependZero(number) {
-  if (typeof number === 'number' && number <= 9)
-    return "0" + number;
-  else
-    return number;
-}
-
-function parseNumber(number) {
-  if (typeof number === 'string') {
-    if (number.includes('.')) number = number.split('.').slice(0, -1).join('.')
-  }
-
-  const result = typeof number === 'number' || !isNaN(parseInt(number)) ?
-    parseInt(number) : number;
-  return result;
-}
-
-
-function convertMarkdownToJson(markdown) {
-  let json = {};
-
-  try {
-    json = mdToJson.parse(markdown);
-  } catch (error) {
-    json = { '': { raw: markdown } }
-  }
-
-  return json;
-}
-
-/**
- * Returns an array of the reference first value being the chapter and the second value being the verse
- * @param {object} item
- * @returns {array|null} bible reference array
- */
-function getchapterVerseFromReference(item) {
-  return item && item?.Chapter ? null : item?.Reference.split(':')
-}
-
-function populateHeaders({
-  raw,
-  item,
-  bookId,
-  nanoid,
-  heading,
-  sourceVerse,
-  sourceChapter,
-}) {
-  const referenceHeader = sourceChapter && sourceVerse ? `${sourceChapter}:${sourceVerse}` : item?.Reference
-  const resultItem = {
-    Book: bookId.toUpperCase(),
-    id: nanoid(),
-  }
-
-  if (item && referenceHeader && item?.Question && item?.Response) {
-    resultItem.Reference = referenceHeader?.trim()
-    resultItem.Question = heading?.trim()
-    resultItem.Response = raw?.trim()
-  } else if (item && item?.Reference && item?.Note && item?.Quote) {
-    resultItem.Reference = referenceHeader?.trim()
-    resultItem.Note = raw
-  } else if (item && item?.Reference && item?.Annotation) {
-    resultItem.Reference = referenceHeader?.trim()
-    resultItem.Annotation = raw?.trim()
-  } else {
-    resultItem.Chapter = parseNumber(sourceChapter)
-    resultItem.Verse = parseNumber(sourceVerse)
-    resultItem.GLQuote = heading?.trim()
-    resultItem.OccurrenceNote = raw?.trim()
-  }
-
-  resultItem.Included = true
-
-  return resultItem
 }

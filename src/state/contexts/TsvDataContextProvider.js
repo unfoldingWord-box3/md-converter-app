@@ -2,11 +2,13 @@ import React, { useState, useEffect, useReducer } from 'react';
 import ric from 'ric-shim'
 import equal from 'deep-equal';
 import * as cacheLibrary from 'money-clip';
+import { customAlphabet } from 'nanoid/non-secure'
 import fetchEnglishTsvsAction from '../actions/fetchEnglishTsvsAction';
 import fetchTnMarkdownAction from '../actions/fetchTnMarkdownAction';
 import getGlTsvContent from '../../helpers/getGlTsvContent';
 import generateTimestamp from '../../helpers/generateTimestamp';
 import useLoading from '../../hooks/useLoading';
+import populateHeaders from '../../helpers/populateHeaders';
 
 export const TsvDataContext = React.createContext({});
 
@@ -125,6 +127,13 @@ export default function TsvDataContextProvider(props) {
     dispatch({ type: 'SET_CURRENT_PROJECT', project })
   }
 
+  const updateProject = (project) => {
+    setSavedBackup(false);
+    console.info('updateProject()');
+
+    dispatch({ type: 'UPDATE_CURRENT_PROJECT', project })
+  }
+
   const removeProject = () => dispatch({ type: 'REMOVE_CURRENT_PROJECT' })
 
   const saveProjectChanges = (targetRecords) => {
@@ -155,6 +164,51 @@ export default function TsvDataContextProvider(props) {
     dispatch({ type: 'SET_PROJECTS', projects: newProjects })
   }
 
+  const toggleRecordView = (e, index) => {
+    const nanoid = customAlphabet('1234567890abcdef', 4);
+    const { currentProject } = state
+    const { targetNotes, sourceNotes, bookId } = currentProject
+    // Create a copy of the arrays to avoid mutation
+    const newTargetNotes = [ ...targetNotes ]
+    const newSourceNotes = [ ...sourceNotes ]
+
+    newTargetNotes[index].Included = e.target.checked
+
+    const emptySourceNote = populateHeaders({
+      bookId,
+      nanoid,
+      raw: '',
+      heading: '',
+      noIncludedField: true,
+      item: newTargetNotes[index],
+      sourceVerse: newTargetNotes[index]?.Verse,
+      sourceChapter: newTargetNotes[index]?.Chapter,
+    })
+
+    const emptyTargetNote = populateHeaders({
+      bookId,
+      nanoid,
+      raw: '',
+      heading: '',
+      Included: true,
+      item: newSourceNotes[index],
+      sourceVerse: newSourceNotes[index]?.Verse,
+      sourceChapter: newSourceNotes[index]?.Chapter,
+    })
+
+    if (newSourceNotes[index]?.Question?.length) {
+      newSourceNotes.splice(index, 0, emptySourceNote)
+      newTargetNotes.splice(index + 1, 0, emptyTargetNote)
+    }
+
+    updateProject({
+      ...currentProject,
+      sourceNotes: newSourceNotes,
+      targetNotes: newTargetNotes,
+      timestamp: generateTimestamp(),
+    })
+  }
+
   const value = {
     state,
     dispatch,
@@ -169,6 +223,7 @@ export default function TsvDataContextProvider(props) {
     setSavedBackup,
     loadingMessage,
     fetchTnMarkdown,
+    toggleRecordView,
     saveProjectChanges,
    }
 

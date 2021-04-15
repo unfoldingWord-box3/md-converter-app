@@ -36,6 +36,7 @@ export default function WorkingArea({
   savedBackup,
   sourceManifest,
   setSavedBackup,
+  toggleRecordView,
 }) {
   useEffect(() => {
     const handleBeforeunload = (event) => {
@@ -110,7 +111,11 @@ export default function WorkingArea({
     setSavedBackup(true);
   }
 
-  console.log(targetColumns)
+
+  console.log({
+    sourceNotes,
+    targetNotes,
+  })
 
   if (targetNotes) {
     return (
@@ -131,6 +136,7 @@ export default function WorkingArea({
             savedBackup={savedBackup}
             exportProject={exportProject}
             setSavedBackup={setSavedBackup}
+            toggleRecordView={toggleRecordView}
           />
         </Styles>
       </Paper>
