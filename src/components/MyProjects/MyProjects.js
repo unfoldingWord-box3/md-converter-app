@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropsTypes from 'prop-types';
+import { RepositoryContext } from 'gitea-react-toolkit';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
@@ -105,10 +106,17 @@ const MyProjects = ({
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [projectClicked, setProjectClicked] = React.useState('');
   const { isLoading, setIsLoading } = useLoading();
+  const { actions: { close: removeRepo } } = useContext(RepositoryContext);
   const open = Boolean(anchorEl);
+
   projects = projects.sort((x, y) => {
     return new Date(y.timestamp) - new Date(x.timestamp);
   });
+
+  const startNewProject = () => {
+    removeRepo()
+    toggleProjects(false)
+  }
 
   const handleClick = (event, name) => {
     setProjectClicked(name);
@@ -152,7 +160,7 @@ const MyProjects = ({
       <div className={classes.root}>
         <div className={classes.titleContainer}>
           <h2 className={classes.title}>My Projects</h2>
-          <Button className={classes.newProjectButton} variant="contained" color="primary" onClick={() => toggleProjects(false)}>
+          <Button className={classes.newProjectButton} variant="contained" color="primary" onClick={startNewProject}>
             Start a New Project
           </Button>
         </div>

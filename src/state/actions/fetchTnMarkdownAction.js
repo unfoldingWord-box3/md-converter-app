@@ -11,7 +11,7 @@ export default async function fetchTnMarkdownAction(bookUrl, bookId, sourceNotes
   const result = [];
   const extraSourceNotes = [];
   const targetItems = {};
-  const nanoid = customAlphabet('1234567890abcdef', 4);
+  const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 4);
 
   try {
     if (navigator.onLine) {

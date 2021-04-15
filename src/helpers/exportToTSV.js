@@ -15,20 +15,27 @@ export default function exportToTSV(sourceNotes, targetNotes, bookId, resourceId
     const sourceNote = sourceNotes[i];
     const targetNote = targetNotes[i];
     const finalNote = { ...sourceNote };
+    let empty = false;
 
-    if (targetNote?.Reference && typeof targetNote?.Question === 'string' && typeof targetNote?.Response === 'string') {
-      finalNote.Question = targetNote?.Question?.trim()
-      finalNote.Response = targetNote?.Response?.trim()
+    if (targetNote?.Reference && ((targetNote?.Question && targetNote?.Response) || finalNote?.Question)) {
+      finalNote.Question = targetNote?.Question ? targetNote?.Question?.trim() : finalNote?.Question?.trim()
+      finalNote.Response = targetNote?.Response ? targetNote?.Response?.trim() : finalNote?.Response?.trim()
     } else if (targetNote?.Reference && targetNote?.Note && targetNote?.Quote) {
       finalNote.Note = cleanNote(targetNote?.Note)
     } else if (targetNote?.Reference && targetNote?.Annotation) {
       finalNote.Annotation = cleanNote(targetNote?.Annotation)
+    } else if (targetNote?.OccurrenceNote || finalNote?.OccurrenceNote) {
+      finalNote.GLQuote = targetNote?.GLQuote ? targetNote?.GLQuote?.trim() : finalNote?.GLQuote?.trim()
+      finalNote.OccurrenceNote = targetNote?.OccurrenceNote ? cleanNote(targetNote?.OccurrenceNote) : cleanNote(finalNote?.OccurrenceNote)
     } else {
-      finalNote.GLQuote = targetNote?.GLQuote?.trim();
-      finalNote.OccurrenceNote = cleanNote(targetNote?.OccurrenceNote)
+      empty = true
     }
 
-    linedUpNotes.push(finalNote);
+    if (!finalNote.ID) finalNote.ID = targetNote?.id.toString().replace(/[^a-zA-Z0-9]/gi, '')
+
+    if (finalNote.ID && !empty) {
+      linedUpNotes.push(finalNote);
+    }
   }
 
   const tsvFile = parser.TSV.stringify(linedUpNotes);
