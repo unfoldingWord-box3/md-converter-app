@@ -196,7 +196,7 @@ export default function TsvDataContextProvider(props) {
       sourceChapter: newSourceNotes[index]?.Chapter,
     })
 
-    if (newSourceNotes[index]?.Question?.length) {
+    if (newSourceNotes[index]?.Question?.length && newTargetNotes[index]?.Question?.length) {
       newSourceNotes.splice(index, 0, emptySourceNote)
       newTargetNotes.splice(index + 1, 0, emptyTargetNote)
     }
