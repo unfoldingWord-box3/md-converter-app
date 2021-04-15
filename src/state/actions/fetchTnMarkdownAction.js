@@ -358,5 +358,7 @@ function populateHeaders({
     resultItem.OccurrenceNote = raw?.trim()
   }
 
+  resultItem.Included = true
+
   return resultItem
 }

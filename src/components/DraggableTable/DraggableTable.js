@@ -10,6 +10,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
+import Checkbox from '@material-ui/core/Checkbox';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import ProjectFab from '../ProjectFab';
@@ -118,7 +119,7 @@ const DraggableTable = ({
                 {headerGroup.headers.map((column) => {
                   const tCellStyle = {};
                   if (column.Header === "GLQuote") tCellStyle.minWidth = '160px';
-                  if (column.Header === "Chapter" || column.Header === "Verse" || column.Header === "Reference") {
+                  if (column.Header === "Chapter" || column.Header === "Verse" || column.Header === "Reference" || column.Header === "Included") {
                     tCellStyle.width = '10px';
                     tCellStyle.padding = '12px 4px';
                   }
@@ -239,13 +240,16 @@ const Record = ({
     setOpen(true);
   };
 
+  const isIncludedCheckbox = cell.column.Header === 'Included'
   const tcStyle = { borderLeft: '1px solid rgba(224, 224, 224, 1)' }
+
+  if (isIncludedCheckbox) tcStyle.textAlign = 'center'
 
   return (
     <ClickAwayListener onClickAway={handleTooltipClose}>
       <HtmlTooltip
         arrow
-        open={open}
+        open={isIncludedCheckbox ? false : open}
         disableHoverListener
         title={cell.value}
         onClose={handleTooltipClose}
@@ -255,7 +259,17 @@ const Record = ({
           onClick={handleTooltipOpen}
           style={tcStyle}
         >
-          {cell.render('Cell')}
+          {isIncludedCheckbox ?
+            <Checkbox
+              checked={cell.value}
+              // onChange={handleChange}
+              name="Included"
+              color="primary"
+              style={{ padding: '0px' }}
+            />
+            :
+            cell.render('Cell')
+          }
         </TableCell>
       </HtmlTooltip>
     </ClickAwayListener>
