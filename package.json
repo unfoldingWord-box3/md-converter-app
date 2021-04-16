@@ -39,6 +39,7 @@
     "styled-components": "^5.1.1",
     "traverse": "^0.6.6",
     "tsv": "^0.2.0",
+    "use-deep-compare-effect": "^1.6.1",
     "yamljs": "^0.3.0"
   },
   "eslintConfig": {
