@@ -111,12 +111,6 @@ export default function WorkingArea({
     setSavedBackup(true);
   }
 
-
-  console.log({
-    sourceNotes,
-    targetNotes,
-  })
-
   if (targetNotes) {
     return (
       <Paper style={{ flex: 1 }}>

@@ -3,6 +3,7 @@ import ric from 'ric-shim'
 import equal from 'deep-equal';
 import * as cacheLibrary from 'money-clip';
 import { customAlphabet } from 'nanoid/non-secure'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 import fetchEnglishTsvsAction from '../actions/fetchEnglishTsvsAction';
 import fetchTnMarkdownAction from '../actions/fetchTnMarkdownAction';
 import getGlTsvContent from '../../helpers/getGlTsvContent';
@@ -80,8 +81,9 @@ export default function TsvDataContextProvider(props) {
     });
   }, []);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!equal(state, initialState)) {
+      console.log('ric')
       ric(() => cacheLibrary.set(reducerName, state))
     }
   }, [state])
@@ -165,7 +167,7 @@ export default function TsvDataContextProvider(props) {
   }
 
   const toggleRecordView = (e, index) => {
-    const nanoid = customAlphabet('1234567890abcdef', 4);
+    const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 4);
     const { currentProject } = state
     const { targetNotes, sourceNotes, bookId } = currentProject
     // Create a copy of the arrays to avoid mutation
@@ -196,7 +198,7 @@ export default function TsvDataContextProvider(props) {
       sourceChapter: newSourceNotes[index]?.Chapter,
     })
 
-    if (newSourceNotes[index]?.Question?.length && newTargetNotes[index]?.Question?.length) {
+    if (newSourceNotes[index]?.Question?.length && newTargetNotes[index]?.Question?.length && !e.target.checked) {
       newSourceNotes.splice(index, 0, emptySourceNote)
       newTargetNotes.splice(index + 1, 0, emptyTargetNote)
     }

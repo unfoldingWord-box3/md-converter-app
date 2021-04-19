@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback, useRef } from 'react';
+import React, { useState, useContext, useCallback, useRef } from 'react';
 import { useTable } from 'react-table';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -15,6 +15,7 @@ import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import ProjectFab from '../ProjectFab';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -65,17 +66,24 @@ const DraggableTable = ({
   toggleRecordView,
 }) => {
   const classes = useStyles();
+  // Made a local state for records to help improve UI performance.
   const [records, setRecords] = useState(data);
+  const [dropped, setDropped] = useState(false)
   const { saveProjectChanges } = useContext(TsvDataContext);
 
-  useEffect(() => {
+  // This useEffect is necessary so that we keep the local records state in sync with its version in TsvDataContext
+  useDeepCompareEffect(() => {
     setRecords(data)
   }, [data])
 
-  useEffect(() => {
-    saveProjectChanges(records);
-    // eslint-disable-next-line
-  }, [records])
+  useDeepCompareEffect(() => {
+    // Only save target notes changes to TsvDataContext when finished dragging item.
+    if (dropped) {
+      console.log('dropped saveProjectChanges')
+      saveProjectChanges(records);
+      setDropped(false);
+    }
+  }, [dropped, records])
 
   const getRowId = useCallback((row) => {
     const reference = row.Reference ? `${row.Reference}` : `${row.Chapter}-${row.Verse}`
@@ -95,6 +103,7 @@ const DraggableTable = ({
   });
 
   const moveRow = (dragIndex, hoverIndex) => {
+    setDropped(false)
     const dragRecord = records[dragIndex];
     setRecords(
       update(records, {
@@ -105,7 +114,11 @@ const DraggableTable = ({
       })
     );
     setSavedBackup(false);
-  };
+  }
+
+  const onDropped = () => {
+    setDropped(true)
+  }
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -147,6 +160,7 @@ const DraggableTable = ({
                     row={row}
                     index={index}
                     moveRow={moveRow}
+                    onDropped={onDropped}
                     {...row.getRowProps()}
                     toggleRecordView={toggleRecordView}
                   />
@@ -161,7 +175,7 @@ const DraggableTable = ({
 
 const DND_ITEM_TYPE = 'row';
 
-const Row = ({ row, index, moveRow, toggleRecordView }) => {
+const Row = ({ row, index, moveRow, toggleRecordView, onDropped }) => {
   const dropRef = useRef(null);
   const dragRef = useRef(null);
 
@@ -211,7 +225,12 @@ const Row = ({ row, index, moveRow, toggleRecordView }) => {
     item: { type: DND_ITEM_TYPE, index },
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
-    })
+    }),
+    end: (_, monitor) => {
+      if (monitor.didDrop()) {
+        onDropped()
+      }
+    },
   });
 
   const opacity = isDragging ? 0 : 1;

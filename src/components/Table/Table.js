@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo, useRef, forwardRef } from 'react';
 import { useTable } from 'react-table';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import MaUTable from '@material-ui/core/Table';
@@ -36,12 +36,12 @@ const HtmlTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
-const IndeterminateCheckbox = React.forwardRef(
+const IndeterminateCheckbox = forwardRef(
   ({ indeterminate, classes, ...rest }, ref) => {
-    const defaultRef = React.useRef()
+    const defaultRef = useRef()
     const resolvedRef = ref || defaultRef
 
-    React.useEffect(() => {
+    useEffect(() => {
       resolvedRef.current.indeterminate = indeterminate
     }, [resolvedRef, indeterminate])
 
@@ -72,6 +72,50 @@ function Table({
     initialState,
   });
 
+
+  const Checkboxes = useMemo(() => {
+    return allColumns.map(column => {
+      return (
+        <div key={column.id} className={classes.checkbox}>
+          <label className={classes.checkboxLabel}>
+            <input type="checkbox" {...column.getToggleHiddenProps()} />{' '}
+            {column.id}
+          </label>
+        </div>
+    )})
+  }, [allColumns, classes])
+
+  const Headers = useMemo(() => {
+    return headerGroups.map((headerGroup) => (
+      <TableRow {...headerGroup.getHeaderGroupProps()}>
+        {headerGroup.headers.map((column) => {
+          const tCellStyle = {};
+          if (column.Header === "Chapter" || column.Header === "Verse" || column.Header === "Book") {
+            tCellStyle.width = '10px';
+            tCellStyle.padding = '12px 2px';
+          }
+
+          return (
+            <TableCell {...column.getHeaderProps()} style={tCellStyle}>
+              {column.render('Header')}
+            </TableCell>
+          )
+        })}
+      </TableRow>
+    ))
+  }, [headerGroups])
+
+  const TableRows = useMemo(() => {
+    return rows.map((row, i) => {
+      prepareRow(row);
+      return (
+        <TableRow {...row.getRowProps()}>
+          {row.cells.map((cell, key) => <Record key={key} cell={cell} />)}
+        </TableRow>
+      );
+    })
+  }, [rows, prepareRow])
+
   // Render the UI for your table
   return (
     <div className={classes.root}>
@@ -80,45 +124,14 @@ function Table({
           <IndeterminateCheckbox {...getToggleHideAllColumnsProps()} classes={classes} />
           All
         </div>
-        {allColumns.map(column => {
-          return (
-            <div key={column.id} className={classes.checkbox}>
-              <label className={classes.checkboxLabel}>
-                <input type="checkbox" {...column.getToggleHiddenProps()} />{' '}
-                {column.id}
-              </label>
-            </div>
-        )})}
+        {Checkboxes}
       </div>
       <MaUTable {...getTableProps()}>
         <TableHead>
-          {headerGroups.map((headerGroup) => (
-            <TableRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => {
-                const tCellStyle = {};
-                if (column.Header === "Chapter" || column.Header === "Verse" || column.Header === "Book") {
-                  tCellStyle.width = '10px';
-                  tCellStyle.padding = '12px 2px';
-                }
-
-                return (
-                  <TableCell {...column.getHeaderProps()} style={tCellStyle}>
-                    {column.render('Header')}
-                  </TableCell>
-                )
-              })}
-            </TableRow>
-          ))}
+          {Headers}
         </TableHead>
         <TableBody>
-          {rows.map((row, i) => {
-            prepareRow(row);
-            return (
-              <TableRow {...row.getRowProps()}>
-                {row.cells.map((cell, key) => <Record key={key} cell={cell} />)}
-              </TableRow>
-            );
-          })}
+          {TableRows}
         </TableBody>
       </MaUTable>
       {sourceNoteVersion && <h4>{sourceNoteVersion}</h4>}
@@ -129,7 +142,7 @@ function Table({
 const Record = ({
   cell,
 }) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleTooltipClose = () => {
     setOpen(false);
