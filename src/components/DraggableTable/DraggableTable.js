@@ -79,7 +79,6 @@ const DraggableTable = ({
   useDeepCompareEffect(() => {
     // Only save target notes changes to TsvDataContext when finished dragging item.
     if (dropped) {
-      console.log('dropped saveProjectChanges')
       saveProjectChanges(records);
       setDropped(false);
     }

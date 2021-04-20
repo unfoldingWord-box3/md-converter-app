@@ -91,7 +91,7 @@ export default function WorkingArea({
       const targetColumns = targetHeaders.filter(({Header}) => shouldInclude.includes(Header))
       const foundIndex = targetColumns.findIndex(({Header}) => Header === 'Included')
 
-      if (foundIndex) {// Move "Included" Header to the second in order
+      if (foundIndex) {// Move "Included" Header to second in order
         const newHeader = targetColumns[foundIndex]
         targetColumns.splice(foundIndex, 1)// remove item
         targetColumns.splice(1, 0, newHeader)// add item

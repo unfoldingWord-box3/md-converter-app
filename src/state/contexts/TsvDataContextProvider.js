@@ -83,7 +83,6 @@ export default function TsvDataContextProvider(props) {
 
   useDeepCompareEffect(() => {
     if (!equal(state, initialState)) {
-      console.log('ric')
       ric(() => cacheLibrary.set(reducerName, state))
     }
   }, [state])
@@ -176,7 +175,7 @@ export default function TsvDataContextProvider(props) {
 
     newTargetNotes[index].Included = e.target.checked
 
-    const emptySourceNote = populateHeaders({
+    let emptySourceNote = populateHeaders({
       bookId,
       nanoid,
       raw: '',
@@ -199,6 +198,22 @@ export default function TsvDataContextProvider(props) {
     })
 
     if (newSourceNotes[index]?.Question?.length && newTargetNotes[index]?.Question?.length && !e.target.checked) {
+      // Remove unnecessary fields for source note
+      emptySourceNote.ID = emptySourceNote.id || emptySourceNote.ID
+      if (emptySourceNote.id) delete emptySourceNote.id
+      if (emptySourceNote.Book) delete emptySourceNote.Book
+
+      const temp = { ...newSourceNotes[index] }
+      // Adding missing keys to temp
+      Object.keys(newSourceNotes[index]).forEach(key => {
+        if (!emptySourceNote[key]) {
+          temp[key] = ''
+        }
+      })
+
+      // Merging with temp to carry over missing keys in the order they should be displayed.
+      emptySourceNote = { ...temp, ...emptySourceNote }
+
       newSourceNotes.splice(index, 0, emptySourceNote)
       newTargetNotes.splice(index + 1, 0, emptyTargetNote)
     }

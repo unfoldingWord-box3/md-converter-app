@@ -70,20 +70,8 @@ function Table({
     data,
     columns,
     initialState,
+    autoResetHiddenColumns: false
   });
-
-
-  const Checkboxes = useMemo(() => {
-    return allColumns.map(column => {
-      return (
-        <div key={column.id} className={classes.checkbox}>
-          <label className={classes.checkboxLabel}>
-            <input type="checkbox" {...column.getToggleHiddenProps()} />{' '}
-            {column.id}
-          </label>
-        </div>
-    )})
-  }, [allColumns, classes])
 
   const Headers = useMemo(() => {
     return headerGroups.map((headerGroup) => (
@@ -124,7 +112,15 @@ function Table({
           <IndeterminateCheckbox {...getToggleHideAllColumnsProps()} classes={classes} />
           All
         </div>
-        {Checkboxes}
+        {allColumns.map(column => {
+          return (
+            <div key={column.id} className={classes.checkbox}>
+              <label className={classes.checkboxLabel}>
+                <input type="checkbox" {...column.getToggleHiddenProps()} />{' '}
+                {column.id}
+              </label>
+            </div>
+        )})}
       </div>
       <MaUTable {...getTableProps()}>
         <TableHead>

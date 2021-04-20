@@ -36,13 +36,10 @@ export default function exportToTSV(sourceNotes, targetNotes, bookId, resourceId
     if (finalNote.ID && !empty) {
       // linedUpNotes.push(finalNote);
       const { Included } = targetNote
-      console.log(typeof Included, Included)
 
       if (typeof Included === 'undefined') {
-        console.log('undefined')
         linedUpNotes.push(finalNote);
       } else if (Included === true) {
-        console.log('else')
         linedUpNotes.push(finalNote);
       }
     }
