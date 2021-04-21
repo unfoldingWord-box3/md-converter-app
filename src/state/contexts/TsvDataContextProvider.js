@@ -39,8 +39,18 @@ function tsvDataReducer(state, action) {
         currentProject: action.project,
       };
     case 'UPDATE_CURRENT_PROJECT':
+      const foundIndex = state.projects.findIndex(project => project.name === action.project.name)
+      const newProjects = state.projects.map((project, index) => {
+        if (foundIndex !== index) {
+          return project;
+        } else {
+          return action.project;
+        }
+      })
+
       return {
         ...state,
+        projects: newProjects,
         currentProject: action.project,
       };
     case 'REMOVE_CURRENT_PROJECT':
@@ -139,21 +149,12 @@ export default function TsvDataContextProvider(props) {
 
   const saveProjectChanges = (targetRecords) => {
     console.info('Saving Project Changes...');
-    const { currentProject, projects } = state;
+    const { currentProject } = state;
     const updatedProject = Object.assign({}, currentProject);
     updatedProject.targetNotes = targetRecords;
     updatedProject.timestamp = generateTimestamp();
-    const foundIndex = projects.findIndex(project => project.name === updatedProject.name)
-    const newProjects = projects.map((project, index) => {
-      if (foundIndex !== index) {
-        return project;
-      } else {
-        return updatedProject;
-      }
-    })
 
     dispatch({ type: 'UPDATE_CURRENT_PROJECT', project: updatedProject })
-    dispatch({ type: 'SET_PROJECTS', projects: newProjects })
   }
 
   const deleteProject = (projectName) => {
@@ -170,8 +171,8 @@ export default function TsvDataContextProvider(props) {
     const { currentProject } = state
     const { targetNotes, sourceNotes, bookId } = currentProject
     // Create a copy of the arrays to avoid mutation
-    const newTargetNotes = [ ...targetNotes ]
-    const newSourceNotes = [ ...sourceNotes ]
+    const newTargetNotes = Object.assign([], targetNotes)
+    const newSourceNotes = Object.assign([], sourceNotes)
 
     newTargetNotes[index].Included = e.target.checked
 
@@ -197,12 +198,26 @@ export default function TsvDataContextProvider(props) {
       sourceChapter: newSourceNotes[index]?.Chapter,
     })
 
-    if (newSourceNotes[index]?.Question?.length && newTargetNotes[index]?.Question?.length && !e.target.checked) {
-      // Remove unnecessary fields for source note
+    function shouldAddRow(newSourceNote, newTargetNote, emptySourceNote) {
       emptySourceNote.ID = emptySourceNote.id || emptySourceNote.ID
       if (emptySourceNote.id) delete emptySourceNote.id
-      if (emptySourceNote.Book) delete emptySourceNote.Book
 
+      if (newSourceNote?.Question?.length && newTargetNote?.Question?.length) {
+        // Remove unnecessary field on empty source note
+        if (emptySourceNote.Book) delete emptySourceNote.Book
+
+        return true;
+      } else if (
+        (newSourceNote?.GLQuote?.length || newSourceNote?.OccurrenceNote?.length) &&
+        (newTargetNote?.OccurrenceNote?.length || newTargetNote?.OccurrenceNote?.length)
+        ) {
+        return true;
+      }
+
+      return false;
+    }
+
+    if (shouldAddRow(newSourceNotes[index], newTargetNotes[index], emptySourceNote) && !e.target.checked) {
       const temp = { ...newSourceNotes[index] }
       // Adding missing keys to temp
       Object.keys(newSourceNotes[index]).forEach(key => {
