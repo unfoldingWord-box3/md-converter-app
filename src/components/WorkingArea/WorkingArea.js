@@ -92,9 +92,16 @@ export default function WorkingArea({
       const foundIndex = targetColumns.findIndex(({Header}) => Header === 'Included')
 
       if (foundIndex) {// Move "Included" Header to second in order
-        const newHeader = targetColumns[foundIndex]
-        targetColumns.splice(foundIndex, 1)// remove item
-        targetColumns.splice(1, 0, newHeader)// add item
+        if (targetColumns.includes('Reference')) {
+          const newHeader = targetColumns[foundIndex]
+          targetColumns.splice(foundIndex, 1)// remove item from current location
+          targetColumns.splice(1, 0, newHeader)// add item to second in order.
+        } else if (targetColumns.includes('Chapter') && targetColumns.includes('Verse')) {
+          const newHeader = targetColumns[foundIndex]
+          targetColumns.splice(foundIndex, 1)// remove item from current location.
+          targetColumns.splice(2, 0, newHeader)// add item to third in order.
+        }
+
       }
 
       return targetColumns
