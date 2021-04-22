@@ -36,6 +36,7 @@ export default function WorkingArea({
   savedBackup,
   sourceManifest,
   setSavedBackup,
+  toggleRecordView,
 }) {
   useEffect(() => {
     const handleBeforeunload = (event) => {
@@ -86,9 +87,24 @@ export default function WorkingArea({
 
   const targetColumns = React.useMemo(
     () => {
-      const shouldInclude = ['Reference', 'Chapter', 'Verse', 'GLQuote', 'Quote', 'OccurrenceNote', 'Annotation', 'Question', 'Response' ]
+      const shouldInclude = ['Reference', 'Included', 'Chapter', 'Verse', 'GLQuote', 'Quote', 'OccurrenceNote', 'Annotation', 'Question', 'Response' ]
+      const targetColumns = targetHeaders.filter(({Header}) => shouldInclude.includes(Header))
+      const foundIndex = targetColumns.findIndex(({Header}) => Header === 'Included')
 
-      return targetHeaders.filter(({Header}) => shouldInclude.includes(Header))
+      if (foundIndex) {// Move "Included" Header to second in order
+        if (targetColumns.includes('Reference')) {
+          const newHeader = targetColumns[foundIndex]
+          targetColumns.splice(foundIndex, 1)// remove item from current location
+          targetColumns.splice(1, 0, newHeader)// add item to second in order.
+        } else if (targetColumns.includes('Chapter') && targetColumns.includes('Verse')) {
+          const newHeader = targetColumns[foundIndex]
+          targetColumns.splice(foundIndex, 1)// remove item from current location.
+          targetColumns.splice(2, 0, newHeader)// add item to third in order.
+        }
+
+      }
+
+      return targetColumns
     },
     [targetHeaders]
   );
@@ -121,6 +137,7 @@ export default function WorkingArea({
             savedBackup={savedBackup}
             exportProject={exportProject}
             setSavedBackup={setSavedBackup}
+            toggleRecordView={toggleRecordView}
           />
         </Styles>
       </Paper>

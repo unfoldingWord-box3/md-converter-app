@@ -2,11 +2,14 @@ import React, { useState, useEffect, useReducer } from 'react';
 import ric from 'ric-shim'
 import equal from 'deep-equal';
 import * as cacheLibrary from 'money-clip';
+import { customAlphabet } from 'nanoid/non-secure'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 import fetchEnglishTsvsAction from '../actions/fetchEnglishTsvsAction';
 import fetchTnMarkdownAction from '../actions/fetchTnMarkdownAction';
 import getGlTsvContent from '../../helpers/getGlTsvContent';
 import generateTimestamp from '../../helpers/generateTimestamp';
 import useLoading from '../../hooks/useLoading';
+import populateHeaders from '../../helpers/populateHeaders';
 
 export const TsvDataContext = React.createContext({});
 
@@ -36,8 +39,18 @@ function tsvDataReducer(state, action) {
         currentProject: action.project,
       };
     case 'UPDATE_CURRENT_PROJECT':
+      const foundIndex = state.projects.findIndex(project => project.name === action.project.name)
+      const newProjects = state.projects.map((project, index) => {
+        if (foundIndex !== index) {
+          return project;
+        } else {
+          return action.project;
+        }
+      })
+
       return {
         ...state,
+        projects: newProjects,
         currentProject: action.project,
       };
     case 'REMOVE_CURRENT_PROJECT':
@@ -78,7 +91,7 @@ export default function TsvDataContextProvider(props) {
     });
   }, []);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!equal(state, initialState)) {
       ric(() => cacheLibrary.set(reducerName, state))
     }
@@ -125,25 +138,23 @@ export default function TsvDataContextProvider(props) {
     dispatch({ type: 'SET_CURRENT_PROJECT', project })
   }
 
+  const updateProject = (project) => {
+    setSavedBackup(false);
+    console.info('updateProject()');
+
+    dispatch({ type: 'UPDATE_CURRENT_PROJECT', project })
+  }
+
   const removeProject = () => dispatch({ type: 'REMOVE_CURRENT_PROJECT' })
 
   const saveProjectChanges = (targetRecords) => {
     console.info('Saving Project Changes...');
-    const { currentProject, projects } = state;
+    const { currentProject } = state;
     const updatedProject = Object.assign({}, currentProject);
     updatedProject.targetNotes = targetRecords;
     updatedProject.timestamp = generateTimestamp();
-    const foundIndex = projects.findIndex(project => project.name === updatedProject.name)
-    const newProjects = projects.map((project, index) => {
-      if (foundIndex !== index) {
-        return project;
-      } else {
-        return updatedProject;
-      }
-    })
 
     dispatch({ type: 'UPDATE_CURRENT_PROJECT', project: updatedProject })
-    dispatch({ type: 'SET_PROJECTS', projects: newProjects })
   }
 
   const deleteProject = (projectName) => {
@@ -153,6 +164,81 @@ export default function TsvDataContextProvider(props) {
     newProjects.splice(foundIndex, 1);
 
     dispatch({ type: 'SET_PROJECTS', projects: newProjects })
+  }
+
+  const toggleRecordView = (e, index) => {
+    const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 4);
+    const { currentProject } = state
+    const { targetNotes, sourceNotes, bookId } = currentProject
+    // Create a copy of the arrays to avoid mutation
+    const newTargetNotes = Object.assign([], targetNotes)
+    const newSourceNotes = Object.assign([], sourceNotes)
+
+    newTargetNotes[index].Included = e.target.checked
+
+    let emptySourceNote = populateHeaders({
+      bookId,
+      nanoid,
+      raw: '',
+      heading: '',
+      noIncludedField: true,
+      item: newTargetNotes[index],
+      sourceVerse: newTargetNotes[index]?.Verse,
+      sourceChapter: newTargetNotes[index]?.Chapter,
+    })
+
+    const emptyTargetNote = populateHeaders({
+      bookId,
+      nanoid,
+      raw: '',
+      heading: '',
+      Included: true,
+      item: newSourceNotes[index],
+      sourceVerse: newSourceNotes[index]?.Verse,
+      sourceChapter: newSourceNotes[index]?.Chapter,
+    })
+
+    function shouldAddRow(newSourceNote, newTargetNote, emptySourceNote) {
+      emptySourceNote.ID = emptySourceNote.id || emptySourceNote.ID
+      if (emptySourceNote.id) delete emptySourceNote.id
+
+      if (newSourceNote?.Question?.length && newTargetNote?.Question?.length) {
+        // Remove unnecessary field on empty source note
+        if (emptySourceNote.Book) delete emptySourceNote.Book
+
+        return true;
+      } else if (
+        (newSourceNote?.GLQuote?.length || newSourceNote?.OccurrenceNote?.length) &&
+        (newTargetNote?.OccurrenceNote?.length || newTargetNote?.OccurrenceNote?.length)
+        ) {
+        return true;
+      }
+
+      return false;
+    }
+
+    if (shouldAddRow(newSourceNotes[index], newTargetNotes[index], emptySourceNote) && !e.target.checked) {
+      const temp = { ...newSourceNotes[index] }
+      // Adding missing keys to temp
+      Object.keys(newSourceNotes[index]).forEach(key => {
+        if (!emptySourceNote[key]) {
+          temp[key] = ''
+        }
+      })
+
+      // Merging with temp to carry over missing keys in the order they should be displayed.
+      emptySourceNote = { ...temp, ...emptySourceNote }
+
+      newSourceNotes.splice(index, 0, emptySourceNote)
+      newTargetNotes.splice(index + 1, 0, emptyTargetNote)
+    }
+
+    updateProject({
+      ...currentProject,
+      sourceNotes: newSourceNotes,
+      targetNotes: newTargetNotes,
+      timestamp: generateTimestamp(),
+    })
   }
 
   const value = {
@@ -169,6 +255,7 @@ export default function TsvDataContextProvider(props) {
     setSavedBackup,
     loadingMessage,
     fetchTnMarkdown,
+    toggleRecordView,
     saveProjectChanges,
    }
 

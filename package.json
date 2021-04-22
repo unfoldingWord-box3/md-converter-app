@@ -34,11 +34,12 @@
     "react-dom": "^16.13.1",
     "react-loader-spinner": "^3.1.14",
     "react-scripts": "3.4.3",
-    "react-table": "^7.5.0",
+    "react-table": "^7.6.3",
     "ric-shim": "^1.0.0",
     "styled-components": "^5.1.1",
     "traverse": "^0.6.6",
     "tsv": "^0.2.0",
+    "use-deep-compare-effect": "^1.6.1",
     "yamljs": "^0.3.0"
   },
   "eslintConfig": {

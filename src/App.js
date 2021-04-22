@@ -38,6 +38,7 @@ export default function App() {
     deleteProject,
     removeProject,
     setSavedBackup,
+    toggleRecordView,
     state: {
       projects,
       currentProject,
@@ -101,7 +102,6 @@ export default function App() {
             }}
             defaultOwner={authentication && authentication.user.name}
             defaultQuery=""
-            // branch='master'
           >
             <div>
               <AppBar toggleProjects={toggleProjects} savedBackup={savedBackup} currentProject={currentProject}/>
@@ -112,8 +112,9 @@ export default function App() {
                       <WorkingArea
                         project={currentProject}
                         savedBackup={savedBackup}
-                        sourceManifest={currentProject?.sourceManifest || sourceManifest || {}}
                         setSavedBackup={setSavedBackup}
+                        toggleRecordView={toggleRecordView}
+                        sourceManifest={currentProject?.sourceManifest || sourceManifest || {}}
                       />
                     :
                     (showProjects && authentication) || (!showStepper && projects && projects.length && authentication) ?

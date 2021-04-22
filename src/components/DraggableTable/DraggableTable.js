@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback, useRef } from 'react';
+import React, { useState, useContext, useCallback, useRef } from 'react';
 import { useTable } from 'react-table';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -10,10 +10,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
+import Checkbox from '@material-ui/core/Checkbox';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import ProjectFab from '../ProjectFab';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -61,15 +63,26 @@ const DraggableTable = ({
   savedBackup,
   exportProject,
   setSavedBackup,
+  toggleRecordView,
 }) => {
   const classes = useStyles();
+  // Made a local state for records to help improve UI performance.
   const [records, setRecords] = useState(data);
+  const [dropped, setDropped] = useState(false)
   const { saveProjectChanges } = useContext(TsvDataContext);
 
-  useEffect(() => {
-    saveProjectChanges(records);
-    // eslint-disable-next-line
-  }, [records])
+  // This useEffect is necessary so that we keep the local records state in sync with its version in TsvDataContext
+  useDeepCompareEffect(() => {
+    setRecords(data)
+  }, [data])
+
+  useDeepCompareEffect(() => {
+    // Only save target notes changes to TsvDataContext when finished dragging item.
+    if (dropped) {
+      saveProjectChanges(records);
+      setDropped(false);
+    }
+  }, [dropped, records])
 
   const getRowId = useCallback((row) => {
     const reference = row.Reference ? `${row.Reference}` : `${row.Chapter}-${row.Verse}`
@@ -89,6 +102,7 @@ const DraggableTable = ({
   });
 
   const moveRow = (dragIndex, hoverIndex) => {
+    setDropped(false)
     const dragRecord = records[dragIndex];
     setRecords(
       update(records, {
@@ -99,7 +113,11 @@ const DraggableTable = ({
       })
     );
     setSavedBackup(false);
-  };
+  }
+
+  const onDropped = () => {
+    setDropped(true)
+  }
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -118,7 +136,7 @@ const DraggableTable = ({
                 {headerGroup.headers.map((column) => {
                   const tCellStyle = {};
                   if (column.Header === "GLQuote") tCellStyle.minWidth = '160px';
-                  if (column.Header === "Chapter" || column.Header === "Verse" || column.Header === "Reference") {
+                  if (column.Header === "Chapter" || column.Header === "Verse" || column.Header === "Reference" || column.Header === "Included") {
                     tCellStyle.width = '10px';
                     tCellStyle.padding = '12px 4px';
                   }
@@ -141,7 +159,9 @@ const DraggableTable = ({
                     row={row}
                     index={index}
                     moveRow={moveRow}
+                    onDropped={onDropped}
                     {...row.getRowProps()}
+                    toggleRecordView={toggleRecordView}
                   />
                 )
             )}
@@ -154,7 +174,7 @@ const DraggableTable = ({
 
 const DND_ITEM_TYPE = 'row';
 
-const Row = ({ row, index, moveRow }) => {
+const Row = ({ row, index, moveRow, toggleRecordView, onDropped }) => {
   const dropRef = useRef(null);
   const dragRef = useRef(null);
 
@@ -204,7 +224,12 @@ const Row = ({ row, index, moveRow }) => {
     item: { type: DND_ITEM_TYPE, index },
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
-    })
+    }),
+    end: (_, monitor) => {
+      if (monitor.didDrop()) {
+        onDropped()
+      }
+    },
   });
 
   const opacity = isDragging ? 0 : 1;
@@ -218,7 +243,7 @@ const Row = ({ row, index, moveRow }) => {
       ref={dropRef}
       style={{ opacity }}
     >
-      {row.cells.map((cell, key) => <Record key={key} cell={cell} />)}
+      {row.cells.map((cell, key) => <Record key={key} cell={cell} index={index} toggleRecordView={toggleRecordView}/>)}
       <TableCell ref={dragRef} style={{ maxWidth: '50px', padding: '5px', cursor }} title="Drag">
         <DragIndicatorIcon />
       </TableCell>
@@ -228,6 +253,8 @@ const Row = ({ row, index, moveRow }) => {
 
 const Record = ({
   cell,
+  index,
+  toggleRecordView,
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -239,23 +266,42 @@ const Record = ({
     setOpen(true);
   };
 
+  const columnHeader = cell.column.Header
+  const isIncludedCheckbox = columnHeader === 'Included'
   const tcStyle = { borderLeft: '1px solid rgba(224, 224, 224, 1)' }
+
+  if ((columnHeader === "Question" || columnHeader === "Response") && cell?.row?.values?.Included === false) {
+    tcStyle.textDecoration = 'line-through';
+    tcStyle.backgroundColor = 'rgba(0, 0, 0, 0.04)';
+  }
+
+  if (isIncludedCheckbox) tcStyle.textAlign = 'center'
 
   return (
     <ClickAwayListener onClickAway={handleTooltipClose}>
       <HtmlTooltip
         arrow
-        open={open}
-        disableHoverListener
         title={cell.value}
+        disableHoverListener
         onClose={handleTooltipClose}
+        open={isIncludedCheckbox ? false : open}
       >
         <TableCell
           {...cell.getCellProps()}
           onClick={handleTooltipOpen}
           style={tcStyle}
         >
-          {cell.render('Cell')}
+          {isIncludedCheckbox ?
+            <Checkbox
+              name="Included"
+              color="primary"
+              checked={cell.value}
+              style={{ padding: '0px' }}
+              onChange={(e) => toggleRecordView(e, index)}
+            />
+            :
+            cell.render('Cell')
+          }
         </TableCell>
       </HtmlTooltip>
     </ClickAwayListener>

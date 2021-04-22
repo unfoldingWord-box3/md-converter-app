@@ -3,8 +3,12 @@ import { saveAs } from 'file-saver';
 
 function cleanNote(note) {
   if (note) {
-    return note.length > 95 ? note.replace(/\n/g, '<br>') : note.replace(/\n/g, ' ');
+    note = note.length > 95 ? note.replace(/\n/g, '<br>') : note.replace(/\n/g, ' ');
   }
+
+  // Removing quotation marks since they can brake the TSV on export.
+  note = note?.replace(/"/g, '')
+
   return note?.trim()
 }
 
@@ -34,7 +38,13 @@ export default function exportToTSV(sourceNotes, targetNotes, bookId, resourceId
     if (!finalNote.ID) finalNote.ID = targetNote?.id.toString().replace(/[^a-zA-Z0-9]/gi, '')
 
     if (finalNote.ID && !empty) {
-      linedUpNotes.push(finalNote);
+      const { Included } = targetNote
+
+      if (typeof Included === 'undefined') {
+        linedUpNotes.push(finalNote);
+      } else if (Included === true) {
+        linedUpNotes.push(finalNote);
+      }
     }
   }
 
