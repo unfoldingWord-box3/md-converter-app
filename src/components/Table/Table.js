@@ -1,77 +1,67 @@
-import React, { useState, useEffect, useMemo, useRef, forwardRef } from 'react';
-import { useTable } from 'react-table';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import React, {
+  useMemo,
+  useState,
+  useEffect,
+} from 'react';
+import {
+  useTable,
+  usePagination,
+} from 'react-table';
+import { makeStyles } from '@material-ui/core/styles';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Pagination from '../Pagination'
+import HtmlTooltip from '../HtmlTooltip';
+import IndeterminateCheckbox from '../IndeterminateCheckbox';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  checkboxes: {
-    display: 'flex',
-  },
-  checkbox: {
-    display: 'flex',
-    margin: '0px',
-  },
-  checkboxLabel: {
-    display: 'flex',
-  },
-}));
-
-const HtmlTooltip = withStyles((theme) => ({
-  tooltip: {
-    backgroundColor: '#f5f5f9',
-    color: 'rgba(0, 0, 0, 0.87)',
-    maxWidth: 200,
-    fontSize: theme.typography.pxToRem(12),
-    border: '1px solid #dadde9',
-  },
-}))(Tooltip);
-
-const IndeterminateCheckbox = forwardRef(
-  ({ indeterminate, classes, ...rest }, ref) => {
-    const defaultRef = useRef()
-    const resolvedRef = ref || defaultRef
-
-    useEffect(() => {
-      resolvedRef.current.indeterminate = indeterminate
-    }, [resolvedRef, indeterminate])
-
-    return <input type="checkbox" ref={resolvedRef} {...rest} />
-  }
-)
-
-function Table({
+export default function Table({
   data,
   columns,
+  fetchData,
   sourceNoteVersion,
+  pageCount: controlledPageCount,
 }) {
   const classes = useStyles();
-  const initialState = {
-    hiddenColumns: ['ID', 'SupportReference', 'OrigQuote', 'Occurrence', 'Quote', 'Tags'],
-  }
   // Use the state and functions returned from useTable to build your UI
   const {
-    rows,
     prepareRow,
     allColumns,
     headerGroups,
     getTableProps,
+    getTableBodyProps,
     getToggleHideAllColumnsProps,
-  } = useTable({
-    data,
-    columns,
-    initialState,
-    autoResetHiddenColumns: false
-  });
+    page,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    state: { pageIndex, pageSize },
+  } = useTable(
+    {
+      data,
+      columns,
+      manualPagination: true,
+      autoResetHiddenColumns: false,
+      pageCount: controlledPageCount,
+      initialState: {
+        pageIndex: 0,
+        hiddenColumns: ['ID', 'SupportReference', 'OrigQuote', 'Occurrence', 'Quote', 'Tags'],
+      },
+    },
+    usePagination
+  );
+
+  useEffect(() => {
+    fetchData({ pageIndex, pageSize })
+  }, [fetchData, pageIndex, pageSize])
 
   const Headers = useMemo(() => {
     return headerGroups.map((headerGroup) => (
@@ -94,7 +84,7 @@ function Table({
   }, [headerGroups])
 
   const TableRows = useMemo(() => {
-    return rows.map((row, i) => {
+    return page.map((row, i) => {
       prepareRow(row);
       return (
         <TableRow {...row.getRowProps()}>
@@ -102,7 +92,7 @@ function Table({
         </TableRow>
       );
     })
-  }, [rows, prepareRow])
+  }, [page, prepareRow])
 
   // Render the UI for your table
   return (
@@ -126,11 +116,25 @@ function Table({
         <TableHead>
           {Headers}
         </TableHead>
-        <TableBody>
+        <TableBody {...getTableBodyProps()}>
           {TableRows}
         </TableBody>
       </MaUTable>
       {sourceNoteVersion && <h4>{sourceNoteVersion}</h4>}
+      <Pagination
+        page={page}
+        gotoPage={gotoPage}
+        nextPage={nextPage}
+        pageCount={pageCount}
+        pageOptions={pageOptions}
+        canNextPage={canNextPage}
+        setPageSize={setPageSize}
+        previousPage={previousPage}
+        canPreviousPage={canPreviousPage}
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        controlledPageCount={controlledPageCount}
+      />
     </div>
   );
 }
@@ -175,4 +179,20 @@ const Record = ({
     </ClickAwayListener>
   );
 }
-export default Table;
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  checkboxes: {
+    display: 'flex',
+  },
+  checkbox: {
+    display: 'flex',
+    margin: '0px',
+  },
+  checkboxLabel: {
+    display: 'flex',
+  },
+}));

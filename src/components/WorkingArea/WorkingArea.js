@@ -1,35 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import PropsTypes from 'prop-types';
 import styled from 'styled-components';
 import Paper from '@material-ui/core/Paper';
 import Table from '../Table';
 import DraggableTable from '../DraggableTable';
+import BackdropLoadingIndicator from '../BackdropLoadingIndicator';
 import exportToTSV from '../../helpers/exportToTSV';
 import downloadProjectBackup from '../../helpers/downloadProjectBackup';
-
-const Styles = styled.div`
-  display: flex;
-  padding: 1rem 1rem 0;
-
-  table {
-    th {
-      font-weight: bold;
-    }
-
-    tr {
-      height: 53px;
-    }
-
-    th,
-    td {
-      padding: 12px;
-      max-width: 140px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-`;
 
 export default function WorkingArea({
   project,
@@ -38,6 +15,13 @@ export default function WorkingArea({
   setSavedBackup,
   toggleRecordView,
 }) {
+  const [sourceData, setSourceData] = useState([])
+  const [targetData, setTargetData] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [pageCount, setPageCount] = useState(0)
+  const [precedingItemsCount, setPrecedingItemsCount] = useState(0)
+  const fetchIdRef = useRef(0)
+
   useEffect(() => {
     const handleBeforeunload = (event) => {
       const returnValue = 'Changes you made may not be locally backed up. Do you wish to continue?';
@@ -118,29 +102,64 @@ export default function WorkingArea({
     setSavedBackup(true);
   }
 
+  const fetchData = useCallback(({ pageSize, pageIndex }) => {
+    // This will get called when the table needs new data
+    // You could fetch your data from literally anywhere,
+    // even a server. But for this example, we'll just fake it.
+
+    // Give this fetch an ID
+    const fetchId = ++fetchIdRef.current
+
+    // Set the loading state
+    setLoading(true)
+
+    // Only update the data if this is the latest fetch
+    if (fetchId === fetchIdRef.current) {
+      const startRow = pageSize * pageIndex
+      const endRow = startRow + pageSize
+      setSourceData(sourceNotes.slice(startRow, endRow))
+      setTargetData(targetNotes.slice(startRow, endRow))
+
+      setPrecedingItemsCount(sourceNotes.slice(0, pageSize * pageIndex).length)
+      // Your server could send back total page count.
+      // For now we'll just fake it, too
+      setPageCount(Math.ceil(sourceNotes.length / pageSize))
+
+      setLoading(false)
+    }
+  }, [sourceNotes, targetNotes])
+
   if (targetNotes) {
     return (
-      <Paper style={{ flex: 1 }}>
-        <Styles>
-          <Table
-            data={sourceNotes}
-            columns={sourceColumns}
-            sourceNoteVersion={sourceNoteVersion}
-          />
-          <DraggableTable
-            bookId={bookId}
-            subject={subject}
-            data={targetNotes}
-            languageId={languageId}
-            columns={targetColumns}
-            saveBackup={saveBackup}
-            savedBackup={savedBackup}
-            exportProject={exportProject}
-            setSavedBackup={setSavedBackup}
-            toggleRecordView={toggleRecordView}
-          />
-        </Styles>
-      </Paper>
+      <>
+        <BackdropLoadingIndicator loading={loading} />
+        <Paper style={{ flex: 1 }}>
+          <Styles>
+            <Table
+              data={sourceData}
+              pageCount={pageCount}
+              fetchData={fetchData}
+              columns={sourceColumns}
+              sourceNoteVersion={sourceNoteVersion}
+            />
+            <DraggableTable
+              pageCount={pageCount}
+              bookId={bookId}
+              subject={subject}
+              data={targetData}
+              languageId={languageId}
+              columns={targetColumns}
+              saveBackup={saveBackup}
+              savedBackup={savedBackup}
+              exportProject={exportProject}
+              setSavedBackup={setSavedBackup}
+              toggleRecordView={toggleRecordView}
+              targetNotes={targetNotes}
+              precedingItemsCount={precedingItemsCount}
+            />
+          </Styles>
+        </Paper>
+      </>
     );
   } else {
     return (
@@ -155,3 +174,27 @@ WorkingArea.propTypes = {
   project: PropsTypes.object.isRequired,
   sourceManifest: PropsTypes.object.isRequired,
 };
+
+const Styles = styled.div`
+  display: flex;
+  padding: 1rem 1rem 0;
+
+  table {
+    th {
+      font-weight: bold;
+    }
+
+    tr {
+      height: 53px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+`;

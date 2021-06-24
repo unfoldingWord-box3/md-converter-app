@@ -6,10 +6,8 @@ import {
   Button,
   Stepper,
   Divider,
-  Backdrop,
   StepButton,
   Typography,
-  CircularProgress,
 } from '@material-ui/core';
 import {
   RepositoryContext,
@@ -21,6 +19,7 @@ import LoadingIndicator from '../LoadingIndicator';
 import { getActiveStep } from '../../helpers/getActiveStep';
 import getSupportedResourceId from '../../helpers/getSupportedResourceId';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider'
+import BackdropLoadingIndicator from '../BackdropLoadingIndicator'
 
 function AppStepper() {
   const classes = useStyles();
@@ -91,9 +90,7 @@ function AppStepper() {
   if (steps[activeStep]) {
     return (
       <Paper style={{ alignSelf: 'center', width: '100%' }}>
-        <Backdrop className={classes.backdrop} open={isFetching}>
-          <CircularProgress color="inherit" size={80} />
-        </Backdrop>
+        <BackdropLoadingIndicator loading={isFetching} size={80} />
         <div className={classes.root}>
           <Stepper activeStep={activeStep}>
             {steps.map((step, index) => (

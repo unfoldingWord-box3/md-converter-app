@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useReducer } from 'react';
-import ric from 'ric-shim'
-import equal from 'deep-equal';
-import * as cacheLibrary from 'money-clip';
+import React, { useState, useEffect, useReducer, useCallback } from 'react';
+// import ric from 'ric-shim'
+// import equal from 'deep-equal';
+// import * as cacheLibrary from 'money-clip';
 import { customAlphabet } from 'nanoid/non-secure'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import fetchEnglishTsvsAction from '../actions/fetchEnglishTsvsAction';
@@ -78,24 +78,24 @@ export default function TsvDataContextProvider(props) {
   const { isLoading, setIsLoading, setIsError, setLoadingMessage, loadingMessage } = useLoading();
   const [savedBackup, setSavedBackup] = useState(false);
 
-  useEffect(() => {
-    cacheLibrary.getAll().then(cacheData => {
-      const payload = cacheData[reducerName];
+  // useEffect(() => {
+  //   cacheLibrary.getAll().then(cacheData => {
+  //     const payload = cacheData[reducerName];
 
-      if (cacheData[reducerName]) {
-        dispatch({
-          type: 'SET_CACHED_REDUCER',
-          payload,
-        })
-      }
-    });
-  }, []);
+  //     if (cacheData[reducerName]) {
+  //       dispatch({
+  //         type: 'SET_CACHED_REDUCER',
+  //         payload,
+  //       })
+  //     }
+  //   });
+  // }, []);
 
-  useDeepCompareEffect(() => {
-    if (!equal(state, initialState)) {
-      ric(() => cacheLibrary.set(reducerName, state))
-    }
-  }, [state])
+  // useDeepCompareEffect(() => {
+  //   if (!equal(state, initialState)) {
+  //     ric(() => cacheLibrary.set(reducerName, state))
+  //   }
+  // }, [state])
 
   const fetchTnMarkdown = async (bookUrl, bookId, targetManifest, resourceId) => {
     try {
@@ -166,9 +166,9 @@ export default function TsvDataContextProvider(props) {
     dispatch({ type: 'SET_PROJECTS', projects: newProjects })
   }
 
-  const toggleRecordView = (e, index) => {
+  const toggleRecordView = useCallback((e, index) => {
     const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 4);
-    const { currentProject } = state
+    const currentProject = state.currentProject
     const { targetNotes, sourceNotes, bookId } = currentProject
     // Create a copy of the arrays to avoid mutation
     const newTargetNotes = Object.assign([], targetNotes)
@@ -239,7 +239,7 @@ export default function TsvDataContextProvider(props) {
       targetNotes: newTargetNotes,
       timestamp: generateTimestamp(),
     })
-  }
+  }, [state.currentProject])
 
   const value = {
     state,

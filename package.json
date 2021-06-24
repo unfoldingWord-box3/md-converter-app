@@ -4,13 +4,13 @@
   "description": "Markdown to TSV conversion App.",
   "private": true,
   "scripts": {
-    "start": "cross-env PORT=3006 react-scripts start",
+    "start": "cross-env PORT=3007 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.0",
+    "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -34,7 +34,7 @@
     "react-dom": "^16.13.1",
     "react-loader-spinner": "^3.1.14",
     "react-scripts": "3.4.3",
-    "react-table": "^7.6.3",
+    "react-table": "^7.7.0",
     "ric-shim": "^1.0.0",
     "styled-components": "^5.1.1",
     "traverse": "^0.6.6",

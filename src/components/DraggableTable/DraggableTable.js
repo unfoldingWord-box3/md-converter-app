@@ -1,7 +1,13 @@
-import React, { useState, useContext, useCallback, useRef } from 'react';
-import { useTable } from 'react-table';
+import React, {
+  useRef,
+  useMemo,
+  useState,
+  useContext,
+  useCallback,
+} from 'react';
+import { useTable, usePagination } from 'react-table';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import MaUTable from '@material-ui/core/Table';
@@ -9,51 +15,15 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
 import Checkbox from '@material-ui/core/Checkbox';
+import useDeepCompareEffect from 'use-deep-compare-effect'
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import ProjectFab from '../ProjectFab';
 import { TsvDataContext } from '../../state/contexts/TsvDataContextProvider';
-import useDeepCompareEffect from 'use-deep-compare-effect'
+import ProjectFab from '../ProjectFab';
+import HtmlTooltip from '../HtmlTooltip';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    display: 'flex',
-    flex: 'auto',
-    flexDirection: 'column',
-  },
-  flex: {
-    display: 'flex',
-  },
-  fill: {
-    display: 'flex',
-    justifyContent: 'center',
-    fontWeight: 'bold',
-    height: '19px',
-  },
-  buttons: {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: '0px',
-  },
-  button: {
-    width: '240px',
-    margin: '15px 5px',
-  },
-}));
-
-const HtmlTooltip = withStyles((theme) => ({
-  tooltip: {
-    backgroundColor: '#f5f5f9',
-    color: 'rgba(0, 0, 0, 0.87)',
-    maxWidth: 200,
-    fontSize: theme.typography.pxToRem(12),
-    border: '1px solid #dadde9',
-  },
-}))(Tooltip);
-
-const DraggableTable = ({
+export default function DraggableTable({
   data,
   bookId,
   columns,
@@ -61,28 +31,43 @@ const DraggableTable = ({
   saveBackup,
   languageId,
   savedBackup,
+  targetNotes,
   exportProject,
   setSavedBackup,
   toggleRecordView,
-}) => {
+  precedingItemsCount,
+  pageCount: controlledPageCount,
+}) {
   const classes = useStyles();
-  // Made a local state for records to help improve UI performance.
+  // Made a local state version (records) of data to help improve UI performance.
   const [records, setRecords] = useState(data);
   const [dropped, setDropped] = useState(false)
+  const [indexes, setIndexes] = useState(null)
   const { saveProjectChanges } = useContext(TsvDataContext);
 
-  // This useEffect is necessary so that we keep the local records state in sync with its version in TsvDataContext
+  // This useDeepCompareEffect is necessary so that we keep the local records state in sync with its version in TsvDataContext
   useDeepCompareEffect(() => {
     setRecords(data)
   }, [data])
 
   useDeepCompareEffect(() => {
-    // Only save target notes changes to TsvDataContext when finished dragging item.
     if (dropped) {
-      saveProjectChanges(records);
+      const { dragIndex, hoverIndex } = indexes || {}
+      const dragRecord = targetNotes[precedingItemsCount + dragIndex];
+      saveProjectChanges(
+        update(targetNotes, {
+          $splice: [
+            [precedingItemsCount + dragIndex, 1],
+            [precedingItemsCount + hoverIndex, 0, dragRecord]
+          ]
+        })
+      );
+      // Clear the indexes state so that when a new drag is initiated it is able to maintain the origin dragIndex (first dragIndex only)
+      setIndexes(null)
       setDropped(false);
+      setSavedBackup(false);
     }
-  }, [dropped, records])
+  }, [dropped, targetNotes, precedingItemsCount, indexes])
 
   const getRowId = useCallback((row) => {
     const reference = row.Reference ? `${row.Reference}` : `${row.Chapter}-${row.Verse}`
@@ -90,18 +75,30 @@ const DraggableTable = ({
   }, [])
 
   const {
+    page,
+    prepareRow,
+    headerGroups,
     getTableProps,
     getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
   } = useTable({
     data: records,
     columns,
     getRowId,
-  });
+    manualPagination: true,
+    pageCount: controlledPageCount,
+    initialState: {
+      pageIndex: 0,
+    },
+  }, usePagination);
 
-  const moveRow = (dragIndex, hoverIndex) => {
+  const moveRow = useCallback((dragIndex, hoverIndex) => {
+    // Only store the first dragIndex since it is the current index for the item in the context state (targetNotes)
+    if (!indexes) {
+      setIndexes({ dragIndex, hoverIndex })
+    } else {
+      // Keep the dragIndex state unchanged only change the hoverIndex since it is the destination when the item is dropped.
+      setIndexes(prevState => ({ ...prevState, hoverIndex }))
+    }
     setDropped(false)
     const dragRecord = records[dragIndex];
     setRecords(
@@ -112,12 +109,28 @@ const DraggableTable = ({
         ]
       })
     );
-    setSavedBackup(false);
-  }
+  }, [records, indexes])
 
-  const onDropped = () => {
+  const onDropped = useCallback(() => {
     setDropped(true)
-  }
+  }, [])
+
+  const TableRows = useMemo(() => {
+    return page.map((row, index) => {
+      prepareRow(row);
+      return (
+        <Row
+          key={`${index}-${row.id}`}
+          row={row}
+          index={index}
+          moveRow={moveRow}
+          onDropped={onDropped}
+          {...row.getRowProps()}
+          toggleRecordView={(e, index) => toggleRecordView(e, index + precedingItemsCount)}
+        />
+      );
+    })
+  }, [page, prepareRow, moveRow, onDropped, toggleRecordView, precedingItemsCount])
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -151,20 +164,7 @@ const DraggableTable = ({
             ))}
           </TableHead>
           <TableBody {...getTableBodyProps()}>
-            {rows.map(
-              (row, index) =>
-                prepareRow(row) || (
-                  <Row
-                    key={`${index}-${row.id}`}
-                    row={row}
-                    index={index}
-                    moveRow={moveRow}
-                    onDropped={onDropped}
-                    {...row.getRowProps()}
-                    toggleRecordView={toggleRecordView}
-                  />
-                )
-            )}
+            {TableRows}
           </TableBody>
         </MaUTable>
       </div>
@@ -308,4 +308,28 @@ const Record = ({
   );
 }
 
-export default DraggableTable;
+const useStyles = makeStyles(() => ({
+  root: {
+    display: 'flex',
+    flex: 'auto',
+    flexDirection: 'column',
+  },
+  flex: {
+    display: 'flex',
+  },
+  fill: {
+    display: 'flex',
+    justifyContent: 'center',
+    fontWeight: 'bold',
+    height: '19px',
+  },
+  buttons: {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '0px',
+  },
+  button: {
+    width: '240px',
+    margin: '15px 5px',
+  },
+}));
