@@ -1,101 +1,20 @@
-import React, { useState, useEffect, useReducer, useCallback } from 'react';
-// import ric from 'ric-shim'
-// import equal from 'deep-equal';
-// import * as cacheLibrary from 'money-clip';
+import React, { useState, useCallback } from 'react';
 import { customAlphabet } from 'nanoid/non-secure'
-import useDeepCompareEffect from 'use-deep-compare-effect'
 import fetchEnglishTsvsAction from '../actions/fetchEnglishTsvsAction';
 import fetchTnMarkdownAction from '../actions/fetchTnMarkdownAction';
 import getGlTsvContent from '../../helpers/getGlTsvContent';
 import generateTimestamp from '../../helpers/generateTimestamp';
 import useLoading from '../../hooks/useLoading';
 import populateHeaders from '../../helpers/populateHeaders';
+import useLocalStorage from '../../hooks/useLocalStorage'
 
 export const TsvDataContext = React.createContext({});
 
-const reducerName = 'tsvDataReducer';
-const initialState = {
-  targetNotes: {},
-  sourceNotes: {},
-  glTsvs: {},
-  bookId: null,
-  projects: [],
-  currentProject: null,
-};
-
-function tsvDataReducer(state, action) {
-  switch (action.type) {
-    case 'SET_BOOK_ID':
-      return {
-        ...state,
-        bookId: action.bookId,
-      };
-    case 'SET_CURRENT_PROJECT':
-      const found = state.projects.find(project => project.name === action.project.name)
-      const projects = found ? state.projects : [...state.projects, action.project];
-      return {
-        ...state,
-        projects,
-        currentProject: action.project,
-      };
-    case 'UPDATE_CURRENT_PROJECT':
-      const foundIndex = state.projects.findIndex(project => project.name === action.project.name)
-      const newProjects = state.projects.map((project, index) => {
-        if (foundIndex !== index) {
-          return project;
-        } else {
-          return action.project;
-        }
-      })
-
-      return {
-        ...state,
-        projects: newProjects,
-        currentProject: action.project,
-      };
-    case 'REMOVE_CURRENT_PROJECT':
-      return {
-        ...state,
-        currentProject: null,
-      };
-    case 'SET_PROJECTS':
-      return {
-        ...state,
-        projects: action.projects,
-      };
-    case 'SET_CACHED_REDUCER':
-      return {
-        ...initialState,
-        ...action.payload,
-      };
-    default:
-      return state;
-  }
-}
-
 export default function TsvDataContextProvider(props) {
-  const [state, dispatch] = useReducer(tsvDataReducer, initialState);
+  const [projects, setProjects] = useLocalStorage('projects', [])
+  const [currentProject, setCurrentProject] = useLocalStorage('currentProject', null);
   const { isLoading, setIsLoading, setIsError, setLoadingMessage, loadingMessage } = useLoading();
   const [savedBackup, setSavedBackup] = useState(false);
-
-  // useEffect(() => {
-  //   cacheLibrary.getAll().then(cacheData => {
-  //     const payload = cacheData[reducerName];
-
-  //     if (cacheData[reducerName]) {
-  //       dispatch({
-  //         type: 'SET_CACHED_REDUCER',
-  //         payload,
-  //       })
-  //     }
-  //   });
-  // }, []);
-
-  // useDeepCompareEffect(() => {
-  //   if (!equal(state, initialState)) {
-  //     ric(() => cacheLibrary.set(reducerName, state))
-  //   }
-  // }, [state])
 
   const fetchTnMarkdown = async (bookUrl, bookId, targetManifest, resourceId) => {
     try {
@@ -122,54 +41,66 @@ export default function TsvDataContextProvider(props) {
         timestamp: generateTimestamp(),
       })
 
-      setBookId(bookId);
       setIsLoading(false);
     } catch (error) {
       console.error(error)
     }
   }
 
-  const setBookId = (bookId) => dispatch({ type: 'SET_BOOK_ID', bookId })
-
-  const setProject = (project) => {
+  const setProject = useCallback((project) => {
     setSavedBackup(false);
     console.info('setProject()');
 
-    dispatch({ type: 'SET_CURRENT_PROJECT', project })
-  }
+    let newProjects = []
+    const foundIndex = projects.findIndex(p => p.name === project.name)
 
-  const updateProject = (project) => {
-    setSavedBackup(false);
+    if (foundIndex) {
+      newProjects = projects.map((p, index) => {
+        if (foundIndex !== index) {
+          return p;
+        } else {
+          return project;
+        }
+      })
+    } else {
+      newProjects = [...projects, project]
+    }
+
+    setProjects([...newProjects])
+    setCurrentProject(project)
+    // dispatch({ type: 'SET_CURRENT_PROJECT', project })
+  }, [setSavedBackup, projects, setProjects, setCurrentProject])
+
+  const updateProject = useCallback((project) => {
     console.info('updateProject()');
 
-    dispatch({ type: 'UPDATE_CURRENT_PROJECT', project })
-  }
+    setProject(project)
+  }, [setProject])
 
-  const removeProject = () => dispatch({ type: 'REMOVE_CURRENT_PROJECT' })
+  const removeProject = () => setCurrentProject(null)
 
   const saveProjectChanges = (targetRecords) => {
     console.info('Saving Project Changes...');
-    const { currentProject } = state;
     const updatedProject = Object.assign({}, currentProject);
     updatedProject.targetNotes = targetRecords;
     updatedProject.timestamp = generateTimestamp();
 
-    dispatch({ type: 'UPDATE_CURRENT_PROJECT', project: updatedProject })
+    setProject(updatedProject)
+    // dispatch({ type: 'UPDATE_CURRENT_PROJECT', project: updatedProject })
   }
 
   const deleteProject = (projectName) => {
-    const { projects } = state;
     const foundIndex = projects.findIndex(project => project.name === projectName)
     const newProjects = [...projects];
     newProjects.splice(foundIndex, 1);
 
-    dispatch({ type: 'SET_PROJECTS', projects: newProjects })
+    setProjects([...newProjects])
+    // dispatch({ type: 'SET_PROJECTS', projects: newProjects })
   }
 
   const toggleRecordView = useCallback((e, index) => {
     const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 4);
-    const currentProject = state.currentProject
-    const { targetNotes, sourceNotes, bookId } = currentProject
+    const { targetNotes, sourceNotes, bookId } = currentProject || {}
     // Create a copy of the arrays to avoid mutation
     const newTargetNotes = Object.assign([], targetNotes)
     const newSourceNotes = Object.assign([], sourceNotes)
@@ -239,12 +170,9 @@ export default function TsvDataContextProvider(props) {
       targetNotes: newTargetNotes,
       timestamp: generateTimestamp(),
     })
-  }, [state.currentProject])
+  }, [currentProject, updateProject])
 
   const value = {
-    state,
-    dispatch,
-    setBookId,
     setProject,
     isLoading,
     setIsError,
@@ -257,6 +185,7 @@ export default function TsvDataContextProvider(props) {
     fetchTnMarkdown,
     toggleRecordView,
     saveProjectChanges,
+    state: { currentProject, projects, sourceNotes: {} },
    }
 
   return <TsvDataContext.Provider value={value}>{props.children}</TsvDataContext.Provider>;

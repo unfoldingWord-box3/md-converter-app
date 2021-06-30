@@ -1,6 +1,4 @@
-import { useState } from 'react'
-
-// based on example at https://usehooks.com/useLocalStorage/
+import { useState, useCallback } from 'react'
 
 export default function useLocalStorage(key, initialValue) {
   // State to store our value
@@ -31,7 +29,7 @@ export default function useLocalStorage(key, initialValue) {
 
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to localStorage.
-  const setValue = value => {
+  const setValue = useCallback(value => {
     try {
       // Allow value to be a function so we have same API as useState
       const valueToStore =
@@ -45,7 +43,7 @@ export default function useLocalStorage(key, initialValue) {
       // A more advanced implementation would handle the error case
       console.log(`useLocalStorage.setValue(${key}) - error:'`, error)
     }
-  }
+  }, [storedValue, key])
 
   return [storedValue, setValue]
 }

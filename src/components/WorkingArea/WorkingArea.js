@@ -102,11 +102,8 @@ export default function WorkingArea({
     setSavedBackup(true);
   }
 
+  // This will get called when the table needs new data
   const fetchData = useCallback(({ pageSize, pageIndex }) => {
-    // This will get called when the table needs new data
-    // You could fetch your data from literally anywhere,
-    // even a server. But for this example, we'll just fake it.
-
     // Give this fetch an ID
     const fetchId = ++fetchIdRef.current
 
@@ -121,8 +118,7 @@ export default function WorkingArea({
       setTargetData(targetNotes.slice(startRow, endRow))
 
       setPrecedingItemsCount(sourceNotes.slice(0, pageSize * pageIndex).length)
-      // Your server could send back total page count.
-      // For now we'll just fake it, too
+      // Set total page count.
       setPageCount(Math.ceil(sourceNotes.length / pageSize))
 
       setLoading(false)
