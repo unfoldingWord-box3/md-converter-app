@@ -6,6 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
 
 export default function Pagination ({
@@ -26,33 +27,43 @@ export default function Pagination ({
 
   return (
     <Container>
+      <span>
+        Showing {page.length} of {controlledPageCount * pageSize}{' '}rows
+      </span>
       <GridRow>
-        <span>
-          Showing {page.length} of {controlledPageCount * pageSize}{' '}rows
-        </span>
-        <Button variant="contained" color="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+        <Button title='Go to first page' variant='contained' color='secondary' onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
           {'<<'}
         </Button>
-        <Button variant="contained" color="secondary" onClick={() => previousPage()} disabled={!canPreviousPage}>
+        <Button title='Previous page' variant='contained' color='secondary' onClick={() => previousPage()} disabled={!canPreviousPage}>
           {'<'}
         </Button>
-        <Button variant="contained" color="secondary" onClick={() => nextPage()} disabled={!canNextPage}>
+        <Button title='Next page' variant='contained' color='secondary' onClick={() => nextPage()} disabled={!canNextPage}>
           {'>'}
         </Button>
-        <Button variant="contained" color="secondary" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+        <Button title='Go to last page' variant='contained' color='secondary' onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
           {'>>'}
+        </Button>
+        <Button
+          color='default'
+          variant='contained'
+          disabled={!canNextPage}
+          title='Add next 10 rows'
+          startIcon={<ExpandMoreIcon />}
+          onClick={() => setPageSize(pageSize + 10)}
+        >
+          {'10'}
         </Button>
         <FormControl color='secondary'>
           <InputLabel
-            id="select-label"
+            id='select-label'
             classes={{ root: classes.inputLabelRoot }}
           >
             Show
           </InputLabel>
           <Select
-            label="Rows"
-            id="select-outlined"
-            labelId="select-outlined-label"
+            label='Rows'
+            id='select-outlined'
+            labelId='select-outlined-label'
             value={pageSize}
             onChange={e => {
               setPageSize(Number(e.target.value))
@@ -71,7 +82,7 @@ export default function Pagination ({
         </FormControl>
         <FormControl color='secondary'>
           <InputLabel
-            id="select-label"
+            id='select-label'
             classes={{ root: classes.inputLabelRoot }}
           >
             Go to page:
@@ -87,13 +98,13 @@ export default function Pagination ({
             classes={{ root: classes.inputLabelRoot }}
           />
         </FormControl>
-        <PageInfo>
-          Page{' '}
-          <strong>
-            {pageIndex + 1} of {pageOptions?.length}
-          </strong>{' '}
-        </PageInfo>
       </GridRow>
+      <PageInfo>
+        Page{' '}
+        <strong>
+          {pageIndex + 1} of {pageOptions?.length}
+        </strong>{' '}
+      </PageInfo>
     </Container>
   )
 }
@@ -116,15 +127,18 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
   font-size: 18px;
   color: #fff;
   background-color: #2B374B;
-  padding: 1rem 2rem;
-  border-top-left-radius: 1rem;
   position: fixed;
   bottom: 0px;
   right: 0%;
-  z-index: 2;
+  left: 0%;
+  z-index: 4;
 `
 
 const GridRow = styled.div`
