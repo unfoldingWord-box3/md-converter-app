@@ -49,12 +49,11 @@ export default function TsvDataContextProvider(props) {
 
   const setProject = useCallback((project) => {
     setSavedBackup(false);
-    console.info('setProject()');
 
     let newProjects = []
     const foundIndex = projects.findIndex(p => p.name === project.name)
 
-    if (foundIndex) {
+    if (foundIndex >= 0) {
       newProjects = projects.map((p, index) => {
         if (foundIndex !== index) {
           return p;
@@ -68,7 +67,6 @@ export default function TsvDataContextProvider(props) {
 
     setProjects([...newProjects])
     setCurrentProject(project)
-    // dispatch({ type: 'SET_CURRENT_PROJECT', project })
   }, [setSavedBackup, projects, setProjects, setCurrentProject])
 
   const updateProject = useCallback((project) => {
@@ -86,7 +84,6 @@ export default function TsvDataContextProvider(props) {
     updatedProject.timestamp = generateTimestamp();
 
     setProject(updatedProject)
-    // dispatch({ type: 'UPDATE_CURRENT_PROJECT', project: updatedProject })
   }
 
   const deleteProject = (projectName) => {
@@ -95,7 +92,6 @@ export default function TsvDataContextProvider(props) {
     newProjects.splice(foundIndex, 1);
 
     setProjects([...newProjects])
-    // dispatch({ type: 'SET_PROJECTS', projects: newProjects })
   }
 
   const toggleRecordView = useCallback((e, index) => {
