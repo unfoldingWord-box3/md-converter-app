@@ -185,7 +185,8 @@ export default function TsvDataContextProvider(props) {
     fetchTnMarkdown,
     toggleRecordView,
     saveProjectChanges,
-    state: { currentProject, projects, sourceNotes: {} },
+    projects,
+    currentProject,
    }
 
   return <TsvDataContext.Provider value={value}>{props.children}</TsvDataContext.Provider>;

@@ -22,7 +22,7 @@ export default function useLocalStorage(key, initialValue) {
       }
     } catch (error) {
       // If error also return initialValue
-      console.log(`useLocalStorage(${key}) - init error:'`, error)
+      console.error(`useLocalStorage(${key}) - init error:'`, error)
       return initialValue
     }
   })
@@ -41,7 +41,7 @@ export default function useLocalStorage(key, initialValue) {
       localStorage.setItem(key, valueJSON)
     } catch (error) {
       // A more advanced implementation would handle the error case
-      console.log(`useLocalStorage.setValue(${key}) - error:'`, error)
+      console.error(`useLocalStorage.setValue(${key}) - error:'`, error)
     }
   }, [storedValue, key])
 

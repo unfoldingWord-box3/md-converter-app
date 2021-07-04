@@ -43,7 +43,6 @@ export default function Table({
     nextPage,
     previousPage,
     setPageSize,
-    state,
     state: { pageIndex, pageSize },
   } = useTable(
     {
@@ -56,17 +55,9 @@ export default function Table({
         pageIndex: 0,
         hiddenColumns: ['ID', 'SupportReference', 'OrigQuote', 'Occurrence', 'Quote', 'Tags'],
       },
-      stateReducer: (newState, action, prevState) => {
-        console.log({newState, action, prevState})
-      }
     },
     usePagination
   );
-
-  console.log({
-    pageOptions,
-    state,
-  })
 
   useEffect(() => {
     fetchData({ pageIndex, pageSize })

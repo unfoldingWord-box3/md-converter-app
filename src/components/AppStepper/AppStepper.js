@@ -26,7 +26,7 @@ function AppStepper() {
   const { state: authentication, component: authenticationComponent } = useContext(AuthenticationContext);
   const { state: sourceRepository, component: repositoryComponent } = useContext(RepositoryContext);
   const { isLoading: isFetching } = useContext(TsvDataContext);
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({
     0: !!authentication,
     1: !!sourceRepository,
