@@ -39,13 +39,8 @@ export default function App() {
     removeProject,
     setSavedBackup,
     toggleRecordView,
-    state: {
-      projects,
-      currentProject,
-      sourceNotes: {
-        manifest: sourceManifest
-      }
-    },
+    projects,
+    currentProject,
   } = useContext(TsvDataContext);
 
   const myAuthStore = localforage.createInstance({
@@ -114,7 +109,7 @@ export default function App() {
                         savedBackup={savedBackup}
                         setSavedBackup={setSavedBackup}
                         toggleRecordView={toggleRecordView}
-                        sourceManifest={currentProject?.sourceManifest || sourceManifest || {}}
+                        sourceManifest={currentProject?.sourceManifest || {}}
                       />
                     :
                     (showProjects && authentication) || (!showStepper && projects && projects.length && authentication) ?

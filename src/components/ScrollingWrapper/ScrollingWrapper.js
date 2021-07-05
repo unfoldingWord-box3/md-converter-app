@@ -15,7 +15,7 @@ const ScrollingWrapperContainer = styled.div`
 
 const ScrollToBottomIconContainer = styled.div`
   position: fixed;
-  bottom: 62px;
+  bottom: 140px;
   right: 0%;
   margin: 0px 15px;
   margin-left: -50px;
@@ -41,7 +41,7 @@ const ScrollToBottomIconContainer = styled.div`
 
 const ScrollToTopIconContainer = styled.div`
   position: fixed;
-  bottom: 115px;
+  bottom: 195px;
   right: 0%;
   margin: 0px 15px;
   margin-left: -50px;

@@ -14,7 +14,7 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   position: fixed;
-  bottom: 10px;
+  bottom: 85px;
   right: 0%;
   margin: 0px 15px;
   margin-left: -50px;

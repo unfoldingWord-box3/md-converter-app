@@ -25,7 +25,7 @@ import generateTimestamp from '../../helpers/generateTimestamp';
 import exportToTSV from '../../helpers/exportToTSV';
 import NoData from '../../assets/images/undraw_no_data.svg';
 import useLoading from '../../hooks/useLoading';
-import BackdropComponent from '../Backdrop';
+import BackdropLoadingIndicator from '../BackdropLoadingIndicator';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -156,7 +156,7 @@ const MyProjects = ({
 
   return (
     <Paper classes={{ root: classes.paper }}>
-      {isLoading && <BackdropComponent open={true} />}
+      {isLoading && <BackdropLoadingIndicator open={true} />}
       <div className={classes.root}>
         <div className={classes.titleContainer}>
           <h2 className={classes.title}>My Projects</h2>

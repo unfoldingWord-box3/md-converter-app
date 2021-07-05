@@ -36,9 +36,7 @@ export default function BooksList({
   const [manifestUrl, setManifestUrl] = useState(null)
   const [hasMarkdownContent, setHasMarkdownContent] = useState(false)
   const {
-    state: {
-      projects,
-    },
+    projects,
     isLoading,
     setIsLoading,
     loadingMessage,

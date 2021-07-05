@@ -38,7 +38,7 @@ export default function exportToTSV(sourceNotes, targetNotes, bookId, resourceId
     if (!finalNote.ID) finalNote.ID = targetNote?.id.toString().replace(/[^a-zA-Z0-9]/gi, '')
 
     if (finalNote.ID && !empty) {
-      const { Included } = targetNote
+      const { Included } = targetNote || {}
 
       if (typeof Included === 'undefined') {
         linedUpNotes.push(finalNote);
