@@ -51,7 +51,6 @@ export default function DraggableTable({
   }, [data])
 
   useDeepCompareEffect(() => {
-    console.log('dropped', dropped)
     if (dropped) {
       const { dragIndex, hoverIndex } = indexes || {}
       if (typeof dragIndex == 'number' && typeof hoverIndex == 'number') {
@@ -116,7 +115,6 @@ export default function DraggableTable({
   }, [records, indexes])
 
   const onDropped = useCallback(() => {
-    console.log('onDropped')
     setDropped(true)
   }, [])
 
