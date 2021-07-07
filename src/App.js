@@ -1,5 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import localforage from 'localforage';
+import * as cacheLibrary from 'money-clip';
 import { makeStyles } from '@material-ui/core/styles';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import {
@@ -42,6 +43,10 @@ export default function App() {
     projects,
     currentProject,
   } = useContext(TsvDataContext);
+
+  useEffect(() => {
+    cacheLibrary.del('tsvDataReducer')
+  }, [])
 
   const myAuthStore = localforage.createInstance({
     driver: [localforage.INDEXEDDB],
