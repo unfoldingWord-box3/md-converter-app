@@ -45,6 +45,7 @@ export default function App() {
   } = useContext(TsvDataContext);
 
   useEffect(() => {
+    // Delete previous cache implementation.
     cacheLibrary.del('tsvDataReducer')
   }, [])
 
