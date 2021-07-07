@@ -129,9 +129,7 @@ export default function DraggableTable({
           moveRow={moveRow}
           onDropped={onDropped}
           {...row.getRowProps()}
-          toggleRecordView={async (e) => {
-            await toggleRecordView(e, precedingItemsCount + index)
-          }}
+          toggleRecordView={(e) => toggleRecordView(e, precedingItemsCount + index)}
         />
       );
     })

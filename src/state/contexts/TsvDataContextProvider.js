@@ -94,7 +94,7 @@ export default function TsvDataContextProvider(props) {
     setProjects([...newProjects])
   }
 
-  const toggleRecordView = (e, index) => {
+  const toggleRecordView = useCallback((e, index) => {
     const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 4);
     const { targetNotes, sourceNotes, bookId } = currentProject || {}
     // Create a copy of the arrays to avoid mutation
@@ -166,8 +166,7 @@ export default function TsvDataContextProvider(props) {
       targetNotes: newTargetNotes,
       timestamp: generateTimestamp(),
     })
-  }
-  //, [currentProject, updateProject])
+  }, [currentProject, updateProject])
 
   const value = {
     setProject,
