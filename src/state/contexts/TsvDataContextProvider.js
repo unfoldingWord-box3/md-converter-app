@@ -78,6 +78,7 @@ export default function TsvDataContextProvider(props) {
   const removeProject = () => setCurrentProject(null)
 
   const saveProjectChanges = (targetRecords) => {
+    console.log('saveProjectChanges')
     console.info('Saving Project Changes...');
     const updatedProject = Object.assign({}, currentProject);
     updatedProject.targetNotes = targetRecords;
@@ -94,12 +95,19 @@ export default function TsvDataContextProvider(props) {
     setProjects([...newProjects])
   }
 
-  const toggleRecordView = useCallback((e, index) => {
+  const toggleRecordView = (e, index) => {
+    console.log('toggleRecordView', index)
     const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 4);
     const { targetNotes, sourceNotes, bookId } = currentProject || {}
     // Create a copy of the arrays to avoid mutation
     const newTargetNotes = Object.assign([], targetNotes)
     const newSourceNotes = Object.assign([], sourceNotes)
+
+    console.log('e.target.checked', e.target.checked)
+
+    console.log('targetNotes', targetNotes)
+    console.log('targetNotes', targetNotes[index])
+    console.log('newTargetNotes', newTargetNotes[index])
 
     newTargetNotes[index].Included = e.target.checked
 
@@ -160,13 +168,16 @@ export default function TsvDataContextProvider(props) {
       newTargetNotes.splice(index + 1, 0, emptyTargetNote)
     }
 
+    console.log('newTargetNotes', newTargetNotes)
+
     updateProject({
       ...currentProject,
       sourceNotes: newSourceNotes,
       targetNotes: newTargetNotes,
       timestamp: generateTimestamp(),
     })
-  }, [currentProject, updateProject])
+  }
+  //, [currentProject, updateProject])
 
   const value = {
     setProject,

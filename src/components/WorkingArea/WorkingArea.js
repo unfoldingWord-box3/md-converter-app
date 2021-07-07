@@ -49,7 +49,8 @@ export default function WorkingArea({
   const { targetNotes, sourceNotes, bookId, languageId, resourceId } = project;
   const { language, subject, version } = sourceManifest?.dublin_core || {};
   let sourceNoteVersion = null;
-
+  console.log('targetData', targetData)
+  console.log('targetNotes', targetNotes)
   if (version) {
     sourceNoteVersion = `${language?.title} ${subject} - Version ${version}`
   }

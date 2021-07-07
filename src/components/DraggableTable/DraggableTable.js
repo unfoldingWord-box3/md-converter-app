@@ -51,21 +51,25 @@ export default function DraggableTable({
   }, [data])
 
   useDeepCompareEffect(() => {
+    console.log('dropped', dropped)
     if (dropped) {
       const { dragIndex, hoverIndex } = indexes || {}
-      const dragRecord = targetNotes[precedingItemsCount + dragIndex];
-      saveProjectChanges(
-        update(targetNotes, {
-          $splice: [
-            [precedingItemsCount + dragIndex, 1],
-            [precedingItemsCount + hoverIndex, 0, dragRecord]
-          ]
-        })
-      );
-      // Clear the indexes state so that when a new drag is initiated it is able to maintain the origin dragIndex (first dragIndex only)
-      setIndexes(null)
-      setDropped(false);
-      setSavedBackup(false);
+      if (typeof dragIndex == 'number' && typeof hoverIndex == 'number') {
+        const precedingCount = precedingItemsCount || 0;
+        const dragRecord = targetNotes[precedingCount + dragIndex];
+        saveProjectChanges(
+          update(targetNotes, {
+            $splice: [
+              [precedingCount + dragIndex, 1],
+              [precedingCount + hoverIndex, 0, dragRecord]
+            ]
+          })
+        );
+        // Clear the indexes state so that when a new drag is initiated it is able to maintain the origin dragIndex (first dragIndex only)
+        setIndexes(null)
+        setDropped(false);
+        setSavedBackup(false);
+      }
     }
   }, [dropped, targetNotes, precedingItemsCount, indexes])
 
@@ -112,6 +116,7 @@ export default function DraggableTable({
   }, [records, indexes])
 
   const onDropped = useCallback(() => {
+    console.log('onDropped')
     setDropped(true)
   }, [])
 
@@ -126,7 +131,9 @@ export default function DraggableTable({
           moveRow={moveRow}
           onDropped={onDropped}
           {...row.getRowProps()}
-          toggleRecordView={(e, index) => toggleRecordView(e, index + precedingItemsCount)}
+          toggleRecordView={async (e) => {
+            await toggleRecordView(e, precedingItemsCount + index)
+          }}
         />
       );
     })
@@ -225,10 +232,8 @@ const Row = ({ row, index, moveRow, toggleRecordView, onDropped }) => {
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
     }),
-    end: (_, monitor) => {
-      if (monitor.didDrop()) {
-        onDropped()
-      }
+    end: () => {
+      onDropped()
     },
   });
 
