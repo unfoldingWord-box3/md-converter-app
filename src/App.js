@@ -34,17 +34,18 @@ export default function App() {
   const [showStepper, setShowStepper] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
   const {
+    projects,
     setProject,
     savedBackup,
     deleteProject,
     removeProject,
     setSavedBackup,
-    toggleRecordView,
-    projects,
     currentProject,
+    toggleRecordView,
   } = useContext(TsvDataContext);
 
   useEffect(() => {
+    // Delete previous cache implementation.
     cacheLibrary.del('tsvDataReducer')
   }, [])
 

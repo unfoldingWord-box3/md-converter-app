@@ -53,19 +53,22 @@ export default function DraggableTable({
   useDeepCompareEffect(() => {
     if (dropped) {
       const { dragIndex, hoverIndex } = indexes || {}
-      const dragRecord = targetNotes[precedingItemsCount + dragIndex];
-      saveProjectChanges(
-        update(targetNotes, {
-          $splice: [
-            [precedingItemsCount + dragIndex, 1],
-            [precedingItemsCount + hoverIndex, 0, dragRecord]
-          ]
-        })
-      );
-      // Clear the indexes state so that when a new drag is initiated it is able to maintain the origin dragIndex (first dragIndex only)
-      setIndexes(null)
-      setDropped(false);
-      setSavedBackup(false);
+      if (typeof dragIndex == 'number' && typeof hoverIndex == 'number') {
+        const precedingCount = precedingItemsCount || 0;
+        const dragRecord = targetNotes[precedingCount + dragIndex];
+        saveProjectChanges(
+          update(targetNotes, {
+            $splice: [
+              [precedingCount + dragIndex, 1],
+              [precedingCount + hoverIndex, 0, dragRecord]
+            ]
+          })
+        );
+        // Clear the indexes state so that when a new drag is initiated it is able to maintain the origin dragIndex (first dragIndex only)
+        setIndexes(null)
+        setDropped(false);
+        setSavedBackup(false);
+      }
     }
   }, [dropped, targetNotes, precedingItemsCount, indexes])
 
@@ -126,7 +129,7 @@ export default function DraggableTable({
           moveRow={moveRow}
           onDropped={onDropped}
           {...row.getRowProps()}
-          toggleRecordView={(e, index) => toggleRecordView(e, index + precedingItemsCount)}
+          toggleRecordView={(e) => toggleRecordView(e, precedingItemsCount + index)}
         />
       );
     })
@@ -225,10 +228,8 @@ const Row = ({ row, index, moveRow, toggleRecordView, onDropped }) => {
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
     }),
-    end: (_, monitor) => {
-      if (monitor.didDrop()) {
-        onDropped()
-      }
+    end: () => {
+      onDropped()
     },
   });
 
@@ -270,7 +271,11 @@ const Record = ({
   const isIncludedCheckbox = columnHeader === 'Included'
   const tcStyle = { borderLeft: '1px solid rgba(224, 224, 224, 1)' }
 
-  if ((columnHeader === "Question" || columnHeader === "Response") && cell?.row?.values?.Included === false) {
+  if (
+    (columnHeader === "Question" || columnHeader === "Response" ||
+    columnHeader === 'GLQuote' || columnHeader === 'OccurrenceNote')
+    && cell?.row?.values?.Included === false
+  ) {
     tcStyle.textDecoration = 'line-through';
     tcStyle.backgroundColor = 'rgba(0, 0, 0, 0.04)';
   }
