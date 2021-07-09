@@ -271,7 +271,11 @@ const Record = ({
   const isIncludedCheckbox = columnHeader === 'Included'
   const tcStyle = { borderLeft: '1px solid rgba(224, 224, 224, 1)' }
 
-  if ((columnHeader === "Question" || columnHeader === "Response") && cell?.row?.values?.Included === false) {
+  if (
+    (columnHeader === "Question" || columnHeader === "Response" ||
+    columnHeader === 'GLQuote' || columnHeader === 'OccurrenceNote')
+    && cell?.row?.values?.Included === false
+  ) {
     tcStyle.textDecoration = 'line-through';
     tcStyle.backgroundColor = 'rgba(0, 0, 0, 0.04)';
   }
