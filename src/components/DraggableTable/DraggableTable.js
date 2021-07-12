@@ -140,7 +140,6 @@ export default function DraggableTable({
       <div className={classes.root}>
         <div className={classes.fill}>{`Target ${subject} (${languageId}_${bookId})`}</div>
         <ProjectFab
-          records={records}
           saveBackup={saveBackup}
           savedBackup={savedBackup}
           exportProject={exportProject}
