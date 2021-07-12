@@ -69,7 +69,6 @@ const StyledMenuItem = withStyles((theme) => ({
 }))(MenuItem);
 
 export default function ProjectFab({
-  records,
   saveBackup,
   savedBackup,
   exportProject,
@@ -111,7 +110,7 @@ export default function ProjectFab({
           <StyledMenuItem
             onClick={() => {
               handleClose();
-              exportProject(records);
+              exportProject();
             }}
           >
             <ListItemIcon>
@@ -126,7 +125,6 @@ export default function ProjectFab({
 }
 
 ProjectFab.propTypes = {
-  records: PropsTypes.array.isRequired,
   saveBackup: PropsTypes.func.isRequired,
   savedBackup: PropsTypes.bool.isRequired,
   exportProject: PropsTypes.func.isRequired,

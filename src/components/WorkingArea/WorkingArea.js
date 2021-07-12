@@ -93,8 +93,8 @@ export default function WorkingArea({
     [targetHeaders]
   );
 
-  const exportProject = (targetRecords) => {
-    exportToTSV(sourceNotes, targetRecords, bookId, resourceId);
+  const exportProject = () => {
+    exportToTSV(sourceNotes, targetNotes, bookId, resourceId);
   }
 
   const saveBackup = async () => {
