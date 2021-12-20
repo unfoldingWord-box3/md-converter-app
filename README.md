@@ -2,7 +2,7 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/2514b51e-d6ea-4dc3-ad15-0458bab21c01/deploy-status)](https://app.netlify.com/sites/tn-converter-app/deploys)
 
-Translation notes markdown conversion to TSV files.
+Translation notes markdown conversion/migration to TSV files.
 
 ## Available Scripts
 
